@@ -1,7 +1,7 @@
 #include <mbed.h>
 #include <rtos.h>
 
-#include "../../../lib/pin_defines.h"
+#include "../../../src/private_lib/pin_defines.h"
 
 /*
 This test code will test the pwm_out pins to verify they are working
@@ -25,7 +25,7 @@ PWM Output pins used on the board:
 PwmOut test_pin(PWM_1);
 
 int main() {
-  float duty_cycle = 0.5;
+  float duty_cycle = 0.25;
   int period = 20;
 
   test_pin.write(duty_cycle);

@@ -10,6 +10,7 @@ void start_charge();
 
 void run_setup();
 void purge();
+void test_state();
 
 void shutdown_state();
 

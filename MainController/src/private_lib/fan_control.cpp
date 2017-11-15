@@ -16,6 +16,8 @@ PwmOut pwm3(PWM_3);
 
 DigitalOut fans_switch(FAN_SWITCH_ALL);
 
+//TODO: Add PID control. Might add in monitoring.
+
 // Sets the speed of fan 1
 // percentage is a float 1 >= percentage >= 0
 void set_fan_1(float percentage){

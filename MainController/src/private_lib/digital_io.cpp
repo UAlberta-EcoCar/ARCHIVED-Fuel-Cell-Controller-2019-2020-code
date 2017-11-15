@@ -82,17 +82,24 @@ bool get_fcc_relay(){
   fcc_m.unlock();
   return(value);}
 
+
+// TODO: Clean Up setter's, should have no checks.
 void set_supply_valve(bool val){
+  supply_m.lock();
   if(get_fc_status()!=ALARM_STATE){supply_v = val;}
   else{supply_v = 0;}
+  supply_m.unlock();
 }
 
 void set_purge_valve(bool val){
+  purge_m.lock();
   if(get_fc_status()!=ALARM_STATE){purge_v = val;}
   else{purge_v = 0;}
+  purge_m.unlock();
 }
 
 void set_start_relay(bool val){
+  start_m.lock();
   if(get_fc_status()!=ALARM_STATE){
     if(charge_r == 0)
     {
@@ -100,15 +107,18 @@ void set_start_relay(bool val){
     }
   }
   else{start_r = 0;}
+  start_m.unlock();
 }
 
 void set_motor_relay(bool val){
+  motor_m.lock();
   if(get_fc_status()!=ALARM_STATE){motor_r = val;}
   else{motor_r = 0;}
+  motor_m.unlock();
 }
 
-void set_charge_relay(bool val)
-{
+void set_charge_relay(bool val){
+  charge_m.lock();
   if(get_fc_status()!=0)
   {
     if(start_r == 0)
@@ -117,9 +127,11 @@ void set_charge_relay(bool val)
     }
   }
   else{charge_r = 0;}
+  charge_m.unlock();
 }
 
 void set_cap_relay(bool val){
+  cap_m.lock();
   if(get_fc_status()!=ALARM_STATE)
   {
     if(start_r == 0)
@@ -131,6 +143,11 @@ void set_cap_relay(bool val){
     }
   }
   else{cap_r = 0;}
+  cap_m.unlock();
 }
 
-void set_fcc_relay(bool val){fcc_r = val;}
+void set_fcc_relay(bool val){
+  fcc_m.lock();
+  fcc_r = val;
+  fcc_m.unlock();
+}

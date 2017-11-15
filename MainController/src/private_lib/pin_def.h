@@ -103,6 +103,10 @@ Analog voltage readings (Temperture Sensors)
 #define MOTOR_TX PB_10//TX 3
 #define MOTOR_RX PB_11//RX 3
 
+//Error Interrupt
+#define ERROR_ISR PH_1
+#define ERROR_ISR_THROW PH_0
+
 /*
 I2C
   -Used for real time clock and humidifier
