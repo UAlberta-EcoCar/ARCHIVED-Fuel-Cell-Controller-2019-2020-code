@@ -9,7 +9,7 @@ typedef void (*functiontype)();
 #define FC_VOLT 20.0f
 
 // Fan constants
-
+#define FAN_SMUDGE 0.1f // made up needs to be optimized
 
 
 #endif

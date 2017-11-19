@@ -16,6 +16,8 @@ PwmOut pwm3(PWM_3);
 
 DigitalOut fans_switch(FAN_SWITCH_ALL);
 
+float set_speed;
+
 //TODO: Add PID control. Might add in monitoring.
 
 // Sets the speed of fan 1
@@ -55,20 +57,20 @@ void set_fan_3(float percentage){
 }
 
 // Reads the speed of fan 1
-float read_fan_1(){
+float get_fan_1(){
   // Period of 40 us
   float duty = tach1.dutycycle();
   return duty;
 }
 
 // Reads the speed of fan 2
-float read_fan_2(){
+float get_fan_2(){
   float duty = tach2.dutycycle();
   return duty;
 }
 
 // Reads the speed of fan 3
-float read_fan_3(){
+float get_fan_3(){
   float duty = tach3.dutycycle();
   return duty;
 }
@@ -87,4 +89,9 @@ void set_fans(float percentage){
   set_fan_1(percentage);
   set_fan_2(percentage);
   set_fan_3(percentage);
+  set_speed = percentage;
+}
+
+float get_fans(){
+  return set_speed;
 }

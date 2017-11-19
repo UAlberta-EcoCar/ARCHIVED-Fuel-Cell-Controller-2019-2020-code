@@ -16,6 +16,8 @@ DigitalOut charge_r(CHARGE_R);
 DigitalOut cap_r(CAP_R);
 DigitalOut fcc_r(FCC_R);
 
+DigitalOut error_throw(ERROR_ISR_THROW);
+
 Mutex supply_m;
 Mutex purge_m;
 Mutex start_m;
@@ -23,6 +25,7 @@ Mutex motor_m;
 Mutex charge_m;
 Mutex cap_m;
 Mutex fcc_m;
+Mutex ert;
 
 bool get_supply_valve(){
   bool value;
@@ -150,4 +153,10 @@ void set_fcc_relay(bool val){
   fcc_m.lock();
   fcc_r = val;
   fcc_m.unlock();
+}
+
+void throw_error(){
+  ert.lock();
+  error_throw = 1;
+  ert.unlock();
 }

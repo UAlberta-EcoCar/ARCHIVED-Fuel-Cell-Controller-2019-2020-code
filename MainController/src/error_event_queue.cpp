@@ -12,5 +12,5 @@ void error_cleanup(){
 void error_event_queue(){
   err_queue.dispatch();
 
-  while(1){Thread::wait(10);}
+  while(1){Thread::wait(-1.0);}
 }

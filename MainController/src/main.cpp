@@ -1,6 +1,7 @@
 #include <mbed.h>
 #include <mbed_events.h>
 
+#include "private_lib/AnalogIn_Ext.h"
 #include "private_lib/constants.h"
 #include "private_lib/pin_def.h"
 #include "private_lib/fc_status.h"
@@ -8,7 +9,7 @@
 #include "controller_states.h"
 #include "monitoring.h"
 #include "error_event_queue.h"
-
+#include "main.h"
 
 Thread controller_event_thread;
 Thread error_event_thread;
@@ -45,6 +46,6 @@ int main() {
   monitor.start(&monitoring_thread);
 
 
-  while(1){Thread::wait(-1.0);};
+  while(1){Thread::wait(1000000);};
   return 0;
 }

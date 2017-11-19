@@ -4,7 +4,6 @@
 
 #include "private_lib/digital_io.h"
 #include "private_lib/pin_def.h"
-#include "private_lib/signal_def.h"
 #include "private_lib/fan_control.h"
 #include "private_lib/fc_status.h"
 #include "private_lib/constants.h"

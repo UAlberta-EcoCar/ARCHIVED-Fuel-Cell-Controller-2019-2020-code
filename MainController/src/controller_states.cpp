@@ -4,8 +4,8 @@
 
 #include "private_lib/digital_io.h"
 #include "private_lib/pin_def.h"
-#include "private_lib/signal_def.h"
 #include "private_lib/fan_control.h"
+#include "monitoring.h"
 
 //TODO: monitoring signals need to be changed once monitoring is added
 
@@ -21,7 +21,8 @@ void fan_spool_up(){
   set_fans(1.0); // set fans speed to %100
   state_fans(true); // switch fans on
 
-  Thread::signal_wait(FAN_SPOOLED_SIG);
+  //TODO: figure out how to share semaphores across cpp files
+  fan_spooled.wait();
 }
 void start_purge(){
   set_supply_valve(true); // open
@@ -30,7 +31,7 @@ void start_purge(){
   set_fcc_relay(false); // open
   set_charge_relay(false);
 
-  Thread::signal_wait(START_PURGE_SIG);
+  startup_purge.wait();
 
   set_start_relay(false); // closed
   set_purge_valve(true); // open

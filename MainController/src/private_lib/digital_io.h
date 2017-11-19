@@ -19,4 +19,6 @@ void set_charge_relay(bool val);
 void set_cap_relay(bool val);
 void set_fcc_relay(bool val);
 
+void throw_error();
+
 #endif

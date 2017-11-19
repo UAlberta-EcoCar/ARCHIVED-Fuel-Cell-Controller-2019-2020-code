@@ -3,6 +3,7 @@
 
 void state_fans(bool state);
 void set_fans(float percentage);
+float get_fans();
 
 void set_fan_1(float percentage);
 void set_fan_2(float percentage);

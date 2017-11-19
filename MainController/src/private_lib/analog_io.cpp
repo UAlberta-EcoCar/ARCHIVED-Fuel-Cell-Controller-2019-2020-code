@@ -145,12 +145,10 @@ void set_fcvolt(void){
   fcvolt_v = fcvolt*45.76f+0.2715f;
 }
 
-// Will be replaced
-/*
-void set_fcpres(void){
-  fcpres_v = fcpres*3.0f*9.93f-24.648f;
-}
-*/
+//void set_fcpres(void){
+//  fcpres_v = fcpres*3.0f*9.93f-24.648f;
+//}
+
 
 /*
 Integration setters:
