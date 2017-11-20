@@ -7,6 +7,8 @@ Define pins as AnalogIn -> reads an analog signal
 
 AnalogIn name(pin);
 */
+
+//TODO: Get rid of this bs 
 AnalogIn capvolt(CAPVOLT);
 AnalogIn fccurr(FCCURR);
 AnalogIn fcvolt(FCVOLT);

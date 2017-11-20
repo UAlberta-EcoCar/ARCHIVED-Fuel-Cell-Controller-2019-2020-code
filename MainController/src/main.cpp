@@ -2,6 +2,7 @@
 #include <mbed_events.h>
 
 #include "private_lib/AnalogIn_Ext.h"
+#include "private_lib/Fan.h"
 #include "private_lib/constants.h"
 #include "private_lib/pin_def.h"
 #include "private_lib/fc_status.h"
@@ -20,6 +21,8 @@ Thread monitor;
 InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
 
+Fan t(CAP_R, FCC_R);
+
 void error_isr(){
   controller_event_thread.terminate();
   set_fc_status(ALARM_STATE);
@@ -30,6 +33,8 @@ int main() {
   // Create Interrupts (Should be the first thing to do)
   h2.fall(&error_isr);
   err.rise(&error_isr);
+
+  AnalogIn_Ext test(CAP_R);
 
   // Threads from lowest -> highest priority
   monitor.set_priority(osPriorityIdle); // Will be running 90% of the time, since other threads are quick

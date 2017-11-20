@@ -20,51 +20,33 @@
  * THE SOFTWARE.
  */
 
-#ifndef MBED_PWMIN_H
-#define MBED_PWMIN_H
+#include "PwmIn.h"
 
-#include "mbed.h"
+PwmIn::PwmIn(PinName p) : _p(p) {
+    _p.rise(this, &PwmIn::rise);
+    _p.fall(this, &PwmIn::fall);
+    _period = 0.0;
+    _pulsewidth = 0.0;
+    _t.start();
+}
 
-/** PwmIn class to read PWM inputs
- * 
- * Uses InterruptIn to measure the changes on the input
- * and record the time they occur
- *
- * @note uses InterruptIn, so not available on p19/p20
- */
-class PwmIn {
-public:
-    /** Create a PwmIn
-     *
-     * @param p The pwm input pin (must support InterruptIn)
-     */ 
-    PwmIn(PinName p);
-    
-    /** Read the current period
-     *
-     * @returns the period in seconds
-     */
-    float period();
-    
-    /** Read the current pulsewidth
-     *
-     * @returns the pulsewidth in seconds
-     */
-    float pulsewidth();
-    
-    /** Read the current dutycycle
-     *
-     * @returns the dutycycle as a percentage, represented between 0.0-1.0
-     */
-    float dutycycle();
+float PwmIn::period_in() {
+    return _period;
+}
 
-protected:        
-    void rise();
-    void fall();
-    
-    InterruptIn _p;
-    Timer _t;
-    float _pulsewidth, _period;
-};
+float PwmIn::pulsewidth_in() {
+    return _pulsewidth;
+}
 
-#endif
+float PwmIn::dutycycle_in() {
+    return _pulsewidth / _period;
+}
+
+void PwmIn::rise() {
+    _period = _t.read();
+    _t.reset();
+}
+
+void PwmIn::fall() {
+    _pulsewidth = _t.read();
+}

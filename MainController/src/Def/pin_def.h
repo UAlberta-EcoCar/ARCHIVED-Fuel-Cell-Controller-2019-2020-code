@@ -22,7 +22,7 @@ Relays
 #define FCC_R PB_0
 // #define START_R not yet defined
 #define MOTOR_R PB_3
-#define START_R PB_2
+#define START_R PC_7
 
 /*
 Analog voltage readings
@@ -47,7 +47,7 @@ Analog voltage readings (pressure sensors)
 
 /*
 H2 Board pins
-  -Ethernet #6
+  -Ethernet #5
 */
 #define STOP PB_5
 #define H2_OK PB_6
