@@ -1,9 +1,28 @@
 #ifndef PIN_DEF_H
 #define PIN_DEF_H
 
-//LED
-#define STATUS_LED PTC5
+//OLED
+#define OLDE_CLK PE_2
+#define OLED_SEL PE_4
+#define OLED_MISO PE_5
+#define OLED_MOSI PE_6
 
+//LED
+#define ALARM_LED PG_0
+#define DEBUG_LED PG_1
+#define SHUT_LED PG_2
+#define RUN_LED PG_9
+#define START_LED PG_3
+
+// External ADC
+#define ADC_SCL PF_14
+#define ADC_SDA PF_15
+
+// Start?
+#define START PF_12
+
+// Button (Which i think is the same use as start?)
+#define BUTT PF_2
 /*
 Valves
   -Ethernet #8
@@ -20,7 +39,6 @@ Relays
 #define CAP_R PB_2
 #define CHARGE_R PB_4
 #define FCC_R PB_0
-// #define START_R not yet defined
 #define MOTOR_R PB_3
 #define START_R PC_7
 
@@ -34,7 +52,6 @@ Analog voltage readings
 #define FCCURR PA_5
 #define MOTORCURR PA_6
 #define CAPCURR PA_7
-// #define FCPRES PTC1 A11 is not defined for some reason will have to tie it to A19 which is near by
 
 /*
 Analog voltage readings (pressure sensors)
@@ -78,12 +95,14 @@ Analog voltage readings (Temperture Sensors)
 #define TEMP4 PF_9
 #define TEMP5 PF_10
 
+
 //Serial Defines
 //open log
 #define OL_CTS PE_3//CTS 2
 #define OL_RTS PE_4//RTS 2
 #define OL_TX PE_5//TX 2
 #define OL_RX PE_6//RX 2
+#define OL_RST PD_7
 
 //FTDI Chip
 #define FTDI_CTS PE_10//CTS 7
@@ -106,6 +125,8 @@ Analog voltage readings (Temperture Sensors)
 //Error Interrupt
 #define ERROR_ISR PH_1
 #define ERROR_ISR_THROW PH_0
+
+#define HUM_RST PC_6
 
 /*
 I2C

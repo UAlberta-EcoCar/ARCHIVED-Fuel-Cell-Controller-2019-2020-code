@@ -27,69 +27,53 @@ AnalogIn_Ext::AnalogIn_Ext(
 // Method Definition
 void AnalogIn_Ext::update()
 {
-  mu.lock();
-  this->value = read();
-  _scale();
+  _scale(read());
+  if (this->value > error_threshold){
+    //TODO: Error Checking
+  }
+  }
 
-  //TODO: Error Checking
-  mu.unlock();
-}
 
-void AnalogIn_Ext::return_val(float &ref, bool update=0)
+float AnalogIn_Ext::return_val(bool update)
 {
   if (update){
-    update();
+    this->update();
   }
-  mu.lock();
-  *ref = this->value;
-  mu.unlock();
+  return this->value;
 }
 
 void AnalogIn_Ext::set_error_threshold(float error_threshold)
 {
-mu.lock();
 this->error_threshold = error_threshold;
-mu.unlock();
 }
 
 void AnalogIn_Ext::set_scale_type(bool type)
 {
-  mu.lock();
   this->type = type;
-  mu.unlock();
 }
 
 void AnalogIn_Ext::set_scale_param(float a, float b)
 {
-  mu.lock();
   this->a = a;
   this->b = b;
-  mu.unlock();
 }
 
 void AnalogIn_Ext::set_name(string name)
 {
-  mu.lock();
   this->name = name;
-  mu.unlock();
 }
 
-void AnalogIn_Ext::set(float value, float int_value)
+void AnalogIn_Ext::set(float value)
 {
-  mu.lock();
   this->value = value;
-  this->int_value = int_value;
-  mu.unlock();
 }
 
-void AnalogIn_Ext::_scale()
+void AnalogIn_Ext::_scale(float val)
 {
-  mu.lock();
   switch (this->type) {
     case 0: //Linear
-      this->value = this->a * this->value + this->b;
+      this->value = this->a * val + this->b;
     case 1: // Exponential, TODO: Calculate if this will even fit in a float at maximum in
-      this->value = this->a * exp(this->value) + this->b;
+      this->value = this->a * exp(val) + this->b;
   }
-  mu.unlock();
 }

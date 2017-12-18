@@ -2,6 +2,7 @@
 #define ANALOGIN_EXT_H
 
 #include <string> // Lol i guess you can include in headers )_)
+#include <mbed.h>
 
 //NOTE: Most everything in private_lib will be converted to classes to make
 //      FTDI debugging a thing
@@ -27,15 +28,7 @@ Blocks:
     > used only for integration, not externally accessible.
   -AnalogIn object
 */
-float stor_var;
-float value;
-float error_threshold;
-std::string name;
-bool type;
-float a;
-float b;
 
-Mutex mu;
 
 
 /*
@@ -66,13 +59,25 @@ Artifically "set" the pin value/int value
 */
 void update();
 float return_val(bool update=0);
+void set_error_threshold(float error_threshold);
 void set_scale_type(bool type);
 void set_scale_param(float a, float b);
 void set_name(std::string name);
 void set(float value);
 
 protected:
-void _scale();
+  float value;
+  float error_threshold;
+  std::string name;
+  bool type;
+  float a;
+  float b;
+
+  Mutex mu;
+
+
+
+void _scale(float val);
 };
 
 #endif

@@ -1,34 +1,34 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
+// TODO: add way for more than one pin to integrate.
+
 #include <string>
+#include <vector>
+#include "AnalogIn_Ext.h"
 
-class Integrator: public AnalogIn_Ext{
+class Integrator{
   float int_value;
+  float y;
   float int_error_threshold;
-  bool int_started;
-
-  Timer dt;
+  vector<AnalogIn_Ext*> vec;
+  vector<AnalogIn_Ext*>::iterator iter;
 
 public:
 
 //Constructor
 Integrator(
-            PinName pin,
-            float error_threshold=2000000000.0,
             float int_error_threshold=2000000000.0,
-            std::string name = "default",
-            bool type=0,
-            float a=1,
-            float b=0
+            std::string name = "default"
           );
 
 // Methods
-void return_int(float &ref, bool update=0);
-void set_error_threshold(float error_threshold);
+void vec_add(AnalogIn_Ext* obj);
+float return_int();
+void set_int_error_threshold(float error_threshold);
 // Overriden Methods
-void update();
-void set(float value, float int_value);
+void update(float dt);
+void set(float int_value);
 };
 
 

@@ -1,99 +1,136 @@
 #include <mbed.h>
-#include <rtos.h>
 #include <mbed_events.h>
 
-#include "private_lib/digital_io.h"
-#include "private_lib/pin_def.h"
-#include "private_lib/fan_control.h"
-#include "monitoring.h"
+// Classes
+#include "Classes/AnalogIn_Ext.h"
+#include "Classes/Fan.h"
+#include "Classes/DigitalOut_Ext.h"
+#include "Classes/Integrator.h"
 
-//TODO: monitoring signals need to be changed once monitoring is added
+// Defs
+#include "Def/constants.h"
+#include "Def/pin_def.h"
+#include "Def/object_def.h"
+#include "Def/thread_def.h"
+#include "Def/semaphore_def.h"
+
+#include "monitoring.h"
 
 void fan_spool_up(){
 
-  set_supply_valve(false); //closed
-  set_purge_valve(false); //closed
-  set_start_relay(false); //open
-  set_fcc_relay(false); //open
-  set_charge_relay(false);
+  supply_v.write_safe(false);
+  purge_v.write_safe(false);
 
+  start_r.write_safe(false);
+  motor_r.write_safe(false);
+  charge_r.write_safe(false);
+  cap_r.write_safe(false);
+  fcc_r.write_safe(false);
 
-  set_fans(1.0); // set fans speed to %100
-  state_fans(true); // switch fans on
+  fan1.set_dutycycle(0.0);
+  fan2.set_dutycycle(0.0);
+  fan3.set_dutycycle(0.0);
 
-  //TODO: figure out how to share semaphores across cpp files
-  fan_spooled.wait();
+  //fan_spooled.wait();
 }
 void start_purge(){
-  set_supply_valve(true); // open
-  set_purge_valve(false); // closed
-  set_start_relay(false); // closed
-  set_fcc_relay(false); // open
-  set_charge_relay(false);
+  supply_v.write_safe(true);
+  purge_v.write_safe(false);
 
-  startup_purge.wait();
+  start_r.write_safe(false);
+  motor_r.write_safe(false);
+  charge_r.write_safe(false);
+  cap_r.write_safe(false);
+  fcc_r.write_safe(false);
 
-  set_start_relay(false); // closed
-  set_purge_valve(true); // open
+  //startup_purge.wait();
+
+  start_r.write_safe(true);
+  purge_v.write_safe(true);
 
   Thread::wait(1000);
+
+  start_r.write_safe(false);
+  purge_v.write_safe(false);
+
 }
 
 void start_end(){
-  set_purge_valve(false);
-  set_supply_valve(true);
-  set_fcc_relay(true);
-  set_start_relay(false);
-  set_charge_relay(false);
+    Thread::wait(1000);
+  supply_v.write_safe(true);
+  purge_v.write_safe(false);
 
-  set_fans(0.35);
-  state_fans(true);
+  start_r.write_safe(false);
+  motor_r.write_safe(false);
+  charge_r.write_safe(false);
+  cap_r.write_safe(true);
+  fcc_r.write_safe(false);
+
+  fan1.set_dutycycle(0.35);
+  fan2.set_dutycycle(0.35);
+  fan3.set_dutycycle(0.35);
 }
 
 void start_charge(){
-  set_charge_relay(true);
-  Thread::signal_wait(0X1);
-  set_charge_relay(false);
-  Thread::wait(500);
-  set_charge_relay(true);
-  Thread::signal_wait(0x1);
+    Thread::wait(1000);
+  supply_v.write_safe(false);
+  purge_v.write_safe(false);
+
+  start_r.write_safe(false);
+  motor_r.write_safe(false);
+  charge_r.write_safe(true);
+  cap_r.write_safe(false);
+  fcc_r.write_safe(false);
+
+  //cap_thres_l.wait();
+
+  charge_r.write_safe(false);
+  cap_r.write_safe(true);
+
+  //cap_thres_h.wait();
 }
 
 void run_setup(){
-  set_purge_valve(false);
-  set_supply_valve(true);
-  set_fcc_relay(true);
-  set_start_relay(false);
-  set_charge_relay(false);
+  supply_v.write_safe(true);
+  purge_v.write_safe(false);
 
-  set_fans(0.3);
-  state_fans(true);
+  start_r.write_safe(false);
+  motor_r.write_safe(true);
+  charge_r.write_safe(false);
+  cap_r.write_safe(true);
+  fcc_r.write_safe(true); // FC relay isn't ever changed in old code?
 }
 
 void purge(){
-  set_purge_valve(true);
+  purge_v.write_safe(true);
   Thread::wait(200);
-  set_purge_valve(false);
+  purge_v.write_safe(true);
 }
 
 void shutdown_state(){
-  set_purge_valve(false);
-  set_supply_valve(false);
-  set_fcc_relay(false);
-  set_start_relay(false);
-  set_charge_relay(false);
+  supply_v.write_safe(false);
+  purge_v.write_safe(false);
 
-  set_fans(0.0);
-  state_fans(false);
+  start_r.write_safe(false);
+  motor_r.write_safe(false);
+  charge_r.write_safe(false);
+  cap_r.write_safe(false);
+  fcc_r.write_safe(false);
+
+  fan1.set_dutycycle(0.0);
+  fan2.set_dutycycle(0.0);
+  fan3.set_dutycycle(0.0);
+
 }
 
 void test_state(){
-  set_purge_valve(true);
-  set_supply_valve(true);
-  set_fcc_relay(true);
-  set_start_relay(true);
-  set_charge_relay(true);
+  supply_v.write_safe(true);
+  purge_v.write_safe(true);
 
-  set_fans(0.75);
-  state_fans(true);
+  start_r.write_safe(true);
+  motor_r.write_safe(true);
+  charge_r.write_safe(true);
+  cap_r.write_safe(true);
+  fcc_r.write_safe(true);
+
 }
