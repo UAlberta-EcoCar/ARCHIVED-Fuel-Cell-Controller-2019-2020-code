@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include "AnalogIn_Ext.h"
+#include "Analog_Sensor.h"
 
 class Integrator{
   float int_value;

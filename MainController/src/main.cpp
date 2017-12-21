@@ -2,7 +2,7 @@
 #include <mbed_events.h>
 
 // Classes
-#include "Classes/AnalogIn_Ext.h"
+#include "Classes/Analog_Sensor.h"
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
@@ -33,23 +33,23 @@ InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
 
 // AnalogIn_Ext Objects
-AnalogIn_Ext capvolt(CAPVOLT);
-AnalogIn_Ext fccurr(FCCURR);
-AnalogIn_Ext fcvolt(FCVOLT);
-AnalogIn_Ext capcurr(CAPCURR);
-AnalogIn_Ext motorvolt(MOTORVOLT);
-AnalogIn_Ext motorcurr(MOTORCURR);
-AnalogIn_Ext press1(PRESS1);
-AnalogIn_Ext press2(PRESS2);
-AnalogIn_Ext press3(PRESS3);
-AnalogIn_Ext press4(PRESS4);
-AnalogIn_Ext fctemp1(FCTEMP1);
-AnalogIn_Ext fctemp2(FCTEMP2);
-AnalogIn_Ext temp1(TEMP1);
-AnalogIn_Ext temp2(TEMP2);
-AnalogIn_Ext temp3(TEMP3);
-AnalogIn_Ext temp4(TEMP4);
-AnalogIn_Ext temp5(TEMP5);
+Analog_Sensor capvolt(CAPVOLT);
+Analog_Sensor fccurr(FCCURR);
+Analog_Sensor fcvolt(FCVOLT);
+Analog_Sensor capcurr(CAPCURR);
+Analog_Sensor motorvolt(MOTORVOLT);
+Analog_Sensor motorcurr(MOTORCURR);
+Analog_Sensor press1(PRESS1);
+Analog_Sensor press2(PRESS2);
+Analog_Sensor press3(PRESS3);
+Analog_Sensor press4(PRESS4);
+Analog_Sensor fctemp1(FCTEMP1);
+Analog_Sensor fctemp2(FCTEMP2);
+Analog_Sensor temp1(TEMP1);
+Analog_Sensor temp2(TEMP2);
+Analog_Sensor temp3(TEMP3);
+Analog_Sensor temp4(TEMP4);
+Analog_Sensor temp5(TEMP5);
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V);

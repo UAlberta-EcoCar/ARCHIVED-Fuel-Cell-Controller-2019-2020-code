@@ -2,6 +2,8 @@
 
 #include "Integrator.h"
 
+//NOTE: SUPER FUCKING BROKEN RN, DO NOT TRY COMPILING
+
 Integrator::Integrator(
   float int_error_threshold,
   std::string name

@@ -2,7 +2,7 @@
 #include <mbed_events.h>
 
 // Classes
-#include "Classes/AnalogIn_Ext.h"
+#include "Classes/Analog_Sensor.h"
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"

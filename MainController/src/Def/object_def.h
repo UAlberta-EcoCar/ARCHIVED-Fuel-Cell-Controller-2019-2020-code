@@ -20,24 +20,24 @@ extern DigitalOut_Ext start_led;
 extern DigitalOut_Ext ol_rst;
 extern DigitalOut_Ext hum_rst;
 
-// AnalogIn_Ext Objects
-extern AnalogIn_Ext capvolt;
-extern AnalogIn_Ext fccurr;
-extern AnalogIn_Ext fcvolt;
-extern AnalogIn_Ext capcurr;
-extern AnalogIn_Ext motorvolt;
-extern AnalogIn_Ext motorcurr;
-extern AnalogIn_Ext press1;
-extern AnalogIn_Ext press2;
-extern AnalogIn_Ext press3;
-extern AnalogIn_Ext press4;
-extern AnalogIn_Ext fctemp1;
-extern AnalogIn_Ext fctemp2;
-extern AnalogIn_Ext temp1;
-extern AnalogIn_Ext temp2;
-extern AnalogIn_Ext temp3;
-extern AnalogIn_Ext temp4;
-extern AnalogIn_Ext temp5;
+// Analog_Sensor Objects
+extern Analog_Sensor capvolt;
+extern Analog_Sensor fccurr;
+extern Analog_Sensor fcvolt;
+extern Analog_Sensor capcurr;
+extern Analog_Sensor motorvolt;
+extern Analog_Sensor motorcurr;
+extern Analog_Sensor press1;
+extern Analog_Sensor press2;
+extern Analog_Sensor press3;
+extern Analog_Sensor press4;
+extern Analog_Sensor fctemp1;
+extern Analog_Sensor fctemp2;
+extern Analog_Sensor temp1;
+extern Analog_Sensor temp2;
+extern Analog_Sensor temp3;
+extern Analog_Sensor temp4;
+extern Analog_Sensor temp5;
 
 //Fans
 extern Fan fan1;

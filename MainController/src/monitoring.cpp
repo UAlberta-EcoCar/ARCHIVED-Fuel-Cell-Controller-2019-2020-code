@@ -3,7 +3,8 @@
 #include <vector>
 
 // Classes
-#include "Classes/AnalogIn_Ext.h"
+#include "Classes/Analog_Sensor.h"
+#include "Classes/Sensor.h"
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
@@ -20,9 +21,9 @@
 float ave_speed;
 float ave_press;
 Semaphore fan_spooled(0), startup_purge(0);
-vector<AnalogIn_Ext*> an_in_vec;
+vector<Sensor*> an_in_vec;
 vector<Integrator*> int_vec;
-vector<AnalogIn_Ext*>::iterator an_iter;
+vector<Sensor*>::iterator an_iter;
 vector<Integrator*>::iterator int_iter;
 
 Timer dt;
@@ -59,7 +60,9 @@ void monitoring_thread(){
     // AnalogIn_Ext object updates
     // iterates through vector
     for (an_iter = an_in_vec.begin(); an_iter != an_in_vec.end(); an_iter++){
+      (*(*an_iter)).lock();
       (*(*an_iter)).update();
+      (*(*an_iter)).unlock();
     }
 
     // Integrator object updates
