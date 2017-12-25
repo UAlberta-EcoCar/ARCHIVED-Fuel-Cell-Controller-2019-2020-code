@@ -21,23 +21,23 @@ extern DigitalOut_Ext ol_rst;
 extern DigitalOut_Ext hum_rst;
 
 // Analog_Sensor Objects
-extern Analog_Sensor capvolt;
-extern Analog_Sensor fccurr;
-extern Analog_Sensor fcvolt;
-extern Analog_Sensor capcurr;
-extern Analog_Sensor motorvolt;
-extern Analog_Sensor motorcurr;
-extern Analog_Sensor press1;
-extern Analog_Sensor press2;
-extern Analog_Sensor press3;
-extern Analog_Sensor press4;
-extern Analog_Sensor fctemp1;
-extern Analog_Sensor fctemp2;
-extern Analog_Sensor temp1;
-extern Analog_Sensor temp2;
-extern Analog_Sensor temp3;
-extern Analog_Sensor temp4;
-extern Analog_Sensor temp5;
+extern Analog_Sensor<LinearScalable> capvolt;
+extern Analog_Sensor<LinearScalable> fccurr;
+extern Analog_Sensor<LinearScalable> fcvolt;
+extern Analog_Sensor<LinearScalable> capcurr;
+extern Analog_Sensor<LinearScalable> motorvolt;
+extern Analog_Sensor<LinearScalable> motorcurr;
+extern Analog_Sensor<LinearScalable> press1;
+extern Analog_Sensor<LinearScalable> press2;
+extern Analog_Sensor<LinearScalable> press3;
+extern Analog_Sensor<LinearScalable> press4;
+extern Analog_Sensor<LinearScalable> fctemp1;
+extern Analog_Sensor<LinearScalable> fctemp2;
+extern Analog_Sensor<LinearScalable> temp1;
+extern Analog_Sensor<LinearScalable> temp2;
+extern Analog_Sensor<LinearScalable> temp3;
+extern Analog_Sensor<LinearScalable> temp4;
+extern Analog_Sensor<LinearScalable> temp5;
 
 //Fans
 extern Fan fan1;

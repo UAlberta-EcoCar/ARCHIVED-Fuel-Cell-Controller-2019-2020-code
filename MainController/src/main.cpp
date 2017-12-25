@@ -6,6 +6,7 @@
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
+#include "Classes/LinearScalable.h"
 
 // Defs
 #include "Def/constants.h"
@@ -32,24 +33,27 @@ Initilaize Objects
 InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
 
+// Scale objects
+LinearScalable cap_scale(1.0, 2.0);
+
 // AnalogIn_Ext Objects
-Analog_Sensor capvolt(CAPVOLT);
-Analog_Sensor fccurr(FCCURR);
-Analog_Sensor fcvolt(FCVOLT);
-Analog_Sensor capcurr(CAPCURR);
-Analog_Sensor motorvolt(MOTORVOLT);
-Analog_Sensor motorcurr(MOTORCURR);
-Analog_Sensor press1(PRESS1);
-Analog_Sensor press2(PRESS2);
-Analog_Sensor press3(PRESS3);
-Analog_Sensor press4(PRESS4);
-Analog_Sensor fctemp1(FCTEMP1);
-Analog_Sensor fctemp2(FCTEMP2);
-Analog_Sensor temp1(TEMP1);
-Analog_Sensor temp2(TEMP2);
-Analog_Sensor temp3(TEMP3);
-Analog_Sensor temp4(TEMP4);
-Analog_Sensor temp5(TEMP5);
+Analog_Sensor<LinearScalable> capvolt(CAPVOLT, cap_scale, "capvolt");
+Analog_Sensor<LinearScalable> fccurr(FCCURR, cap_scale, "fccurr");
+Analog_Sensor<LinearScalable> fcvolt(FCVOLT, cap_scale, "fcvolt");
+Analog_Sensor<LinearScalable> capcurr(CAPCURR, cap_scale, "capcurr");
+Analog_Sensor<LinearScalable> motorvolt(MOTORVOLT, cap_scale, "motorvolt");
+Analog_Sensor<LinearScalable> motorcurr(MOTORCURR, cap_scale, "motorcurr");
+Analog_Sensor<LinearScalable> press1(PRESS1, cap_scale, "press1");
+Analog_Sensor<LinearScalable> press2(PRESS2, cap_scale, "press2");
+Analog_Sensor<LinearScalable> press3(PRESS3, cap_scale, "press3");
+Analog_Sensor<LinearScalable> press4(PRESS4, cap_scale, "press4");
+Analog_Sensor<LinearScalable> fctemp1(FCTEMP1, cap_scale, "fctemp1");
+Analog_Sensor<LinearScalable> fctemp2(FCTEMP2, cap_scale, "fctemp2");
+Analog_Sensor<LinearScalable> temp1(TEMP1, cap_scale, "temp1");
+Analog_Sensor<LinearScalable> temp2(TEMP2, cap_scale, "temp2");
+Analog_Sensor<LinearScalable> temp3(TEMP3, cap_scale, "temp3");
+Analog_Sensor<LinearScalable> temp4(TEMP4, cap_scale, "temp4");
+Analog_Sensor<LinearScalable> temp5(TEMP5, cap_scale, "temp5");
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V);

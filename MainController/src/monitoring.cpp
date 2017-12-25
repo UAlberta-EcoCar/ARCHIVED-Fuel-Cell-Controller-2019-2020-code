@@ -57,19 +57,17 @@ void monitoring_thread(){
   dt.start();
 
   while(true){
-    // AnalogIn_Ext object updates
+    // Sensor object updates
     // iterates through vector
     for (an_iter = an_in_vec.begin(); an_iter != an_in_vec.end(); an_iter++){
-      (*(*an_iter)).lock();
       (*(*an_iter)).update();
-      (*(*an_iter)).unlock();
     }
 
     // Integrator object updates
     // iterates through vector
     dt.stop();
     for (int_iter = int_vec.begin(); int_iter != int_vec.end(); int_iter++){
-      (*(*int_iter)).update(dt.read());
+      (*(*int_iter)).update();
     }
     dt.reset();
 
@@ -80,7 +78,7 @@ void monitoring_thread(){
         if(fan1.is_spooled() && fan2.is_spooled() && fan3.is_spooled()){
           fan_spooled.release();
         }
-        if(fcvolt.return_val() > FC_VOLT){
+        if(fcvolt.read() > FC_VOLT){
           startup_purge.release();
         }
       case RUN_STATE:

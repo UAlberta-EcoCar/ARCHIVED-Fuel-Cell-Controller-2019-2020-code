@@ -3,32 +3,89 @@
 
 // TODO: add way for more than one pin to integrate.
 
-#include <string>
 #include <vector>
-#include "Analog_Sensor.h"
+#include "IO.h"
 
-class Integrator{
-  float int_value;
+class Integrator: public IO{
+private:
+  float value;
   float y;
-  float int_error_threshold;
-  vector<AnalogIn_Ext*> vec;
-  vector<AnalogIn_Ext*>::iterator iter;
+  vector<Sensor*> vec;
+  vector<Sensor*>::iterator iter;
+  Timer dt;
+  bool _coup;
 
 public:
 
 //Constructor
 Integrator(
-            float int_error_threshold=2000000000.0,
-            std::string name = "default"
-          );
+  std::string name = "default"
+):IO(name)
+{
+  this->lock();
+  this->value = 0.0;
+  this->_coup = 1;
+  this->unlock();
+};
 
 // Methods
-void vec_add(AnalogIn_Ext* obj);
-float return_int();
-void set_int_error_threshold(float error_threshold);
-// Overriden Methods
-void update(float dt);
-void set(float int_value);
+void sensor_add(
+  Sensor* obj
+)
+{
+  this->lock();
+  this->vec.push_back(obj);
+  this->unlock();
+};
+
+float read(
+  bool update=1
+)
+{
+  if (update){
+    this->update();
+  }
+  return this->value;
+};
+
+void set(
+  float value
+)
+{
+  this->lock();
+  this->value = value;
+  this->unlock();
+};
+
+void update()
+{
+  this->lock();
+  this->dt.stop();
+  this->y=0.0;
+
+  for (iter = vec.begin(); iter != vec.end(); iter++){
+    this->y = this->y + (*(*iter)).read();
+  }
+
+  this->value = this->value + (((this->value + this->y)/2) * this->dt.read());
+  this->dt.reset();
+  this->unlock();
+};
+
+void start(){
+  this->lock();
+  this->dt.start();
+  this->unlock();
+};
+
+void couple(
+  bool couple=1
+)
+{
+  this->lock();
+  this->_coup = couple;
+  this->unlock();
+};
 };
 
 

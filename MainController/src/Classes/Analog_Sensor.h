@@ -7,11 +7,12 @@
 #include "Scalable.h"
 #include "LinearScalable.h"
 
+template <class T>
 class Analog_Sensor: public Sensor{
 private:
   float value;
   bool _coup;
-  Scalable* scaler;
+  T scaler;
   AnalogIn pin;
 
 /*
@@ -21,15 +22,53 @@ public:
 // Constructor
 Analog_Sensor(
   PinName pin,
-  Scalable* scaler,
+  T scaler,
   string name="default"
-);
+):Sensor(name), pin(pin)
+{
+  this->scaler = scaler;
+  this->couple();
+};
 
-void update() override;
-float read(bool update=0) override;
-void set(float value, bool decouple=1) override;
-void couple() override;
-void decouple() override;
+void update(){
+  this->lock();
+  if (this->_coup){
+    this->set(this->scaler.scale(this->pin.read()));
+  }
+  this->unlock();
+};
+
+float read(bool update=0)
+{
+  if (update){
+    this->update();
+  }
+  return this->value;
+};
+
+void set(float value, bool decouple=1)
+{
+  if (decouple){
+    this->decouple();
+  }
+  this->lock();
+  this->value = value;
+  this->unlock();
+};
+
+void couple()
+{
+  this->lock();
+  this->_coup = 1;
+  this->unlock();
+};
+
+void decouple()
+{
+  this->lock();
+  this->_coup = 0;
+  this->unlock();
+};
 
 
 };

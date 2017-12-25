@@ -5,9 +5,6 @@
 #include "IO.h"
 
 class Sensor: public IO{
-private:
-  float error_threshold_low = 0;
-  float error_threshold_high = 0;
 
 public:
   Sensor(string name):IO(name){};
