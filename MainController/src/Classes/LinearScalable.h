@@ -1,14 +1,13 @@
 #ifndef LINEARSCALABLE_H
 #define LINEARSCALABLE_H
 
-#include <math.h>
-
 #include "Scalable.h"
 
+template <class T>
 class LinearScalable: public Scalable{
 private:
-  float a;
-  float b;
+  T a;
+  T b;
 
 public:
   LinearScalable(
@@ -17,29 +16,29 @@ public:
     this->set_params();
   };
   LinearScalable(
-    float a
+    T a
   )
   {
     this->set_params(a);
   };
   LinearScalable(
-    float a,
-    float b
+    T a,
+    T b
   )
   {
     this->set_params(a, b);
   };
 
-  float scale(
-    float value
+  T scale(
+    T value
   )
   {
     return (a*value) + b;
   };
 
   void set_params(
-    float a=1,
-    float b=0
+    T a=1,
+    T b=0
   )
   {
     this->a = a;

@@ -1,7 +1,7 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
-// TODO: add way for more than one pin to integrate.
+//TODO: Add way to add constants to integration term and template the class
 
 #include <vector>
 #include "IO.h"

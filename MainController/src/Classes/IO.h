@@ -4,6 +4,7 @@
 // Multi inheritance is bad, but whatever
 // Private inheritance means the functions inherited can only be used internally
 #include <string>
+#include <sstream>
 #include <mbed.h>
 
 class IO{
@@ -37,6 +38,9 @@ public:
   };
   void unlock(){
     mu.unlock();
+  };
+  string toString(){
+    return this->get_name();
   };
 };
 

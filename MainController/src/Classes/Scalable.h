@@ -1,6 +1,8 @@
 #ifndef SCALABLE_H
 #define SCALABLE_H
 
+#include <math.h>
+
 class Scalable{
 
 public:

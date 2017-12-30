@@ -35,26 +35,26 @@ InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
 
 // Scale objects
-LinearScalable cap_scale(1.0, 2.0);
+LinearScalable<float> cap_scale(1.0, 2.0);
 
 // AnalogIn_Ext Objects
-Analog_Sensor<LinearScalable> capvolt(CAPVOLT, cap_scale, "capvolt");
-Analog_Sensor<LinearScalable> fccurr(FCCURR, cap_scale, "fccurr");
-Analog_Sensor<LinearScalable> fcvolt(FCVOLT, cap_scale, "fcvolt");
-Analog_Sensor<LinearScalable> capcurr(CAPCURR, cap_scale, "capcurr");
-Analog_Sensor<LinearScalable> motorvolt(MOTORVOLT, cap_scale, "motorvolt");
-Analog_Sensor<LinearScalable> motorcurr(MOTORCURR, cap_scale, "motorcurr");
-Analog_Sensor<LinearScalable> press1(PRESS1, cap_scale, "press1");
-Analog_Sensor<LinearScalable> press2(PRESS2, cap_scale, "press2");
-Analog_Sensor<LinearScalable> press3(PRESS3, cap_scale, "press3");
-Analog_Sensor<LinearScalable> press4(PRESS4, cap_scale, "press4");
-Analog_Sensor<LinearScalable> fctemp1(FCTEMP1, cap_scale, "fctemp1");
-Analog_Sensor<LinearScalable> fctemp2(FCTEMP2, cap_scale, "fctemp2");
-Analog_Sensor<LinearScalable> temp1(TEMP1, cap_scale, "temp1");
-Analog_Sensor<LinearScalable> temp2(TEMP2, cap_scale, "temp2");
-Analog_Sensor<LinearScalable> temp3(TEMP3, cap_scale, "temp3");
-Analog_Sensor<LinearScalable> temp4(TEMP4, cap_scale, "temp4");
-Analog_Sensor<LinearScalable> temp5(TEMP5, cap_scale, "temp5");
+Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, cap_scale, "capvolt");
+Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, cap_scale, "fccurr");
+Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, cap_scale, "fcvolt");
+Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, cap_scale, "capcurr");
+Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, cap_scale, "motorvolt");
+Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, cap_scale, "motorcurr");
+Analog_Sensor<LinearScalable<float> > press1(PRESS1, cap_scale, "press1");
+Analog_Sensor<LinearScalable<float> > press2(PRESS2, cap_scale, "press2");
+Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
+Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
+Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, cap_scale, "fctemp1");
+Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, cap_scale, "fctemp2");
+Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
+Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
+Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
+Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
+Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
@@ -76,9 +76,9 @@ DigitalOut_Ext ol_rst(OL_RST, "OL_RST");
 DigitalOut_Ext hum_rst(HUM_RST, "HUM_RST");
 
 // Fan objects
-Fan fan1(PWM_1,TACH_1);
-Fan fan2(PWM_2,TACH_2);
-Fan fan3(PWM_3,TACH_3);
+Fan fan1("fan1",PWM_1,TACH_1);
+Fan fan2("fan2",PWM_2,TACH_2);
+Fan fan3("fan3",PWM_3,TACH_3);
 
 // Integrator objects
 Integrator fc_coulumbs;

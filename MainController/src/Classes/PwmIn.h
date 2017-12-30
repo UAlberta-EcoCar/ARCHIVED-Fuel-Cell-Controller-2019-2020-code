@@ -44,19 +44,19 @@ public:
      *
      * @returns the period in seconds
      */
-    float period_in();
+    float period();
 
     /** Read the current pulsewidth
      *
      * @returns the pulsewidth in seconds
      */
-    float pulsewidth_in();
+    float pulsewidth();
 
     /** Read the current dutycycle
      *
      * @returns the dutycycle as a percentage, represented between 0.0-1.0
      */
-    float dutycycle_in();
+    float dutycycle();
 
 protected:
     void rise();

@@ -27,9 +27,9 @@ void fan_spool_up(){
   cap_r.write(false);
   fcc_r.write(false);
 
-  fan1.set_dutycycle(0.0);
-  fan2.set_dutycycle(0.0);
-  fan3.set_dutycycle(0.0);
+  fan1.set_out(0.0);
+  fan2.set_out(0.0);
+  fan3.set_out(0.0);
 
   //fan_spooled.wait();
 }
@@ -66,9 +66,9 @@ void start_end(){
   cap_r.write(true);
   fcc_r.write(false);
 
-  fan1.set_dutycycle(0.35);
-  fan2.set_dutycycle(0.35);
-  fan3.set_dutycycle(0.35);
+  fan1.set_out(0.35);
+  fan2.set_out(0.35);
+  fan3.set_out(0.35);
 }
 
 void start_charge(){
@@ -117,9 +117,9 @@ void shutdown_state(){
   cap_r.write(false);
   fcc_r.write(false);
 
-  fan1.set_dutycycle(0.0);
-  fan2.set_dutycycle(0.0);
-  fan3.set_dutycycle(0.0);
+  fan1.set_out(0.0);
+  fan2.set_out(0.0);
+  fan3.set_out(0.0);
 
 }
 

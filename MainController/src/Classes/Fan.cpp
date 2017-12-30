@@ -1,49 +1,46 @@
-#include <mbed.h>
-
 #include "Fan.h"
 
 using namespace std;
 
 Fan::Fan(
+  string name,
   PinName out_pin,
   PinName in_pin
 )
-:PwmOut(out_pin), PwmIn(in_pin)
+:IO(name), out(out_pin), in(in_pin)
 {
-  mu.lock();
-  this->period(0.00004);
-  this->write(0.0);
+  this->lock();
+  this->out.period(0.00004);
+  this->out.write(0.0);
   this->__dutyIn = 0.0;
-  mu.unlock();
+  this->unlock();
 }
 
-void Fan::set_dutycycle(
+void Fan::set_out(
   float percentage
 )
 {
-  mu.lock();
-  if (percentage < 0){
-      this->write(0.0);
+  this->lock();
+  if (__coup){
+     if (percentage < 0){
+      this->out.write(0.0);
+    }
+    else if (percentage > 1){
+      this->out.write(1.0);
+    }
+    else{
+      this->out.write(percentage);
+    }
   }
-  else if (percentage > 1){
-      this->write(1.0);
-  }
-  else{
-      this->write(percentage);
-  }
-  mu.unlock();
+  this->unlock();
 }
 
-void Fan::set_in_dutycycle(
+void Fan::set_in(
   float percentage,
   bool lock
 )
 {
-  mu.lock();
-
-  if (lock){
-    this->lock();
-  }
+  this->lock();
 
   if (percentage < 0){
       this->__dutyIn = 0.0;
@@ -54,41 +51,42 @@ void Fan::set_in_dutycycle(
   else{
       this->__dutyIn = percentage;
   }
-  mu.unlock();
+  this->unlock();
 }
 
-float Fan::get_dutycycle()
+float Fan::get_out()
 {
-  return this->read();
+  return this->out.read();
 }
 
-float Fan::get_in_dutycycle(){
-  if(!this->__lock){
-    this->__dutyIn = this->dutycycle_in();
+float Fan::get_in(){
+  if(this->__coup){
+    this->__dutyIn = this->in.dutycycle();
   }
   return __dutyIn;
 }
 
-void Fan::unlock()
-{
-  mu.lock();
-  this->__lock = 1;
-  mu.unlock();
-}
+
 
 bool Fan::is_spooled()
 {
-  if (this->get_in_dutycycle() >= this->get_dutycycle() - 0.1f){
+  if (this->get_in() >= this->get_out() - 0.1f){
     return true;
   }
-  else{
-    return false;
-  }
+  
+  return false;
 }
 
-void Fan::lock()
+void Fan::couple()
 {
-  mu.lock();
-  this->__lock = 0;
-  mu.unlock();
+  this->lock();
+  this->__coup = 1;
+  this->unlock();
+}
+
+void Fan::decouple()
+{
+  this->lock();
+  this->__coup = 0;
+  this->unlock();
 }

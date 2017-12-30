@@ -2,34 +2,33 @@
 #define FAN_H
 
 #include "PwmIn.h"
+#include "IO.h"
 
-// Multi inheritance is bad, but whatever
-// Private inheritance means the functions inherited can only be used internally
-class Fan: protected PwmIn, protected PwmOut{
+class Fan: public IO{
 
-bool __lock;
+bool __coup;
 float __dutyIn;
 
-Mutex mu;
+PwmIn in;
+PwmOut out;
 public:
 
 Fan(
+  string name,
   PinName out_pin,
   PinName in_pin
 );
 
-// TODO: methods for artifically setting values and stuff idk rn im tired
-void set_dutycycle(float percentage);
-void set_in_dutycycle(float percentage, bool lock=0);
+// Getters/Setters
+void set_out(float percentage);
+void set_in(float percentage, bool couple=0);
+float get_out();
+float get_in();
 
-float get_dutycycle();
-float get_in_dutycycle();
-
+// Other Methods
 bool is_spooled();
-
-// Lock prevents updating of the PwmIn, used for debugging.
-void unlock();
-void lock();
+void couple();
+void decouple();
 
 };
 

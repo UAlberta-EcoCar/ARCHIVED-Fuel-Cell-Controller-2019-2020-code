@@ -30,15 +30,15 @@ PwmIn::PwmIn(PinName p) : _p(p) {
     _t.start();
 }
 
-float PwmIn::period_in() {
+float PwmIn::period() {
     return _period;
 }
 
-float PwmIn::pulsewidth_in() {
+float PwmIn::pulsewidth() {
     return _pulsewidth;
 }
 
-float PwmIn::dutycycle_in() {
+float PwmIn::dutycycle() {
     return _pulsewidth / _period;
 }
 

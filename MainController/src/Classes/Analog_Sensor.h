@@ -1,11 +1,11 @@
 #ifndef ANALOGIN_SENSOR_H
 #define ANALOGIN_SENSOR_H
 
-#include <string>
-#include <mbed.h>
 #include "Sensor.h"
 #include "Scalable.h"
 #include "LinearScalable.h"
+
+using namespace std;
 
 template <class T>
 class Analog_Sensor: public Sensor{
@@ -68,6 +68,15 @@ void decouple()
   this->lock();
   this->_coup = 0;
   this->unlock();
+};
+
+string toString()
+{
+  stringstream ss;
+  ss << this->get_name();
+  ss << ": ";
+  ss << this->read();
+  return ss.str();
 };
 
 

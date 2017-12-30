@@ -2,18 +2,21 @@
 #define EXPSCALABLE_H
 
 #include "Scalable.h"
-
+template <class T>
 class ExpScalable: public Scalable{
 private:
-  float a;
-  float b;
+  T a;
+  T b;
 
 public:
-  ExpScalable();
-  ExpScalable(float a);
-  ExpScalable(float a, float b);
-  float scale(float value) override;
-  void set_params(float a=1, float b=0) override;
+  ExpScalable(){this->set_params();};
+  ExpScalable(T a){this->set_params(a);};
+  ExpScalable(T a, T b){this->set_params(a, b);};
+  T scale(T value) {return (a*exp(value)) + b;};
+  void set_params(T a=1, T b=0) {  
+    this->a = a;
+    this->b = b;
+    };
 };
 
 #endif
