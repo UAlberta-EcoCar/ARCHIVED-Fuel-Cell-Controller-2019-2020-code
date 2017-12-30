@@ -3,6 +3,7 @@
 #include <vector>
 #include "IO.h"
 
+template<class T>
 class SerialPrinter {
 private:
   Serial printer;
@@ -16,27 +17,35 @@ public:
   ):printer(tx,rx,baud)
   {};
 
-  print_names(
-    vector<IO*>* IO_device_list,
-    vector<IO*>::iterator* IO_device_list_iter
+  void print(
+    vector<T*>* T_vec,
+    typename vector<T*>::iterator* T_iter
   ){
-
+    for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
+      printer.printf("%s %f ",(*(*T_vec)[i]).name(), (string)(*(*T_vec)[i]).read());
+    }
   };
-  print_values(
-    vector<IO*>* IO_device_list,
-    vector<IO*>::iterator* IO_device_list_iter
+
+  void print_names(
+    vector<T*>* T_vec,
+    typename vector<T*>::iterator* T_iter
   )
   {
 
   };
 
-  print_name_value(
-    vector<IO*>* IO_device_list,
-    vector<IO*>::iterator* IO_device_list_iter
+  void print_name(
+    T* obj
   )
   {
-
+    printer.printf("%s ", (*obj).get_name());
   };
 
+  void print_read(
+    T* obj
+  )
+  {
+    printer.printf("%f ", (*obj).read());
+  };
 };
 #endif

@@ -2,6 +2,7 @@
 #define DIGITALOUT_EXT_H
 
 #include "IO.h"
+#include <string>
 
 // Class is used to make DigitalOut thread safe
 class DigitalOut_Ext: public IO{
@@ -27,7 +28,8 @@ void write(
   this->unlock();
 };
 
-int read();
+int read(){
   return this->value;
+};
 };
 #endif

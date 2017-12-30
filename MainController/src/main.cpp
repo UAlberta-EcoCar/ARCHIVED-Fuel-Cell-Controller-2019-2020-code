@@ -7,6 +7,7 @@
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
 #include "Classes/LinearScalable.h"
+#include "Classes/SerialPrinter.h"
 
 // Defs
 #include "Def/constants.h"
@@ -56,23 +57,23 @@ Analog_Sensor<LinearScalable> temp4(TEMP4, cap_scale, "temp4");
 Analog_Sensor<LinearScalable> temp5(TEMP5, cap_scale, "temp5");
 
 // DigitalOut_Ext objects
-DigitalOut_Ext supply_v(SUPPLY_V);
-DigitalOut_Ext purge_v(PURGE_V);
-DigitalOut_Ext other1_v(VALVE3);
-DigitalOut_Ext other2_v(VALVE4);
-DigitalOut_Ext start_r(START_R);
-DigitalOut_Ext motor_r(MOTOR_R);
-DigitalOut_Ext charge_r(CHARGE_R);
-DigitalOut_Ext cap_r(CAP_R);
-DigitalOut_Ext fcc_r(FCC_R);
-DigitalOut_Ext error_throw(ERROR_ISR_THROW);
-DigitalOut_Ext alarm_led(ALARM_LED);
-DigitalOut_Ext debug_led(DEBUG_LED);
-DigitalOut_Ext shut_led(SHUT_LED);
-DigitalOut_Ext run_led(RUN_LED);
-DigitalOut_Ext start_led(START_LED);
-DigitalOut_Ext ol_rst(OL_RST);
-DigitalOut_Ext hum_rst(HUM_RST);
+DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
+DigitalOut_Ext purge_v(PURGE_V, "PURGE_V");
+DigitalOut_Ext other1_v(VALVE3, "VALVE3");
+DigitalOut_Ext other2_v(VALVE4, "VALVE4");
+DigitalOut_Ext start_r(START_R, "START_R");
+DigitalOut_Ext motor_r(MOTOR_R, "MOTOR_R");
+DigitalOut_Ext charge_r(CHARGE_R, "CHARGE_R");
+DigitalOut_Ext cap_r(CAP_R, "CAP_R");
+DigitalOut_Ext fcc_r(FCC_R, "FCC_R");
+DigitalOut_Ext error_throw(ERROR_ISR_THROW, "ERROR_ISR_THROW");
+DigitalOut_Ext alarm_led(ALARM_LED, "ALARM_LED");
+DigitalOut_Ext debug_led(DEBUG_LED, "DEBUG_LED");
+DigitalOut_Ext shut_led(SHUT_LED, "SHUT_LED");
+DigitalOut_Ext run_led(RUN_LED, "RUN_LED");
+DigitalOut_Ext start_led(START_LED, "START_LED");
+DigitalOut_Ext ol_rst(OL_RST, "OL_RST");
+DigitalOut_Ext hum_rst(HUM_RST, "HUM_RST");
 
 // Fan objects
 Fan fan1(PWM_1,TACH_1);

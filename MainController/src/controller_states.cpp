@@ -18,14 +18,14 @@
 
 void fan_spool_up(){
 
-  supply_v.write_safe(false);
-  purge_v.write_safe(false);
+  supply_v.write(false);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(false);
-  charge_r.write_safe(false);
-  cap_r.write_safe(false);
-  fcc_r.write_safe(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
 
   fan1.set_dutycycle(0.0);
   fan2.set_dutycycle(0.0);
@@ -34,37 +34,37 @@ void fan_spool_up(){
   //fan_spooled.wait();
 }
 void start_purge(){
-  supply_v.write_safe(true);
-  purge_v.write_safe(false);
+  supply_v.write(true);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(false);
-  charge_r.write_safe(false);
-  cap_r.write_safe(false);
-  fcc_r.write_safe(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
 
   //startup_purge.wait();
 
-  start_r.write_safe(true);
-  purge_v.write_safe(true);
+  start_r.write(true);
+  purge_v.write(true);
 
   Thread::wait(1000);
 
-  start_r.write_safe(false);
-  purge_v.write_safe(false);
+  start_r.write(false);
+  purge_v.write(false);
 
 }
 
 void start_end(){
     Thread::wait(1000);
-  supply_v.write_safe(true);
-  purge_v.write_safe(false);
+  supply_v.write(true);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(false);
-  charge_r.write_safe(false);
-  cap_r.write_safe(true);
-  fcc_r.write_safe(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(true);
+  fcc_r.write(false);
 
   fan1.set_dutycycle(0.35);
   fan2.set_dutycycle(0.35);
@@ -73,49 +73,49 @@ void start_end(){
 
 void start_charge(){
     Thread::wait(1000);
-  supply_v.write_safe(false);
-  purge_v.write_safe(false);
+  supply_v.write(false);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(false);
-  charge_r.write_safe(true);
-  cap_r.write_safe(false);
-  fcc_r.write_safe(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(true);
+  cap_r.write(false);
+  fcc_r.write(false);
 
   //cap_thres_l.wait();
 
-  charge_r.write_safe(false);
-  cap_r.write_safe(true);
+  charge_r.write(false);
+  cap_r.write(true);
 
   //cap_thres_h.wait();
 }
 
 void run_setup(){
-  supply_v.write_safe(true);
-  purge_v.write_safe(false);
+  supply_v.write(true);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(true);
-  charge_r.write_safe(false);
-  cap_r.write_safe(true);
-  fcc_r.write_safe(true); // FC relay isn't ever changed in old code?
+  start_r.write(false);
+  motor_r.write(true);
+  charge_r.write(false);
+  cap_r.write(true);
+  fcc_r.write(true); // FC relay isn't ever changed in old code?
 }
 
 void purge(){
-  purge_v.write_safe(true);
+  purge_v.write(true);
   Thread::wait(200);
-  purge_v.write_safe(true);
+  purge_v.write(true);
 }
 
 void shutdown_state(){
-  supply_v.write_safe(false);
-  purge_v.write_safe(false);
+  supply_v.write(false);
+  purge_v.write(false);
 
-  start_r.write_safe(false);
-  motor_r.write_safe(false);
-  charge_r.write_safe(false);
-  cap_r.write_safe(false);
-  fcc_r.write_safe(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
 
   fan1.set_dutycycle(0.0);
   fan2.set_dutycycle(0.0);
@@ -124,13 +124,13 @@ void shutdown_state(){
 }
 
 void test_state(){
-  supply_v.write_safe(true);
-  purge_v.write_safe(true);
+  supply_v.write(true);
+  purge_v.write(true);
 
-  start_r.write_safe(true);
-  motor_r.write_safe(true);
-  charge_r.write_safe(true);
-  cap_r.write_safe(true);
-  fcc_r.write_safe(true);
+  start_r.write(true);
+  motor_r.write(true);
+  charge_r.write(true);
+  cap_r.write(true);
+  fcc_r.write(true);
 
 }
