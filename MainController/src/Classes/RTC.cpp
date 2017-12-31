@@ -56,8 +56,8 @@ void RealTimeClock::__read()
     (*master).read(address<<1,this->slave_buffer, 19);
     (*master).unlock();
 
-    this->time.sec = (slave_buffer[0]&0x0f) + ((slave_buffer[0]&0xf0)*10);
-    this->time.min = (slave_buffer[1]&0x0f) + ((slave_buffer[1]&0xf0)*10);
-    this->time.hour = (slave_buffer[2]&0x0f) + ((slave_buffer[2]&0xf0)*10);
+    this->time.sec = (slave_buffer[0]&0x0f) + (((slave_buffer[0]&0xf0)>>4)*10);
+    this->time.min = (slave_buffer[1]&0x0f) + (((slave_buffer[1]&0xf0)>>4)*10);
+    this->time.hour = (slave_buffer[2]&0x0f) + (((slave_buffer[2]&0xf0)>>4)*10);
     this->unlock();
 };
