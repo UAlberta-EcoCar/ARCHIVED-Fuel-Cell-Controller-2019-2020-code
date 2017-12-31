@@ -16,9 +16,9 @@ public:
     string name
   )
   {
-  mu.lock();
-  this->__name = name;
-  mu.unlock();
+    mu.lock();
+    this->__name = name;
+    mu.unlock();
   };
 
   void set_name(
@@ -29,17 +29,25 @@ public:
     this->__name = name;
     mu.unlock();
   };
+
   string get_name()
   {
     return this->__name;
   };
+
   void lock(){
     mu.lock();
   };
+
   void unlock(){
     mu.unlock();
   };
+
   string toString(){
+    return this->get_name();
+  };
+
+  string toStringInfo(){
     return this->get_name();
   };
 };

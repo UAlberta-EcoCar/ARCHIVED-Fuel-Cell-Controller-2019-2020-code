@@ -16,7 +16,6 @@ private:
   bool _coup;
 
 public:
-
 //Constructor
 Integrator(
   std::string name = "default"
