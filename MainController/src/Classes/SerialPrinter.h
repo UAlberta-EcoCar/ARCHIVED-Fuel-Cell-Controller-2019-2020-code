@@ -38,13 +38,13 @@ public:
     this->lock();
     for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
       (*(*T_vec)[i]).lock();
-      printer.printf("%s ",(*(*T_vec)[i]).toString());
+      printer.printf("%s ",(*(*T_vec)[i]).get_name());
       (*(*T_vec)[i]).unlock();
     }
     printer.printf("\n");
     this->unlock();
   };
-  void print_values(
+  void print_info(
     vector<T*>* T_vec,
     typename vector<T*>::iterator* T_iter
   )
@@ -52,7 +52,7 @@ public:
     this->unlock();
     for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
       (*(*T_vec)[i]).lock();
-      printer.printf("%f ",(float)(*(*T_vec)[i]).read());
+      printer.printf("%s ", (*(*T_vec)[i]).toStringInfo());
       (*(*T_vec)[i]).unlock();
     }
     printer.printf("\n");
@@ -70,13 +70,13 @@ public:
     this->unlock();
   };
 
-  void print_read(
+  void print_info(
     T* obj
   )
   {
     this->lock();
     (*obj).lock();
-    printer.printf("%f ", (float)(*obj).read());
+    printer.printf("%f ", (float)(*obj).toStringInfo());
     (*obj).unlock();
     this->unlock();
   };

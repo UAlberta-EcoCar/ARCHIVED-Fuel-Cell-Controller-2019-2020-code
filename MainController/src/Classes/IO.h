@@ -5,6 +5,7 @@
 // Private inheritance means the functions inherited can only be used internally
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include <mbed.h>
 
 class IO{

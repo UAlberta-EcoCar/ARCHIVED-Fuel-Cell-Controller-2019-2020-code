@@ -75,9 +75,17 @@ string toString()
   stringstream ss;
   ss << this->get_name();
   ss << ": ";
-  ss << this->read();
+  ss << fixed << setprecision(2) << this->read();
   return ss.str();
 };
+
+string toStringInfo()
+{
+  stringstream ss;
+  ss << fixed << setprecision(2) << this->read();
+  return ss.str();
+
+}
 
 
 };

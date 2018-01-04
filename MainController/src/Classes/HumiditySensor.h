@@ -1,13 +1,14 @@
 #ifndef HUMIDITYSENSOR_H
 #define HUMIDITYSENSOR_H
 
-#include "IO.h"
 #include "Sensor.h"
+using namespace std;
 
 class HumiditySensor: public Sensor{
     private:
     bool _coup;
     float value;
+    char slave_buffer[6];
 
     I2C* master;
 
@@ -18,6 +19,8 @@ class HumiditySensor: public Sensor{
     void update();
     void decouple();
     void couple();
+    string toString();
+    string toStringInfo();
 };
 
 #endif
