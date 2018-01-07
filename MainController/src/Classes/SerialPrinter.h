@@ -4,7 +4,6 @@
 #include <vector>
 #include "IO.h"
 
-template<class T>
 class SerialPrinter: public IO {
 private:
   Serial printer;
@@ -18,47 +17,65 @@ public:
   ):IO(name), printer(tx,rx,baud)
   {};
 
+  template <class T>
   void print(
     vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter
+    typename vector<T*>::iterator* T_iter,
+    bool newline=1
   ){
     this->lock();
-    for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
-      printer.printf("%s ",(*(*T_vec)[i]).toString());
+    for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
+      (*(*(*T_iter))).lock();
+      printer.printf("%s ",(*(*(*T_iter))).toString());
+      (*(*(*T_iter))).unlock();
     }
-    printer.printf("\n");
+    if (newline){
+      printer.printf("\n");
+    }
     this->unlock();
   };
 
+  template <class T>
   void print_names(
     vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter
+    typename vector<T*>::iterator* T_iter,
+    bool newline=1
   )
   {
     this->lock();
-    for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
-      (*(*T_vec)[i]).lock();
-      printer.printf("%s ",(*(*T_vec)[i]).get_name());
-      (*(*T_vec)[i]).unlock();
+    for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
+      (*(*(*T_iter))).lock();
+      printer.printf("%s ",(*(*(*T_iter))).get_name());
+      (*(*(*T_iter))).unlock();
     }
-    printer.printf("\n");
-    this->unlock();
-  };
-  void print_info(
-    vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter
-  )
-  {
-    this->unlock();
-    for(int i = (*T_iter).begin(); i != (*T_iter).end(); i++){
-      (*(*T_vec)[i]).lock();
-      printer.printf("%s ", (*(*T_vec)[i]).toStringInfo());
-      (*(*T_vec)[i]).unlock();
+    
+    if (newline){
+      printer.printf("\n");
     }
-    printer.printf("\n");
     this->unlock();
   };
 
+  template <class T>
+  void print_info(
+    vector<T*>* T_vec,
+    typename vector<T*>::iterator* T_iter,
+    bool newline=1
+  )
+  {
+    this->lock();
+    for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
+      (*(*(*T_iter))).lock();
+      printer.printf("%s ", (*(*(*T_iter))).toStringInfo());
+      (*(*(*T_iter))).unlock();
+    }
+
+    if (newline){
+      printer.printf("\n");
+    }
+    this->unlock();
+  };
+
+  template <class T>
   void print_name(
     T* obj
   )
@@ -69,14 +86,14 @@ public:
     (*obj).unlock();
     this->unlock();
   };
-
+  template <class T>
   void print_info(
     T* obj
   )
   {
     this->lock();
     (*obj).lock();
-    printer.printf("%f ", (float)(*obj).toStringInfo());
+    printer.printf("%s ", (*obj).toStringInfo());
     (*obj).unlock();
     this->unlock();
   };

@@ -38,7 +38,7 @@ void update(){
   this->unlock();
 };
 
-float read(bool update=0)
+float read(bool update=1)
 {
   if (update){
     this->update();

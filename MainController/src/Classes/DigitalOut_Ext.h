@@ -22,5 +22,6 @@ DigitalOut_Ext(
 void write(int value);
 int read();
 string toString();
+string toStringInfo();
 };
 #endif

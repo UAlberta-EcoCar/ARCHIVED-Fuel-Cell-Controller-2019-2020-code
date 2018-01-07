@@ -25,22 +25,35 @@ void test(){
   cont_queue.call(test_state);
 }
 
-void run(){
-  set_fc_status(RUN_STATE);
+void update_leds(){
   alarm_led.write(false);
   shut_led.write(false);
   start_led.write(false);
-  run_led.write(true);
+  run_led.write(false);
+
+  if (get_fc_status() == ALARM_STATE){
+    alarm_led.write(true);
+  }
+  else if (get_fc_status() == SHUTDOWN_STATE){
+    shut_led.write(true);
+  }
+  else if (get_fc_status() == START_STATE){
+    start_led.write(true);
+  }
+  else if (get_fc_status() == RUN_STATE){
+    run_led.write(true);
+  }
+}
+
+void run(){
+  set_fc_status(RUN_STATE);
+  update_leds();
   cont_queue.call(run_setup);
 }
 
 void startup(){
   set_fc_status(START_STATE);
-  alarm_led.write(false);
-  shut_led.write(false);
-  start_led.write(true);
-  run_led.write(false);
-
+  update_leds();
   cont_queue.call(fan_spool_up);
   cont_queue.call(start_purge);
   cont_queue.call(start_charge);
@@ -50,24 +63,18 @@ void startup(){
 
 void shutdown(){
   set_fc_status(SHUTDOWN_STATE);
-  alarm_led.write(false);
-  shut_led.write(true);
-  start_led.write(false);
-  run_led.write(false);
+  update_leds();
   cont_queue.call(shutdown_state);
 }
 
 void alarm(){
   set_fc_status(ALARM_STATE);
-  alarm_led.write(true);
-  shut_led.write(false);
-  start_led.write(false);
-  run_led.write(false);
+  update_leds();
   cont_queue.call(shutdown_state);
 }
 
 int contoller_event_queue_thread(){
-  cont_queue.call(run);
+  cont_queue.call(shutdown);
   cont_queue.dispatch();
 
 

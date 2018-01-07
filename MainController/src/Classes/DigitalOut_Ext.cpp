@@ -31,3 +31,10 @@ string DigitalOut_Ext::toString()
   ss << this->read();
   return ss.str();
 };
+
+string DigitalOut_Ext::toStringInfo()
+{
+  stringstream ss;
+  ss << this->read();
+  return ss.str();
+};

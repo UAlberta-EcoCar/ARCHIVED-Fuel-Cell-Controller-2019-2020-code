@@ -7,7 +7,10 @@
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
 #include "Classes/LinearScalable.h"
+#include "Classes/ExpScalable.h"
 #include "Classes/SerialPrinter.h"
+#include "Classes/HumiditySensor.h"
+#include "Classes/RTC.h"
 
 // Defs
 #include "Def/constants.h"
@@ -15,12 +18,15 @@
 #include "Def/object_def.h"
 #include "Def/thread_def.h"
 #include "Def/semaphore_def.h"
+#include "Def/ds3231.h"
+#include "Def/SHT31.h"
 
 // Thread src
 #include "controller_event_queue.h"
 #include "controller_states.h"
 #include "monitoring.h"
 #include "error_event_queue.h"
+#include "datalink.h"
 #include "main.h"
 
 #include "fc_status.h"
@@ -33,6 +39,9 @@ Initilaize Objects
 // Interrupt Objects
 InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
+//I2C Objects
+I2C master(I2C_SDA, I2C_SCL);
+HumiditySensor humidity("Humidity", &master);
 
 // Scale objects
 LinearScalable<float> cap_scale(1.0, 2.0);
@@ -55,6 +64,7 @@ Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
 Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
 Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
 Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
+
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
@@ -86,6 +96,16 @@ Integrator fc_joules;
 Integrator cap_coulumbs;
 Integrator cap_joules;
 
+//Vectors
+vector<Sensor*> sensor_vec;
+vector<Integrator*> int_vec;
+vector<DigitalOut_Ext*> dig_out_vec;
+
+//Iterators
+vector<Sensor*>::iterator sensor_iter;
+vector<Integrator*>::iterator int_iter;
+vector<DigitalOut_Ext*>::iterator dig_out_iter;
+
 
 // Initilaize threads
 Thread controller_event_thread;
@@ -101,14 +121,43 @@ void error_isr(){
 }
 
 int main() {
+  // Attach Interrupts
+  h2.fall(&error_isr);
+  err.rise(&error_isr);
 
+  //Populate vectors
+  sensor_vec.push_back(&fccurr);
+  sensor_vec.push_back(&capvolt);
+  sensor_vec.push_back(&fcvolt);
+  sensor_vec.push_back(&capcurr);
+  sensor_vec.push_back(&motorvolt);
+  sensor_vec.push_back(&motorcurr);
+  sensor_vec.push_back(&press1);
+  sensor_vec.push_back(&press2);
+  sensor_vec.push_back(&press3);
+  sensor_vec.push_back(&press4);
+  sensor_vec.push_back(&fctemp1);
+  sensor_vec.push_back(&fctemp2);
+  sensor_vec.push_back(&temp1);
+  sensor_vec.push_back(&temp2);
+  sensor_vec.push_back(&temp3);
+  sensor_vec.push_back(&temp4);
+  sensor_vec.push_back(&temp5);
 
+  int_vec.push_back(&fc_coulumbs);
+  int_vec.push_back(&fc_joules);
+  int_vec.push_back(&cap_coulumbs);
+  int_vec.push_back(&cap_joules);
 
-
-  // Attach Interrupts (Should be the first thing to do)
-  //h2.fall(&error_isr);
-  //err.rise(&error_isr);
-
+  dig_out_vec.push_back(&supply_v);
+  dig_out_vec.push_back(&purge_v);
+  dig_out_vec.push_back(&other1_v);
+  dig_out_vec.push_back(&other2_v);
+  dig_out_vec.push_back(&start_r);
+  dig_out_vec.push_back(&motor_r);
+  dig_out_vec.push_back(&charge_r);
+  dig_out_vec.push_back(&cap_r);
+  dig_out_vec.push_back(&fcc_r);
 
   // Threads from lowest -> highest priority
   monitor.set_priority(osPriorityIdle); // Will be running 90% of the time, since other threads are quick
@@ -120,6 +169,7 @@ int main() {
   // Start threads
   error_event_thread.start(&error_event_queue);
   controller_event_thread.start(&contoller_event_queue_thread);
+  data_event_thread.start(&datalink_thread);
   monitor.start(&monitoring_thread);
 
 

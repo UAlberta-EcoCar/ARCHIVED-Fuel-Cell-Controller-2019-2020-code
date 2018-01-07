@@ -35,7 +35,7 @@ void HumiditySensor::update()
         this->lock();
         if (this->_coup){
             (*this->master).lock();
-            (*this->master).read(SHT31_ADDRESS<<1,slave_buffer,6);
+            (*this->master).read(SHT31_DEFAULT_ADDR<<1,slave_buffer,6);
             (*this->master).unlock();
 
             uint16_t srh = slave_buffer[3];

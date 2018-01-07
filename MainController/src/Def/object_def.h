@@ -55,4 +55,13 @@ extern Integrator cap_joules;
 extern InterruptIn h2;
 extern InterruptIn err;
 
+//Vectors
+extern vector<Sensor*> sensor_vec;
+extern vector<Integrator*> int_vec;
+extern vector<DigitalOut_Ext*> dig_out_vec;
+
+//Iterators
+extern vector<Sensor*>::iterator sensor_iter;
+extern vector<Integrator*>::iterator int_iter;
+extern vector<DigitalOut_Ext*>::iterator dig_out_iter;
 #endif
