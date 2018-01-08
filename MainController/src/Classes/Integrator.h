@@ -85,6 +85,23 @@ void couple(
   this->_coup = couple;
   this->unlock();
 };
+
+string toString()
+{
+  stringstream ss;
+  ss << this->get_name();
+  ss << ":";
+  ss << fixed << setprecision(2) << this->read();
+  return ss.str();
+};
+
+string toStringInfo()
+{
+  stringstream ss;
+  ss << fixed << setprecision(2) << this->read();
+  return ss.str();
+
+};
 };
 
 

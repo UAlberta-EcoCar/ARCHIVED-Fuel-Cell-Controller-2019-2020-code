@@ -74,7 +74,7 @@ void alarm(){
 }
 
 int contoller_event_queue_thread(){
-  cont_queue.call(shutdown);
+  cont_queue.call(startup);
   cont_queue.dispatch();
 
 

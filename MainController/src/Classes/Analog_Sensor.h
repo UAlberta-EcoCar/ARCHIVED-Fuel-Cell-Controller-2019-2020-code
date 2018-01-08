@@ -26,6 +26,7 @@ Analog_Sensor(
   string name="default"
 ):Sensor(name), pin(pin)
 {
+  this->value = 0.0;
   this->scaler = scaler;
   this->couple();
 };
@@ -46,7 +47,7 @@ float read(bool update=1)
   return this->value;
 };
 
-void set(float value, bool decouple=1)
+void set(float value, bool decouple=0)
 {
   if (decouple){
     this->decouple();
@@ -70,16 +71,16 @@ void decouple()
   this->unlock();
 };
 
-string toString()
+virtual string toString()
 {
   stringstream ss;
   ss << this->get_name();
-  ss << ": ";
+  ss << ":";
   ss << fixed << setprecision(2) << this->read();
   return ss.str();
 };
 
-string toStringInfo()
+virtual string toStringInfo()
 {
   stringstream ss;
   ss << fixed << setprecision(2) << this->read();

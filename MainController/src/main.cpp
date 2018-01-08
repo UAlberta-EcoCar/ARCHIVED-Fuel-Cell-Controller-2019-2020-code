@@ -44,7 +44,7 @@ I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
 
 // Scale objects
-LinearScalable<float> cap_scale(1.0, 2.0);
+LinearScalable<float> cap_scale(1.0, 0.0);
 
 // AnalogIn_Ext Objects
 Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, cap_scale, "capvolt");
@@ -59,11 +59,11 @@ Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
 Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
 Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, cap_scale, "fctemp1");
 Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, cap_scale, "fctemp2");
-Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
-Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
-Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
-Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
-Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
+//Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
+//Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
+//Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
+//Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
+//Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 
 
 // DigitalOut_Ext objects
@@ -91,10 +91,10 @@ Fan fan2("fan2",PWM_2,TACH_2);
 Fan fan3("fan3",PWM_3,TACH_3);
 
 // Integrator objects
-Integrator fc_coulumbs;
-Integrator fc_joules;
-Integrator cap_coulumbs;
-Integrator cap_joules;
+Integrator fc_coulumbs("fc_coulumbs");
+Integrator fc_joules("fc_joul");
+Integrator cap_coulumbs("cap_coulumbs");
+Integrator cap_joules("cap_joul");
 
 //Vectors
 vector<Sensor*> sensor_vec;
@@ -138,11 +138,11 @@ int main() {
   sensor_vec.push_back(&press4);
   sensor_vec.push_back(&fctemp1);
   sensor_vec.push_back(&fctemp2);
-  sensor_vec.push_back(&temp1);
-  sensor_vec.push_back(&temp2);
-  sensor_vec.push_back(&temp3);
-  sensor_vec.push_back(&temp4);
-  sensor_vec.push_back(&temp5);
+  //sensor_vec.push_back(&temp1);
+  //sensor_vec.push_back(&temp2);
+  //sensor_vec.push_back(&temp3);
+  //sensor_vec.push_back(&temp4);
+  //sensor_vec.push_back(&temp5);
 
   int_vec.push_back(&fc_coulumbs);
   int_vec.push_back(&fc_joules);
@@ -166,7 +166,7 @@ int main() {
   FTDI_event_thread.set_priority(osPriorityNormal);
   error_event_thread.set_priority(osPriorityHigh);
 
-  // Start threads
+  //Start threads
   error_event_thread.start(&error_event_queue);
   controller_event_thread.start(&contoller_event_queue_thread);
   data_event_thread.start(&datalink_thread);

@@ -65,7 +65,7 @@ string HumiditySensor::toString()
 {
   stringstream ss;
   ss << this->get_name();
-  ss << ": ";
+  ss << ":";
   ss << fixed << setprecision(2) << this->read();
   return ss.str();
 };

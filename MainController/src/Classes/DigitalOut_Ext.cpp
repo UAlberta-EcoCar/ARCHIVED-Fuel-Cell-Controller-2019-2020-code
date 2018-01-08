@@ -27,7 +27,7 @@ string DigitalOut_Ext::toString()
 {
   stringstream ss;
   ss << this->get_name();
-  ss << ": ";
+  ss << ":";
   ss << this->read();
   return ss.str();
 };

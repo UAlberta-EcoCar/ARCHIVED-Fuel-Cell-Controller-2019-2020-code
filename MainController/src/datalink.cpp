@@ -25,8 +25,8 @@
 
 #include "fc_status.h"
 
-SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, 115200);
-SerialPrinter ol_printer("Openlog", BLUE_TX, BLUE_RX, 115200);
+SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, 1000000);
+SerialPrinter ol_printer("Openlog", OL_TX, OL_RX, 1000000);
 Ticker update;
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
 Semaphore stall(0);
@@ -53,7 +53,7 @@ void datalink_thread(){
     ol_printer.print_names<Sensor>(&sensor_vec, &sensor_iter, 0);
     ol_printer.print_names<Integrator>(&int_vec, &int_iter, 0);
     ol_printer.print_names<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-    update.attach(push_datalog, 1.0);
+    update.attach(&push_datalog, 0.01);
     data_queue.dispatch();
     stall.wait();
 }

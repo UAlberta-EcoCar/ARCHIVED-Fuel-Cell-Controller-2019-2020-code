@@ -50,17 +50,15 @@ public:
   )
   {
     this->lock();
-    stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
       (*(*(*T_iter))).lock();
-      ss << (*(*(*T_iter))).get_name() + " ";
+      printer.printf("%s ",(*(*(*T_iter))).get_name());
       (*(*(*T_iter))).unlock();
     }
+    
     if (newline){
-      ss << "\n";
+      printer.printf("\n");
     }
-    stat = ss.str();
-    printer.printf("%s", this->stat.c_str());
     this->unlock();
   };
 
@@ -72,17 +70,15 @@ public:
   )
   {
     this->lock();
-    stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
       (*(*(*T_iter))).lock();
-      ss << (*(*(*T_iter))).toStringInfo() + " ";
+      printer.printf("%s ", (*(*(*T_iter))).toStringInfo());
       (*(*(*T_iter))).unlock();
     }
+
     if (newline){
-      ss << "\n";
+      printer.printf("\n");
     }
-    stat = ss.str();
-    printer.printf("%s", this->stat.c_str());
     this->unlock();
   };
 

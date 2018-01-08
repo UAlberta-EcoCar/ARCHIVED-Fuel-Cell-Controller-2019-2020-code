@@ -16,12 +16,12 @@ class HumiditySensor: public Sensor{
     public:
     HumiditySensor(string name, I2C* master);
     float read(bool update=1);
-    void set(float value, bool decouple=1);
+    void set(float value, bool decouple=0);
     void update();
     void decouple();
     void couple();
-    string toString();
-    string toStringInfo();
+    virtual string toString();
+    virtual string toStringInfo();
 };
 
 #endif

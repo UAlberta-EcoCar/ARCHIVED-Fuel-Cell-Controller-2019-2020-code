@@ -12,6 +12,8 @@ public:
   virtual void update() = 0;
   virtual void decouple() = 0;
   virtual void couple() = 0;
+  virtual string toString() = 0;
+  virtual string toStringInfo() = 0;
 };
 
 #endif
