@@ -17,17 +17,40 @@
 #include "Def/semaphore_def.h"
 
 #include "fc_status.h"
+#include "error_event_queue.h"
+#include "controller_event_queue.h"
 
 float ave_speed;
 float ave_press;
 Semaphore fan_spooled(0), startup_purge(0);
-
+vector<Sensor*> pres_vec;
+vector<Sensor*>::iterator pres_iter;
 
 void monitoring_thread(){
 
+  while(true){
     for (int_iter = int_vec.begin(); int_iter != int_vec.end(); int_iter++){
       (*(*int_iter)).update();
     }
+
+    // Error Checking
+    if (fcvolt.read() >= 0.75 || capvolt.read() >= 32.0){
+      error_throw.write(false);
+    }
+
+    if (fccurr.read() >= 0.75 || capcurr.read() >= 70){
+      error_throw.write(false);
+    }
+
+    if (press1.read() >= 8.0){
+      error_throw.write(false);
+    }
+
+    if (fctemp1.read() >= 60.0 || fctemp2.read() >= 60.0){
+      error_throw.write(false);
+    }
+
+
 
 
     switch (get_fc_status()) {
@@ -50,6 +73,18 @@ void monitoring_thread(){
                 
       case RUN_STATE:
         ;
+      case ALARM_STATE:
+        // Temporary solution to a bug in which valves reopen.
+        supply_v.write(false);
+        purge_v.write(false);
+        start_r.write(false);
+        motor_r.write(false);
+        charge_r.write(false);
+        cap_r.write(false);
+        fcc_r.write(false);
       default:;
     }
+    Thread::wait(1);
+  }
+
 }

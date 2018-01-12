@@ -15,8 +15,6 @@ void error_cleanup(){
 }
 
 void error_event_queue(){
-
-  push_error_checks.attach(error_checking, 0.5);
   err_queue.dispatch();
   while(1){Thread::wait(100000.0);}
 }

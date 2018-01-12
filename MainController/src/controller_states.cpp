@@ -48,7 +48,7 @@ void start_purge(){
   start_r.write(true);
   purge_v.write(true);
 
-  Thread::wait(1000);
+  Thread::wait(10000);
 
   start_r.write(false);
   purge_v.write(false);

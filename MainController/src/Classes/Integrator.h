@@ -10,6 +10,7 @@ class Integrator: public IO{
 private:
   float value;
   float y;
+  float constant;
   vector<Sensor*> vec;
   vector<Sensor*>::iterator iter;
   Timer dt;
@@ -24,6 +25,7 @@ Integrator(
   this->lock();
   this->value = 0.0;
   this->_coup = 1;
+  this->constant = 1.0;
   this->unlock();
 };
 
@@ -34,6 +36,15 @@ void sensor_add(
 {
   this->lock();
   this->vec.push_back(obj);
+  this->unlock();
+};
+
+void set_const(
+  float constant
+)
+{
+  this->lock();
+  this->constant = constant;
   this->unlock();
 };
 
@@ -60,14 +71,16 @@ void update()
 {
   this->lock();
   this->dt.stop();
-  this->y=0.0;
+  this->y=1.0;
 
   for (iter = vec.begin(); iter != vec.end(); iter++){
-    this->y = this->y + (*(*iter)).read();
+    this->y = this->y * (*(*iter)).read();
   }
+  this->y *= this->constant;
 
-  this->value = this->value + (((this->value + this->y)/2) * this->dt.read());
+  this->value = this->value + (this->y * this->dt.read());
   this->dt.reset();
+  this->dt.start();
   this->unlock();
 };
 

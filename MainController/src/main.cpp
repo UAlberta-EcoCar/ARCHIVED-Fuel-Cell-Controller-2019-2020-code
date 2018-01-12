@@ -1,5 +1,6 @@
 #include <mbed.h>
 #include <mbed_events.h>
+#include <InterruptIn.h>
 
 // Classes
 #include "Classes/Analog_Sensor.h"
@@ -39,6 +40,8 @@ Initilaize Objects
 // Interrupt Objects
 InterruptIn h2(H2_OK);
 InterruptIn err(ERROR_ISR);
+InterruptIn estop1(ESTOP1);
+InterruptIn estop2(ESTOP2);
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
@@ -115,15 +118,24 @@ Thread FTDI_event_thread;
 Thread monitor;
 
 void error_isr(){
-  controller_event_thread.terminate();
+  cont_queue.break_dispatch();
   set_fc_status(ALARM_STATE);
   error_cleanup();
 }
-
+void throw_something_dammit(){
+  err_queue.call(error_isr);
+}
 int main() {
   // Attach Interrupts
-  h2.fall(&error_isr);
-  err.rise(&error_isr);
+  //error_throw.write(true);
+  h2.rise(&error_isr); // Works
+  err.rise(&error_isr); // Don't work? EDIT: Found out Nucleo only supports interrupts on one port
+  h2.mode(PullDown);
+  err.mode(PullDown);
+  estop1.rise(&error_isr); // Works
+  estop1.mode(PullDown);
+  estop2.rise(&error_isr); // Works
+  estop2.mode(PullDown);
 
   //Populate vectors
   sensor_vec.push_back(&fccurr);
@@ -158,6 +170,14 @@ int main() {
   dig_out_vec.push_back(&charge_r);
   dig_out_vec.push_back(&cap_r);
   dig_out_vec.push_back(&fcc_r);
+  dig_out_vec.push_back(&error_throw);
+
+  fc_coulumbs.sensor_add(&fccurr);
+  fc_joules.sensor_add(&fccurr);
+  fc_joules.sensor_add(&fcvolt);
+  cap_coulumbs.sensor_add(&capcurr);
+  cap_joules.sensor_add(&capcurr);
+  cap_joules.sensor_add(&capvolt);
 
   // Threads from lowest -> highest priority
   monitor.set_priority(osPriorityIdle); // Will be running 90% of the time, since other threads are quick
@@ -171,6 +191,8 @@ int main() {
   controller_event_thread.start(&contoller_event_queue_thread);
   data_event_thread.start(&datalink_thread);
   monitor.start(&monitoring_thread);
+  
+  
 
 
   while(1){Thread::wait(1000000);};

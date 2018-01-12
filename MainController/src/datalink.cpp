@@ -33,7 +33,9 @@ Semaphore stall(0);
 
 void blue_logging(){
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
+    Thread::wait(1);
     blue_printer.print<Integrator>(&int_vec, &int_iter, 0);
+    Thread::wait(1);
     blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
 }
 
@@ -53,7 +55,7 @@ void datalink_thread(){
     ol_printer.print_names<Sensor>(&sensor_vec, &sensor_iter, 0);
     ol_printer.print_names<Integrator>(&int_vec, &int_iter, 0);
     ol_printer.print_names<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-    update.attach(&push_datalog, 0.01);
+    update.attach(&push_datalog, 0.1);
     data_queue.dispatch();
     stall.wait();
 }

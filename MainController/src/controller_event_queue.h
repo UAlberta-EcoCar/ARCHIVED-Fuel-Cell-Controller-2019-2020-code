@@ -2,5 +2,6 @@
 #define CONTROLLER_EVENT_QUEUE_H
 
 void contoller_event_queue_thread();
+extern EventQueue cont_queue;
 
 #endif

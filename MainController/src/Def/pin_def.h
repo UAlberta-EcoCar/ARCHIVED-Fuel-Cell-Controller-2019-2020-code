@@ -76,8 +76,8 @@ Fans
   -Ethernet #7
 */
 #define TACH_1 PB_15
-#define TACH_2 PC_6
-#define TACH_3 PC_7
+#define TACH_2 PC_8
+#define TACH_3 PC_9
 #define PWM_1 PE_11
 #define PWM_2 PE_12
 #define PWM_3 PE_14
@@ -98,31 +98,25 @@ Analog voltage readings (Temperture Sensors)
 
 //Serial Defines
 //open log
-#define OL_CTS PE_3//CTS 2
-#define OL_RTS PE_4//RTS 2
 #define OL_TX PD_5//TX 2
 #define OL_RX PD_6//RX 2
 #define OL_RST PD_7
 
 //FTDI Chip
-#define FTDI_CTS PE_10//CTS 7
-#define FTDI_RTS PE_9//RTS 7
 #define FTDI_TX PE_8//TX 7
 #define FTDI_RX PE_7//RX 7
 
 //Bluetooth
-#define BLUE_CTS PC_9//CTS 5
-#define BLUE_RTS PC_8//RTS 5
 #define BLUE_TX PC_12//TX 5
 #define BLUE_RX PD_2//RX 5
 
 //To motor controller
-#define MOTOR_CTS PD_11//CTS 3
-#define MOTOR_RTS PD_12//RTS 3
 #define MOTOR_TX PB_10//TX 3
 #define MOTOR_RX PB_11//RX 3
 
 //Error Interrupt
+// IDKWhy but PH_1 dosen't do interrupts i guess?
+// not a big deal, the h2 stop works which is pretty much all we need
 #define ERROR_ISR PH_1
 #define ERROR_ISR_THROW PH_0
 
