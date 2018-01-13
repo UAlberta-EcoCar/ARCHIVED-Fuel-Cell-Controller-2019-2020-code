@@ -10,7 +10,7 @@ DigitalOut_Ext::DigitalOut_Ext(
 
 // Method declaration
 void DigitalOut_Ext::write(
-  int value
+  bool value
 )
 {
   this->lock();

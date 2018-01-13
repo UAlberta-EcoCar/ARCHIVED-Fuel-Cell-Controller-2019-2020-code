@@ -1,17 +1,14 @@
 #include <mbed.h>
 #include <mbed_events.h>
 
-#include "controller_states.h"
+#include "controller_event_queue.h"
+#include "datalink.h"
 
 EventQueue err_queue(32*EVENTS_EVENT_SIZE);
-Ticker push_error_checks;
-
-void error_checking(){
-
-}
 
 void error_cleanup(){
   err_queue.call(shutdown_state);
+  err_queue.call(error_logging);
 }
 
 void error_event_queue(){

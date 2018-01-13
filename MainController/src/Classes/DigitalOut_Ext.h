@@ -19,7 +19,7 @@ DigitalOut_Ext(
 );
 
 // Method declaration
-void write(int value);
+void write(bool value);
 int read();
 string toString();
 string toStringInfo();

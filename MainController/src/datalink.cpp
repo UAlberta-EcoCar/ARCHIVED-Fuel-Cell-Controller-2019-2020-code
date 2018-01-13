@@ -1,5 +1,6 @@
 #include <mbed.h>
 #include <mbed_events.h>
+#include <string>
 
 // Classes
 #include "Classes/Analog_Sensor.h"
@@ -18,7 +19,6 @@
 
 // Thread src
 #include "controller_event_queue.h"
-#include "controller_states.h"
 #include "monitoring.h"
 #include "error_event_queue.h"
 #include "main.h"
@@ -27,35 +27,56 @@
 
 SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, 1000000);
 SerialPrinter ol_printer("Openlog", OL_TX, OL_RX, 1000000);
-Ticker update;
+Ticker update_ol;
+Ticker update_blue;
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
 Semaphore stall(0);
+
+void error_logging(){
+    ol_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
+    Thread::wait(1);
+    ol_printer.print<string>("error");
+    Thread::wait(1);
+    blue_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
+    Thread::wait(1);
+    blue_printer.print<string>("error");
+}
 
 void blue_logging(){
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
     Thread::wait(1);
     blue_printer.print<Integrator>(&int_vec, &int_iter, 0);
     Thread::wait(1);
-    blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
+    blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    Thread::wait(1);
+    blue_printer.print<string>("FC Status:", 0);
+    Thread::wait(1);
+    blue_printer.print<int>(get_fc_status());
+    Thread::wait(1);
 }
 
 void ol_logging(){
     ol_printer.print_info<Sensor>(&sensor_vec, &sensor_iter, 0);
+    Thread::wait(1);
     ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
-    ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-}
-
-void push_datalog(){
-    data_queue.call(ol_logging);
-    data_queue.call(blue_logging);
+    Thread::wait(1);
+    ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    Thread::wait(1);
+    ol_printer.print<int>(get_fc_status());
+    Thread::wait(1);
 }
 
 void datalink_thread(){
     //TODO: Printer time via rtc
-    ol_printer.print_names<Sensor>(&sensor_vec, &sensor_iter, 0);
-    ol_printer.print_names<Integrator>(&int_vec, &int_iter, 0);
-    ol_printer.print_names<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-    update.attach(&push_datalog, 0.1);
+    // Print name headers for OL
+    ol_printer.print_name<Sensor>(&sensor_vec, &sensor_iter, 0);
+    ol_printer.print_name<Integrator>(&int_vec, &int_iter, 0);
+    ol_printer.print_name<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    ol_printer.print<string>("FC Status");
+
+    // Start periodic logging
+    update_ol.attach(&ol_logging, 0.5);
+    update_blue.attach(&blue_logging, 2);
     data_queue.dispatch();
     stall.wait();
 }

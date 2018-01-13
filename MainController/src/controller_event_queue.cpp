@@ -14,13 +14,111 @@
 #include "Def/thread_def.h"
 
 #include "fc_status.h"
-#include "controller_states.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
 void push_function(functiontype func){
   cont_queue.call(func);
 }
+
+void fan_spool_up(){
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  fan1.set_out(0.0);
+  fan2.set_out(0.0);
+  fan3.set_out(0.0);
+  //fan_spooled.wait();
+}
+void start_purge(){
+  supply_v.write(true);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  //startup_purge.wait();
+  start_r.write(true);
+  purge_v.write(true);
+  Thread::wait(10000);
+  start_r.write(false);
+  purge_v.write(false);
+
+}
+
+void start_end(){
+  supply_v.write(true);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(true);
+  fcc_r.write(false);
+  fan1.set_out(0.35);
+  fan2.set_out(0.35);
+  fan3.set_out(0.35);
+}
+
+void start_charge(){
+  Thread::wait(1000);
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(true);
+  cap_r.write(false);
+  fcc_r.write(false);
+  //cap_thres_l.wait();
+  charge_r.write(false);
+  cap_r.write(true);
+  //cap_thres_h.wait();
+}
+
+void run_setup(){
+  supply_v.write(true);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(true);
+  charge_r.write(false);
+  cap_r.write(true);
+  fcc_r.write(true); 
+}
+
+void purge(){
+  purge_v.write(true);
+  Thread::wait(200);
+  purge_v.write(true);
+}
+
+void shutdown_state(){
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  fan1.set_out(0.0);
+  fan2.set_out(0.0);
+  fan3.set_out(0.0);
+
+}
+
+void test_state(){
+  supply_v.write(true);
+  purge_v.write(true);
+  start_r.write(true);
+  motor_r.write(true);
+  charge_r.write(true);
+  cap_r.write(true);
+  fcc_r.write(true);
+}
+
 void test(){
   cont_queue.call(test_state);
 }
@@ -75,7 +173,7 @@ void alarm(){
 
 int contoller_event_queue_thread(){
   cont_queue.call(startup);
-  cont_queue.dispatch();
+  cont_queue.dispatch_forever();
 
 
   while(1){Thread::wait(10000);}

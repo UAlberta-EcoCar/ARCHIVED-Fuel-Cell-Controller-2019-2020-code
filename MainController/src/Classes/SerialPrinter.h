@@ -42,8 +42,45 @@ public:
     this->unlock();
   };
 
+    template <class T>
+  void print(
+    T* obj,
+    bool newline = 1
+  )
+  {
+    this->lock();
+    stringstream ss;
+    (*obj).lock();
+    ss << (*obj).toString + " ";
+    (*obj).unlock();
+    if (newline){
+      ss << "\n";
+    }
+    stat = ss.str();
+    printer.printf("%s", this->stat.c_str());
+    this->unlock();
+  };
+
   template <class T>
-  void print_names(
+  void print(
+    T obj,
+    bool newline = 1
+  )
+  {
+    this->lock();
+    stringstream ss;
+    ss << obj;
+    ss << " ";
+    if (newline){
+      ss << "\n";
+    }
+    stat = ss.str();
+    printer.printf("%s", this->stat.c_str());
+    this->unlock();
+  };
+
+  template <class T>
+  void print_name(
     vector<T*>* T_vec,
     typename vector<T*>::iterator* T_iter,
     bool newline=1
@@ -56,6 +93,25 @@ public:
       ss << (*(*(*T_iter))).get_name() + " ";
       (*(*(*T_iter))).unlock();
     }
+    if (newline){
+      ss << "\n";
+    }
+    stat = ss.str();
+    printer.printf("%s", this->stat.c_str());
+    this->unlock();
+  };
+
+  template <class T>
+  void print_name(
+    T* obj,
+    bool newline = 1
+  )
+  {
+    this->lock();
+    stringstream ss;
+    (*obj).lock();
+    ss << (*obj).get_name();
+    (*obj).unlock();
     if (newline){
       ss << "\n";
     }
@@ -87,25 +143,21 @@ public:
   };
 
   template <class T>
-  void print_name(
-    T* obj
-  )
-  {
-    this->lock();
-    (*obj).lock();
-    printer.printf("%s ", (*obj).get_name());
-    (*obj).unlock();
-    this->unlock();
-  };
-  template <class T>
   void print_info(
-    T* obj
+    T* obj,
+    bool newline = 1
   )
   {
     this->lock();
+    stringstream ss;
     (*obj).lock();
-    printer.printf("%s ", (*obj).toStringInfo());
+    ss << (*obj).toStringInfo();
     (*obj).unlock();
+    if (newline){
+      ss << "\n";
+    }
+    stat = ss.str();
+    printer.printf("%s", this->stat.c_str());
     this->unlock();
   };
 };

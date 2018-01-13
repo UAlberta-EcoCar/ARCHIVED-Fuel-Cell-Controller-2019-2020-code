@@ -24,7 +24,6 @@
 
 // Thread src
 #include "controller_event_queue.h"
-#include "controller_states.h"
 #include "monitoring.h"
 #include "error_event_queue.h"
 #include "datalink.h"
@@ -36,9 +35,9 @@ Initilaize Objects
   -These are used by the Threads
     -want the I/O to be global, local objects are defined locally
 */
-
 // Interrupt Objects
 InterruptIn h2(H2_OK);
+InterruptIn stop(STOP);
 InterruptIn err(ERROR_ISR);
 InterruptIn estop1(ESTOP1);
 InterruptIn estop2(ESTOP2);
@@ -119,19 +118,18 @@ Thread monitor;
 
 void error_isr(){
   cont_queue.break_dispatch();
+  controller_event_thread.terminate();
   set_fc_status(ALARM_STATE);
   error_cleanup();
 }
-void throw_something_dammit(){
-  err_queue.call(error_isr);
-}
+
 int main() {
   // Attach Interrupts
   //error_throw.write(true);
   h2.rise(&error_isr); // Works
-  err.rise(&error_isr); // Don't work? EDIT: Found out Nucleo only supports interrupts on one port
+  //err.rise(&error_isr); // Don't work? EDIT: Found out Nucleo only supports interrupts on one port
   h2.mode(PullDown);
-  err.mode(PullDown);
+  //err.mode(PullDown);
   estop1.rise(&error_isr); // Works
   estop1.mode(PullDown);
   estop2.rise(&error_isr); // Works
