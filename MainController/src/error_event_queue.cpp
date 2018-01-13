@@ -5,10 +5,12 @@
 #include "datalink.h"
 
 EventQueue err_queue(32*EVENTS_EVENT_SIZE);
+Event<void()> alarm_event(&err_queue, alarm_state);
+Event<void()> error_log_event(&err_queue, error_logging);
 
 void error_cleanup(){
-  err_queue.call(shutdown_state);
-  err_queue.call(error_logging);
+  error_log_event.post();
+  alarm_event.post();
 }
 
 void error_event_queue(){

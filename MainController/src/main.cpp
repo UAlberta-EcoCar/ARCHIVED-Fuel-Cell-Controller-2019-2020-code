@@ -12,6 +12,7 @@
 #include "Classes/SerialPrinter.h"
 #include "Classes/HumiditySensor.h"
 #include "Classes/RTC.h"
+#include "Classes/FuelCell.h"
 
 // Defs
 #include "Def/constants.h"
@@ -28,8 +29,6 @@
 #include "error_event_queue.h"
 #include "datalink.h"
 #include "main.h"
-
-#include "fc_status.h"
 /*
 Initilaize Objects
   -These are used by the Threads
@@ -98,6 +97,8 @@ Integrator fc_joules("fc_joul");
 Integrator cap_coulumbs("cap_coulumbs");
 Integrator cap_joules("cap_joul");
 
+FuelCell fc("Fuel Cell");
+
 //Vectors
 vector<Sensor*> sensor_vec;
 vector<Integrator*> int_vec;
@@ -119,7 +120,6 @@ Thread monitor;
 void error_isr(){
   cont_queue.break_dispatch();
   controller_event_thread.terminate();
-  set_fc_status(ALARM_STATE);
   error_cleanup();
 }
 

@@ -8,6 +8,7 @@
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
+#include "Classes/FuelCell.h"
 
 // Defs
 #include "Def/constants.h"
@@ -16,7 +17,6 @@
 #include "Def/thread_def.h"
 #include "Def/semaphore_def.h"
 
-#include "fc_status.h"
 #include "error_event_queue.h"
 #include "controller_event_queue.h"
 
@@ -52,8 +52,8 @@ void monitoring_thread(){
 
 
 
-
-    switch (get_fc_status()) {
+    //
+    switch (fc.get_fc_status()) {
       case START_STATE:
         fan1.lock();
         fan2.lock();
@@ -73,15 +73,6 @@ void monitoring_thread(){
                 
       case RUN_STATE:
         ;
-      case ALARM_STATE:
-        // Temporary solution to a bug in which valves reopen.
-        supply_v.write(false);
-        purge_v.write(false);
-        start_r.write(false);
-        motor_r.write(false);
-        charge_r.write(false);
-        cap_r.write(false);
-        fcc_r.write(false);
       default:;
     }
     Thread::wait(1);

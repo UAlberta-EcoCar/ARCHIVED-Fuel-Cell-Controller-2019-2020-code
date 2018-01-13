@@ -6,121 +6,36 @@
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
+#include "Classes/FuelCell.h"
 
 // Defs
 #include "Def/constants.h"
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
 #include "Def/thread_def.h"
+#include "Def/semaphore_def.h"
 
-#include "fc_status.h"
+#include "error_event_queue.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
-void push_function(functiontype func){
-  cont_queue.call(func);
-}
+void start_state();
+void run_state();
+void shut_state();
+void alarm_state();
+void update_leds();
 
-void fan_spool_up(){
-  supply_v.write(false);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(false);
-  fcc_r.write(false);
-  fan1.set_out(0.0);
-  fan2.set_out(0.0);
-  fan3.set_out(0.0);
-  //fan_spooled.wait();
-}
-void start_purge(){
-  supply_v.write(true);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(false);
-  fcc_r.write(false);
-  //startup_purge.wait();
-  start_r.write(true);
-  purge_v.write(true);
-  Thread::wait(10000);
-  start_r.write(false);
-  purge_v.write(false);
+Event<void()> start_event(&cont_queue, start_state);
+Event<void()> run_event(&cont_queue, run_state);
+Event<void()> shutdown_event(&cont_queue, shut_state);
 
-}
+int contoller_event_queue_thread(){
+  start_event.post();
+  cont_queue.dispatch_forever();
 
-void start_end(){
-  supply_v.write(true);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(true);
-  fcc_r.write(false);
-  fan1.set_out(0.35);
-  fan2.set_out(0.35);
-  fan3.set_out(0.35);
-}
 
-void start_charge(){
-  Thread::wait(1000);
-  supply_v.write(false);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(true);
-  cap_r.write(false);
-  fcc_r.write(false);
-  //cap_thres_l.wait();
-  charge_r.write(false);
-  cap_r.write(true);
-  //cap_thres_h.wait();
-}
-
-void run_setup(){
-  supply_v.write(true);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(true);
-  charge_r.write(false);
-  cap_r.write(true);
-  fcc_r.write(true); 
-}
-
-void purge(){
-  purge_v.write(true);
-  Thread::wait(200);
-  purge_v.write(true);
-}
-
-void shutdown_state(){
-  supply_v.write(false);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(false);
-  fcc_r.write(false);
-  fan1.set_out(0.0);
-  fan2.set_out(0.0);
-  fan3.set_out(0.0);
-
-}
-
-void test_state(){
-  supply_v.write(true);
-  purge_v.write(true);
-  start_r.write(true);
-  motor_r.write(true);
-  charge_r.write(true);
-  cap_r.write(true);
-  fcc_r.write(true);
-}
-
-void test(){
-  cont_queue.call(test_state);
+  while(1){Thread::wait(10000);}
+  return 1;
 }
 
 void update_leds(){
@@ -128,54 +43,88 @@ void update_leds(){
   shut_led.write(false);
   start_led.write(false);
   run_led.write(false);
-
-  if (get_fc_status() == ALARM_STATE){
+  fc.lock();
+  if (fc.get_fc_status() == ALARM_STATE){
     alarm_led.write(true);
   }
-  else if (get_fc_status() == SHUTDOWN_STATE){
+  else if (fc.get_fc_status() == SHUTDOWN_STATE){
     shut_led.write(true);
   }
-  else if (get_fc_status() == START_STATE){
+  else if (fc.get_fc_status() == START_STATE){
     start_led.write(true);
   }
-  else if (get_fc_status() == RUN_STATE){
+  else if (fc.get_fc_status() == RUN_STATE){
     run_led.write(true);
   }
+  fc.unlock();
 }
 
-void run(){
-  set_fc_status(RUN_STATE);
+void start_state(){
+  fc.set_fc_status(START_STATE);
   update_leds();
-  cont_queue.call(run_setup);
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  fan1.set_out(1.0);
+  fan2.set_out(1.0);
+  fan3.set_out(1.0);
+  fan_spooled.wait();
+
+  supply_v.write(true);
+  purge_v.write(true);
+  Thread::wait(1000);
+  start_r.write(true);
+  startup_purge.wait();
+  purge_v.write(false);
+  start_r.write(false);
+  charge_r.write(true);
+  // Start Fan control
+
+  run_event.post();
 }
 
-void startup(){
-  set_fc_status(START_STATE);
+void run_state(){
+  fc.set_fc_status(RUN_STATE);
   update_leds();
-  cont_queue.call(fan_spool_up);
-  cont_queue.call(start_purge);
-  cont_queue.call(start_charge);
-  cont_queue.call(start_end);
-  cont_queue.call(run);
+  supply_v.write(true);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(true);
+  charge_r.write(false);
+  cap_r.write(true);
+  fcc_r.write(true);
 }
 
-void shutdown(){
-  set_fc_status(SHUTDOWN_STATE);
+void shut_state(){
+  fc.set_fc_status(SHUTDOWN_STATE);
   update_leds();
-  cont_queue.call(shutdown_state);
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  // Stop fans
 }
 
-void alarm(){
-  set_fc_status(ALARM_STATE);
+void alarm_state(){
+  fc.set_fc_status(ALARM_STATE);
   update_leds();
-  cont_queue.call(shutdown_state);
-}
-
-int contoller_event_queue_thread(){
-  cont_queue.call(startup);
-  cont_queue.dispatch_forever();
-
-
-  while(1){Thread::wait(10000);}
-  return 1;
+  while(true){
+  supply_v.write(false);
+  purge_v.write(false);
+  start_r.write(false);
+  motor_r.write(false);
+  charge_r.write(false);
+  cap_r.write(false);
+  fcc_r.write(false);
+  // Stop fans
+  Thread::wait(50);
+  }
+  
 }

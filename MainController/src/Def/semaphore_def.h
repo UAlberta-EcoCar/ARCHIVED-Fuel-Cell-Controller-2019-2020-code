@@ -5,6 +5,7 @@ extern Semaphore fan_spooled;
 extern Semaphore startup_purge;
 extern Semaphore cap_thres_l;
 extern Semaphore cap_thres_h;
+extern Semaphore contoller_perm;
 
 
 #endif

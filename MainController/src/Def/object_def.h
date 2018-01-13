@@ -1,6 +1,8 @@
 #ifndef OBJECT_DEF_H
 #define OBJECT_DEF_H
 
+#include "./Classes/FuelCell.h"
+
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
 extern DigitalOut_Ext purge_v;
@@ -50,6 +52,8 @@ extern Integrator fc_coulumbs;
 extern Integrator fc_joules;
 extern Integrator cap_coulumbs;
 extern Integrator cap_joules;
+
+extern FuelCell fc;
 
 // Interrupts
 extern InterruptIn h2;

@@ -23,8 +23,6 @@
 #include "error_event_queue.h"
 #include "main.h"
 
-#include "fc_status.h"
-
 SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, 1000000);
 SerialPrinter ol_printer("Openlog", OL_TX, OL_RX, 1000000);
 Ticker update_ol;
@@ -49,9 +47,7 @@ void blue_logging(){
     Thread::wait(1);
     blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
     Thread::wait(1);
-    blue_printer.print<string>("FC Status:", 0);
-    Thread::wait(1);
-    blue_printer.print<int>(get_fc_status());
+    blue_printer.print<FuelCell>(&fc);
     Thread::wait(1);
 }
 
@@ -62,7 +58,7 @@ void ol_logging(){
     Thread::wait(1);
     ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
     Thread::wait(1);
-    ol_printer.print<int>(get_fc_status());
+    ol_printer.print_info<FuelCell>(&fc);
     Thread::wait(1);
 }
 
@@ -72,7 +68,7 @@ void datalink_thread(){
     ol_printer.print_name<Sensor>(&sensor_vec, &sensor_iter, 0);
     ol_printer.print_name<Integrator>(&int_vec, &int_iter, 0);
     ol_printer.print_name<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
-    ol_printer.print<string>("FC Status");
+    ol_printer.print<string>("FC_Status Error_Status");
 
     // Start periodic logging
     update_ol.attach(&ol_logging, 0.5);

@@ -51,7 +51,7 @@ public:
     this->lock();
     stringstream ss;
     (*obj).lock();
-    ss << (*obj).toString + " ";
+    ss << (*obj).toString() + " ";
     (*obj).unlock();
     if (newline){
       ss << "\n";
