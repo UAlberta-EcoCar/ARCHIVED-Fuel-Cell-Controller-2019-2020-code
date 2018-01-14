@@ -29,6 +29,8 @@ float get_in();
 bool is_spooled();
 void couple();
 void decouple();
+string toString();
+string toStringInfo();
 
 };
 

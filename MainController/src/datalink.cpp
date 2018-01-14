@@ -33,11 +33,11 @@ Semaphore stall(0);
 void error_logging(){
     ol_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
     Thread::wait(1);
-    ol_printer.print<string>("error");
+    ol_printer.print<int>(fc.get_error_status());
     Thread::wait(1);
     blue_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
     Thread::wait(1);
-    blue_printer.print<string>("error");
+    blue_printer.print<int>(fc.get_error_status());
 }
 
 void blue_logging(){
@@ -47,7 +47,10 @@ void blue_logging(){
     Thread::wait(1);
     blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
     Thread::wait(1);
+    blue_printer.print<Fan>(&fan_vec, &fan_iter, 0);
+    Thread::wait(1);
     blue_printer.print<FuelCell>(&fc);
+    blue_printer.print<string>("\n", 0);
     Thread::wait(1);
 }
 
@@ -57,6 +60,8 @@ void ol_logging(){
     ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
     Thread::wait(1);
     ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    Thread::wait(1);
+    ol_printer.print_info<Fan>(&fan_vec, &fan_iter, 0);
     Thread::wait(1);
     ol_printer.print_info<FuelCell>(&fc);
     Thread::wait(1);

@@ -19,6 +19,7 @@
 
 #include "error_event_queue.h"
 #include "controller_event_queue.h"
+#include "main.h"
 
 float ave_speed;
 float ave_press;
@@ -34,22 +35,28 @@ void monitoring_thread(){
     }
 
     // Error Checking
-    if (fcvolt.read() >= 0.75 || capvolt.read() >= 32.0){
-      error_throw.write(false);
-    }
+    if (fc.get_error_status() == 0){
+      if (fcvolt.read() >= 30.8 || capvolt.read() >= 32.0){
+        fc.set_error_status(1);
+        error_isr();
+      }
 
-    if (fccurr.read() >= 0.75 || capcurr.read() >= 70){
-      error_throw.write(false);
-    }
+      if (fccurr.read() >= 70 || capcurr.read() >= 70){
+        fc.set_error_status(2);
+         error_isr();
+      }
 
-    if (press1.read() >= 8.0){
-      error_throw.write(false);
-    }
+      if (press1.read() >= 8.0){
+        fc.set_error_status(3);
+        error_isr();
+      }
 
-    if (fctemp1.read() >= 60.0 || fctemp2.read() >= 60.0){
-      error_throw.write(false);
+      if (fctemp1.read() >= 60.0 || fctemp2.read() >= 60.0){
+        fc.set_error_status(4);
+        error_isr();
+      }
     }
-
+    
 
 
     //
@@ -59,7 +66,7 @@ void monitoring_thread(){
         fan2.lock();
         fan3.lock();
         
-        if(fan1.is_spooled() && fan2.is_spooled() && fan3.is_spooled()){
+        if(fan1.is_spooled()){
           fan_spooled.release();
         }
         fan1.unlock();

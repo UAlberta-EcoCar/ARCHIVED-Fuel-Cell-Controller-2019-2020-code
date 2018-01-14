@@ -124,7 +124,7 @@ void alarm_state(){
   cap_r.write(false);
   fcc_r.write(false);
   // Stop fans
-  Thread::wait(50);
+  Thread::wait(100);
   }
   
 }

@@ -63,9 +63,12 @@ extern InterruptIn err;
 extern vector<Sensor*> sensor_vec;
 extern vector<Integrator*> int_vec;
 extern vector<DigitalOut_Ext*> dig_out_vec;
+extern vector<Fan*> fan_vec;
 
 //Iterators
 extern vector<Sensor*>::iterator sensor_iter;
 extern vector<Integrator*>::iterator int_iter;
 extern vector<DigitalOut_Ext*>::iterator dig_out_iter;
+extern vector<Fan*>::iterator fan_iter;
+
 #endif

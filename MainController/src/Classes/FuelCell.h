@@ -44,9 +44,9 @@ class FuelCell: public IO{
     string toString(){
         stringstream ss;
         this->lock();
-        ss << "FC Status:";
+        ss << "FC_Status:";
         ss << this-> get_fc_status();
-        ss << " Error Status:";
+        ss << " Error_Status:";
         ss << this->get_error_status();
         ss << " ";
         this->unlock();

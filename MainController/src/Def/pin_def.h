@@ -115,8 +115,6 @@ Analog voltage readings (Temperture Sensors)
 #define MOTOR_RX PB_11//RX 3
 
 //Error Interrupt
-// IDKWhy but PH_1 dosen't do interrupts i guess?
-// not a big deal, the h2 stop works which is pretty much all we need
 #define ERROR_ISR PH_1
 #define ERROR_ISR_THROW PH_0
 

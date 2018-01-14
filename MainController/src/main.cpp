@@ -9,6 +9,7 @@
 #include "Classes/Integrator.h"
 #include "Classes/LinearScalable.h"
 #include "Classes/ExpScalable.h"
+#include "Classes/PolyScalable.h"
 #include "Classes/SerialPrinter.h"
 #include "Classes/HumiditySensor.h"
 #include "Classes/RTC.h"
@@ -37,7 +38,6 @@ Initilaize Objects
 // Interrupt Objects
 InterruptIn h2(H2_OK);
 InterruptIn stop(STOP);
-InterruptIn err(ERROR_ISR);
 InterruptIn estop1(ESTOP1);
 InterruptIn estop2(ESTOP2);
 //I2C Objects
@@ -45,21 +45,26 @@ I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
 
 // Scale objects
-LinearScalable<float> cap_scale(1.0, 0.0);
+LinearScalable<float> v_s(45.768, 0.2715);
+LinearScalable<float> c_s(48.329, -15.464);
+LinearScalable<float> press_s(49.65, -24.468);
+
+
 
 // AnalogIn_Ext Objects
-Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, cap_scale, "capvolt");
-Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, cap_scale, "fccurr");
-Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, cap_scale, "fcvolt");
-Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, cap_scale, "capcurr");
-Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, cap_scale, "motorvolt");
-Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, cap_scale, "motorcurr");
-Analog_Sensor<LinearScalable<float> > press1(PRESS1, cap_scale, "press1");
-Analog_Sensor<LinearScalable<float> > press2(PRESS2, cap_scale, "press2");
-Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
-Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
-Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, cap_scale, "fctemp1");
-Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, cap_scale, "fctemp2");
+Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, v_s, "capvolt");
+Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, c_s, "fccurr");
+Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, v_s, "fcvolt");
+Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s, "capcurr");
+// Assuming current and voltage sensing is the same as fc for motor, might be a good assumption for cap as well
+Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt"); 
+Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s, "motorcurr");
+Analog_Sensor<LinearScalable<float> > press1(PRESS1, press_s, "press1");
+//Analog_Sensor<LinearScalable<float> > press2(PRESS2, cap_scale, "press2");
+//Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
+//Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
+Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, c_s, "fctemp1");
+Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, c_s, "fctemp2");
 //Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
 //Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
 //Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
@@ -103,11 +108,13 @@ FuelCell fc("Fuel Cell");
 vector<Sensor*> sensor_vec;
 vector<Integrator*> int_vec;
 vector<DigitalOut_Ext*> dig_out_vec;
+vector<Fan*> fan_vec;
 
 //Iterators
 vector<Sensor*>::iterator sensor_iter;
 vector<Integrator*>::iterator int_iter;
 vector<DigitalOut_Ext*>::iterator dig_out_iter;
+vector<Fan*>::iterator fan_iter;
 
 
 // Initilaize threads
@@ -125,11 +132,8 @@ void error_isr(){
 
 int main() {
   // Attach Interrupts
-  //error_throw.write(true);
   h2.rise(&error_isr); // Works
-  //err.rise(&error_isr); // Don't work? EDIT: Found out Nucleo only supports interrupts on one port
   h2.mode(PullDown);
-  //err.mode(PullDown);
   estop1.rise(&error_isr); // Works
   estop1.mode(PullDown);
   estop2.rise(&error_isr); // Works
@@ -143,9 +147,9 @@ int main() {
   sensor_vec.push_back(&motorvolt);
   sensor_vec.push_back(&motorcurr);
   sensor_vec.push_back(&press1);
-  sensor_vec.push_back(&press2);
-  sensor_vec.push_back(&press3);
-  sensor_vec.push_back(&press4);
+  //sensor_vec.push_back(&press2);
+  //sensor_vec.push_back(&press3);
+  //sensor_vec.push_back(&press4);
   sensor_vec.push_back(&fctemp1);
   sensor_vec.push_back(&fctemp2);
   //sensor_vec.push_back(&temp1);
@@ -168,7 +172,10 @@ int main() {
   dig_out_vec.push_back(&charge_r);
   dig_out_vec.push_back(&cap_r);
   dig_out_vec.push_back(&fcc_r);
-  dig_out_vec.push_back(&error_throw);
+
+  fan_vec.push_back(&fan1);
+  fan_vec.push_back(&fan2);
+  fan_vec.push_back(&fan3);
 
   fc_coulumbs.sensor_add(&fccurr);
   fc_joules.sensor_add(&fccurr);

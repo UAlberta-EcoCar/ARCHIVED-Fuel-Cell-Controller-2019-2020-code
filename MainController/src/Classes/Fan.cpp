@@ -13,6 +13,7 @@ Fan::Fan(
   this->out.period(0.00004);
   this->out.write(0.0);
   this->__dutyIn = 0.0;
+  this->couple();
   this->unlock();
 }
 
@@ -22,11 +23,11 @@ void Fan::set_out(
 {
   this->lock();
   if (__coup){
-     if (percentage < 0){
+     if (percentage <= 0){
       this->out.write(0.0);
     }
-    else if (percentage > 1){
-      this->out.write(1.0);
+    else if (percentage >= 1){
+      this->out.write(0.975);
     }
     else{
       this->out.write(percentage);
@@ -45,7 +46,7 @@ void Fan::set_in(
   if (percentage < 0){
       this->__dutyIn = 0.0;
   }
-  else if (percentage > 1){
+  else if (percentage >= 1){
       this->__dutyIn = 1.0;
   }
   else{
@@ -89,4 +90,27 @@ void Fan::decouple()
   this->lock();
   this->__coup = 0;
   this->unlock();
+}
+
+string Fan::toString()
+{
+  stringstream ss;
+  this->lock();
+  ss << "Set_Speed:";
+  ss << this->get_out();
+  ss << " Speed:";
+  ss << this->get_in();
+  this->unlock();
+  return ss.str();
+}
+
+string Fan::toStringInfo()
+{
+  stringstream ss;
+  this->lock();
+  ss << this->get_out();
+  ss << " ";
+  ss << this->get_in();
+  this->unlock();
+  return ss.str();
 }
