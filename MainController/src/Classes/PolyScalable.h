@@ -4,7 +4,7 @@
 #include "Scalable.h"
 #include <vector>
 
-template <class T, class V>
+template <class T>
 class PolyScalable: public Scalable{
 private:
   vector<T> param_vec;
@@ -47,7 +47,7 @@ public:
   }
   */
 
-  V scale(
+  T scale(
     T value
   )
   {
@@ -57,10 +57,12 @@ public:
       val += (*this->param_iter)*pow(value, count);
       count++;
     }
-    return (V) val;
+    return val;
   };
 
   void set_params(
+    T a=1,
+    T b=0
   )
   {
   };

@@ -5,7 +5,8 @@
 #include "IO.h"
 
 class Fan: public IO{
-
+static const float max;
+static const float min;
 bool __coup;
 float __dutyIn;
 

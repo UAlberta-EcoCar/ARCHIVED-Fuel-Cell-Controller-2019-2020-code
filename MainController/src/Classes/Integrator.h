@@ -71,6 +71,9 @@ void update()
 {
   this->lock();
   this->dt.stop();
+  float del = this->dt.read;
+  this->dt.reset();
+  this->dt.start();
   this->y=1.0;
 
   for (iter = vec.begin(); iter != vec.end(); iter++){
@@ -78,9 +81,7 @@ void update()
   }
   this->y *= this->constant;
 
-  this->value = this->value + (this->y * this->dt.read());
-  this->dt.reset();
-  this->dt.start();
+  this->value = this->value + (this->y * del);
   this->unlock();
 };
 
