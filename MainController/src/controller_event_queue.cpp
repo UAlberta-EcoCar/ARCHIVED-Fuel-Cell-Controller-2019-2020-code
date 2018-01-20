@@ -24,10 +24,12 @@ void run_state();
 void shut_state();
 void alarm_state();
 void update_leds();
+void purge();
 
+Event<void()> shutdown_event(&cont_queue, shut_state);
 Event<void()> start_event(&cont_queue, start_state);
 Event<void()> run_event(&cont_queue, run_state);
-Event<void()> shutdown_event(&cont_queue, shut_state);
+
 
 int contoller_event_queue_thread(){
   start_event.post();
@@ -114,7 +116,8 @@ void shut_state(){
 
 void alarm_state(){
   fc.set_fc_status(ALARM_STATE);
-  update_leds();
+  update_leds();\
+  // Loop is problematic
   while(true){
   supply_v.write(false);
   purge_v.write(false);
@@ -126,5 +129,10 @@ void alarm_state(){
   // Stop fans
   Thread::wait(100);
   }
-  
+}
+
+void purge(){
+  purge_v.write(true);
+  Thread::wait(200);
+  purge_v.write(false);
 }

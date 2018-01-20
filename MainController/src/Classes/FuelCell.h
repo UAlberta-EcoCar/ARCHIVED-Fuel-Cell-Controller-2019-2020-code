@@ -12,12 +12,14 @@ class FuelCell: public IO{
     private:
     int fc_status;
     int error_status;
+    int num_purges;
 
     public:
     FuelCell(string name="Fuel Cell"):IO(name){
         this->lock();
         this->fc_status = 0;
         this->error_status = 0;
+        this->num_purges = 0;
         this->unlock();
     };
 
@@ -39,6 +41,16 @@ class FuelCell: public IO{
 
     int get_error_status(){
         return this->error_status;
+    };
+
+    int get_num_purges(){
+        return this->num_purges;
+    };
+
+    void increment_purge(){
+        this->lock();
+        this->num_purges++;
+        this->unlock();
     };
 
     string toString(){

@@ -4,6 +4,9 @@
 void contoller_event_queue_thread();
 
 void alarm_state();
+void start_state();
+void shut_state();
+void purge();
 
 extern EventQueue cont_queue;
 

@@ -40,6 +40,7 @@ InterruptIn h2(H2_OK);
 InterruptIn stop(STOP);
 InterruptIn estop1(ESTOP1);
 InterruptIn estop2(ESTOP2);
+InterruptIn ol_rst(OL_RST);
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
@@ -133,11 +134,13 @@ void error_isr(){
 int main() {
   // Attach Interrupts
   h2.rise(&error_isr); // Works
-  h2.mode(PullDown);
   estop1.rise(&error_isr); // Works
-  estop1.mode(PullDown);
   estop2.rise(&error_isr); // Works
+  ol_rst.rise(&error_isr); // TEMPORARY CALL
+  estop1.mode(PullDown);
+  h2.mode(PullDown);
   estop2.mode(PullDown);
+  ol_rst.mode(PullDown);
 
   //Populate vectors
   sensor_vec.push_back(&fccurr);

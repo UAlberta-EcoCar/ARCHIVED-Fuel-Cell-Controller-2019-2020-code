@@ -18,7 +18,7 @@
 #define ADC_SCL PF_14
 #define ADC_SDA PF_15
 
-// Start?
+// Start
 #define START PF_12
 
 // Button (Which i think is the same use as start?)

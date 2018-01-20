@@ -3,6 +3,12 @@
 
 #include "./Classes/FuelCell.h"
 
+// Digital In Objects
+extern DigitalIn ol_rst;
+extern DigitalIn hum_rst;
+extern DigitalIn start_butt;
+extern DigitalIn button;
+
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
 extern DigitalOut_Ext purge_v;

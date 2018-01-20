@@ -21,11 +21,16 @@
 #include "controller_event_queue.h"
 #include "main.h"
 
-float ave_speed;
-float ave_press;
 Semaphore fan_spooled(0), startup_purge(0);
-vector<Sensor*> pres_vec;
-vector<Sensor*>::iterator pres_iter;
+
+Event<void()> shutdown_event(&cont_queue, shut_state);
+Event<void()> start_event(&cont_queue, start_state);
+Event<void()> purge_event(&cont_queue, purge);
+
+DigitalIn start_butt(START, PullDown);
+DigitalIn ol_rst(OL_RST, PullDown);
+DigitalIn hum_rst(HUM_RST, PullDown);
+DigitalIn button(BUTT, PullDown);
 
 void monitoring_thread(){
 
@@ -57,9 +62,20 @@ void monitoring_thread(){
       }
     }
     
+    // Code for digital in's that can't be covered with a interrupt
+    // Button Code for start button
+    if (start_butt.read()){
+      switch (fc.get_fc_status){
+        case SHUTDOWN_STATE:
+          start_event.post();
+        default:
+          shutdown_event.post();
+      }
+    }
+    
+    // Button Code for ol_rst
+    // Button Code for hum_rst
 
-
-    //
     switch (fc.get_fc_status()) {
       case START_STATE:
         fan1.lock();
@@ -79,7 +95,11 @@ void monitoring_thread(){
         fcvolt.unlock();
                 
       case RUN_STATE:
-        ;
+        fc.lock();
+        if (fc_coulumbs.read()%((fc.get_num_purges)*2300) > 2300){
+          purge_event.post();
+        };
+        fc.unlock();
       default:;
     }
     Thread::wait(1);
