@@ -9,13 +9,13 @@ private:
   Serial printer;
   string stat;
 public:
+
   SerialPrinter(
     string name,
     PinName tx,
     PinName rx,
     int baud
-  ):IO(name), printer(tx,rx,baud)
-  {
+  ):IO(name), printer(tx,rx,baud){
     this->lock();
     this->stat = "";
     this->unlock();

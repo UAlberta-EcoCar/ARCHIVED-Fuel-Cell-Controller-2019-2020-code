@@ -16,6 +16,7 @@
 #include "Def/semaphore_def.h"
 
 #include "error_event_queue.h"
+#include "monitoring.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
@@ -32,7 +33,6 @@ Event<void()> run_event(&cont_queue, run_state);
 
 
 int contoller_event_queue_thread(){
-  start_event.post();
   cont_queue.dispatch_forever();
 
 
@@ -63,6 +63,8 @@ void update_leds(){
 
 void start_state(){
   fc.set_fc_status(START_STATE);
+  controller_flags.clear(0x1f);
+  controller_flags.set(0x2);
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -71,26 +73,32 @@ void start_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
-  fan1.set_out(1.0);
-  fan2.set_out(1.0);
-  fan3.set_out(1.0);
-  fan_spooled.wait();
+  // Signal set fans high
+  controller_flags.clear(0xff00);
+  controller_flags.set(0x800);
+
+  // Signal wait for fans
+  controller_flags.wait(0x10000);
 
   supply_v.write(true);
   purge_v.write(true);
   Thread::wait(1000);
   start_r.write(true);
-  startup_purge.wait();
+  controller_flags.wait(0x20000);
   purge_v.write(false);
   start_r.write(false);
   charge_r.write(true);
-  // Start Fan control
 
-  run_event.post();
+  // Signal fans to minimum
+  controller_flags.clear(0xff00);
+  controller_flags.set(0x200);
+  controller_flags.set(0x1);
 }
 
 void run_state(){
   fc.set_fc_status(RUN_STATE);
+  controller_flags.clear(0x1f);
+  controller_flags.set(0x2);
   update_leds();
   supply_v.write(true);
   purge_v.write(false);
@@ -99,10 +107,18 @@ void run_state(){
   charge_r.write(false);
   cap_r.write(true);
   fcc_r.write(true);
+
+  // Signal PID for fans
+  controller_flags.clear(0xff00);
+  controller_flags.set(0x400);
+
+  controller_flags.set(0x1);
 }
 
 void shut_state(){
   fc.set_fc_status(SHUTDOWN_STATE);
+  controller_flags.clear(0x1f);
+  controller_flags.set(0x10);
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -111,14 +127,17 @@ void shut_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
+  controller_flags.clear(0xff00);
+  controller_flags.set(0x100);
+  controller_flags.set(0x1);
   // Stop fans
 }
 
 void alarm_state(){
   fc.set_fc_status(ALARM_STATE);
-  update_leds();\
-  // Loop is problematic
-  while(true){
+  controller_flags.clear(0x1f);
+  controller_flags.set(0x20);
+  update_leds();
   supply_v.write(false);
   purge_v.write(false);
   start_r.write(false);
@@ -126,13 +145,16 @@ void alarm_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
-  // Stop fans
-  Thread::wait(100);
-  }
+  controller_flags.clear(0xff00);
+  controller_flags.set(0x100);
+  controller_flags.set(0x1);
 }
 
 void purge(){
+  controller_flags.clear(0x1);
+  controller_flags.set(0x8);
   purge_v.write(true);
   Thread::wait(200);
   purge_v.write(false);
+  controller_flags.set(0x1);
 }

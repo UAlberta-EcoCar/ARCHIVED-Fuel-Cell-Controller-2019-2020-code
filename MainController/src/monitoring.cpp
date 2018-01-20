@@ -22,6 +22,7 @@
 #include "main.h"
 
 Semaphore fan_spooled(0), startup_purge(0);
+EventFlags controller_flags;
 
 Event<void()> shutdown_event(&cont_queue, shut_state);
 Event<void()> start_event(&cont_queue, start_state);
@@ -64,7 +65,7 @@ void monitoring_thread(){
     
     // Code for digital in's that can't be covered with a interrupt
     // Button Code for start button
-    if (start_butt.read()){
+    if (start_butt.read() && (controller_flags.get()&0x20 == 0)){
       switch (fc.get_fc_status){
         case SHUTDOWN_STATE:
           start_event.post();
@@ -76,6 +77,19 @@ void monitoring_thread(){
     // Button Code for ol_rst
     // Button Code for hum_rst
 
+
+    // Signal Checking
+    uint32_t flags = controller_flags.get();
+    // If no error and excution of last event has finished
+    if (!(flags&0x20) && (flags&0x1)){
+
+      if (flags&0x2){
+        run_event.post();
+      }
+      
+    }
+
+
     switch (fc.get_fc_status()) {
       case START_STATE:
         fan1.lock();
@@ -83,14 +97,14 @@ void monitoring_thread(){
         fan3.lock();
         
         if(fan1.is_spooled()){
-          fan_spooled.release();
+          controller_flags.set(0x10000);
         }
         fan1.unlock();
         fan2.unlock();
         fan3.unlock();
         fcvolt.lock();
         if(fcvolt.read() > FC_VOLT){
-          startup_purge.release();
+          controller_flags.set(0x2000);
         }
         fcvolt.unlock();
                 
