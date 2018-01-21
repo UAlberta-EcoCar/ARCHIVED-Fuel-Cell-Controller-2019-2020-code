@@ -1,6 +1,5 @@
 #include <mbed.h>
 #include <mbed_events.h>
-#include <InterruptIn.h>
 
 // Classes
 #include "Classes/Analog_Sensor.h"
@@ -40,7 +39,7 @@ InterruptIn h2(H2_OK);
 InterruptIn stop(STOP);
 InterruptIn estop1(ESTOP1);
 InterruptIn estop2(ESTOP2);
-InterruptIn ol_rst(OL_RST);
+
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
@@ -89,8 +88,6 @@ DigitalOut_Ext debug_led(DEBUG_LED, "DEBUG_LED");
 DigitalOut_Ext shut_led(SHUT_LED, "SHUT_LED");
 DigitalOut_Ext run_led(RUN_LED, "RUN_LED");
 DigitalOut_Ext start_led(START_LED, "START_LED");
-DigitalOut_Ext ol_rst(OL_RST, "OL_RST");
-DigitalOut_Ext hum_rst(HUM_RST, "HUM_RST");
 
 // Fan objects
 Fan fan1("fan1",PWM_1,TACH_1);
@@ -136,11 +133,9 @@ int main() {
   h2.rise(&error_isr); // Works
   estop1.rise(&error_isr); // Works
   estop2.rise(&error_isr); // Works
-  ol_rst.rise(&error_isr); // TEMPORARY CALL
   estop1.mode(PullDown);
   h2.mode(PullDown);
   estop2.mode(PullDown);
-  ol_rst.mode(PullDown);
 
   //Populate vectors
   sensor_vec.push_back(&fccurr);

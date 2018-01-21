@@ -19,6 +19,7 @@
 
 #include "error_event_queue.h"
 #include "controller_event_queue.h"
+#include "monitoring.h"
 #include "main.h"
 
 Semaphore fan_spooled(0), startup_purge(0);
@@ -26,6 +27,7 @@ EventFlags controller_flags;
 
 Event<void()> shutdown_event(&cont_queue, shut_state);
 Event<void()> start_event(&cont_queue, start_state);
+Event<void()> run_event(&cont_queue, run_state);
 Event<void()> purge_event(&cont_queue, purge);
 
 DigitalIn start_butt(START, PullDown);
@@ -62,11 +64,12 @@ void monitoring_thread(){
         error_isr();
       }
     }
-    
+
+    uint32_t flags = controller_flags.get();
     // Code for digital in's that can't be covered with a interrupt
     // Button Code for start button
-    if (start_butt.read() && (controller_flags.get()&0x20 == 0)){
-      switch (fc.get_fc_status){
+    if ((start_butt.read() == 1) && (flags&ALARM_EVENT_FLAG == 0)){
+      switch (fc.get_fc_status()){
         case SHUTDOWN_STATE:
           start_event.post();
         default:
@@ -79,14 +82,26 @@ void monitoring_thread(){
 
 
     // Signal Checking
-    uint32_t flags = controller_flags.get();
     // If no error and excution of last event has finished
-    if (!(flags&0x20) && (flags&0x1)){
+    if (!(flags&ALARM_EVENT_FLAG) && (flags&FINISHED_EXCUTION_FLAG)){
 
-      if (flags&0x2){
+      if (flags&START_EVENT_FLAG){
         run_event.post();
       }
       
+    }
+    // Fan Control
+    switch(flags&CLEAR_FAN_FLAG){
+      case FAN_SHUTDOWN_FLAG:
+        ;
+      case FAN_MIN_FLAG:
+        ;
+      case FAN_MAX_FLAG:
+        ;
+      case FAN_PID_FLAG:
+        ;
+      default:
+        ;
     }
 
 
@@ -97,20 +112,20 @@ void monitoring_thread(){
         fan3.lock();
         
         if(fan1.is_spooled()){
-          controller_flags.set(0x10000);
+          controller_flags.set(FAN_SPOOLED_FLAG);
         }
         fan1.unlock();
         fan2.unlock();
         fan3.unlock();
         fcvolt.lock();
         if(fcvolt.read() > FC_VOLT){
-          controller_flags.set(0x2000);
+          controller_flags.set(START_PURGE_FLAG);
         }
         fcvolt.unlock();
                 
       case RUN_STATE:
         fc.lock();
-        if (fc_coulumbs.read()%((fc.get_num_purges)*2300) > 2300){
+        if ((fc_coulumbs.read() - (float)(fc.get_num_purges()*2300)) > 2300){
           purge_event.post();
         };
         fc.unlock();

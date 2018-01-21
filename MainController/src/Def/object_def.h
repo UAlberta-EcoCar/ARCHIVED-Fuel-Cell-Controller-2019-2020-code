@@ -1,13 +1,13 @@
 #ifndef OBJECT_DEF_H
 #define OBJECT_DEF_H
 
+#include <vector>
+#include <mbed.h>
 #include "./Classes/FuelCell.h"
-
-// Digital In Objects
-extern DigitalIn ol_rst;
-extern DigitalIn hum_rst;
-extern DigitalIn start_butt;
-extern DigitalIn button;
+#include "./Classes/Analog_Sensor.h"
+#include "./Classes/Fan.h"
+#include "./Classes/FuelCell.h"
+#include "./Classes/Integrator.h"
 
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
@@ -25,8 +25,6 @@ extern DigitalOut_Ext debug_led;
 extern DigitalOut_Ext shut_led;
 extern DigitalOut_Ext run_led;
 extern DigitalOut_Ext start_led;
-extern DigitalOut_Ext ol_rst;
-extern DigitalOut_Ext hum_rst;
 
 // Analog_Sensor Objects
 extern Analog_Sensor<LinearScalable<float> > capvolt;

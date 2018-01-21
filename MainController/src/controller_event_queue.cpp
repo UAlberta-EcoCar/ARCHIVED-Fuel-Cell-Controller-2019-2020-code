@@ -1,21 +1,13 @@
 #include <mbed.h>
 #include <mbed_events.h>
 
-// Classes
-#include "Classes/Analog_Sensor.h"
-#include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
-#include "Classes/Integrator.h"
 #include "Classes/FuelCell.h"
 
 // Defs
 #include "Def/constants.h"
-#include "Def/pin_def.h"
 #include "Def/object_def.h"
-#include "Def/thread_def.h"
-#include "Def/semaphore_def.h"
 
-#include "error_event_queue.h"
 #include "monitoring.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
@@ -26,11 +18,6 @@ void shut_state();
 void alarm_state();
 void update_leds();
 void purge();
-
-Event<void()> shutdown_event(&cont_queue, shut_state);
-Event<void()> start_event(&cont_queue, start_state);
-Event<void()> run_event(&cont_queue, run_state);
-
 
 int contoller_event_queue_thread(){
   cont_queue.dispatch_forever();
@@ -62,9 +49,13 @@ void update_leds(){
 }
 
 void start_state(){
+  controller_flags.clear(CLEAR_EVENT_FLAG);
+  controller_flags.set(START_EVENT_FLAG);
   fc.set_fc_status(START_STATE);
-  controller_flags.clear(0x1f);
-  controller_flags.set(0x2);
+  // Signal fans to high
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MAX_FLAG);
+
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -73,32 +64,32 @@ void start_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
-  // Signal set fans high
-  controller_flags.clear(0xff00);
-  controller_flags.set(0x800);
-
+  
   // Signal wait for fans
-  controller_flags.wait(0x10000);
+  controller_flags.wait_all(FAN_SPOOLED_FLAG);
 
+  // Startup purge
   supply_v.write(true);
-  purge_v.write(true);
   Thread::wait(1000);
   start_r.write(true);
-  controller_flags.wait(0x20000);
+  controller_flags.wait_all(START_PURGE_FLAG);
+  purge_v.write(true);
+  Thread::wait(200);
   purge_v.write(false);
   start_r.write(false);
   charge_r.write(true);
 
   // Signal fans to minimum
-  controller_flags.clear(0xff00);
-  controller_flags.set(0x200);
-  controller_flags.set(0x1);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MIN_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 
 void run_state(){
+  controller_flags.clear(CLEAR_EVENT_FLAG);
   fc.set_fc_status(RUN_STATE);
-  controller_flags.clear(0x1f);
-  controller_flags.set(0x2);
+  controller_flags.set(RUN_EVENT_FLAG);
+
   update_leds();
   supply_v.write(true);
   purge_v.write(false);
@@ -109,16 +100,16 @@ void run_state(){
   fcc_r.write(true);
 
   // Signal PID for fans
-  controller_flags.clear(0xff00);
-  controller_flags.set(0x400);
-
-  controller_flags.set(0x1);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_PID_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 
 void shut_state(){
   fc.set_fc_status(SHUTDOWN_STATE);
-  controller_flags.clear(0x1f);
-  controller_flags.set(0x10);
+  controller_flags.clear(CLEAR_EVENT_FLAG);
+  controller_flags.set(SHUT_EVENT_FLAG);
+
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -127,16 +118,18 @@ void shut_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
-  controller_flags.clear(0xff00);
-  controller_flags.set(0x100);
-  controller_flags.set(0x1);
+
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_SHUTDOWN_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
   // Stop fans
 }
 
 void alarm_state(){
   fc.set_fc_status(ALARM_STATE);
-  controller_flags.clear(0x1f);
-  controller_flags.set(0x20);
+  controller_flags.clear(CLEAR_EVENT_FLAG);
+  controller_flags.set(START_EVENT_FLAG);
+
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -145,16 +138,21 @@ void alarm_state(){
   charge_r.write(false);
   cap_r.write(false);
   fcc_r.write(false);
-  controller_flags.clear(0xff00);
-  controller_flags.set(0x100);
-  controller_flags.set(0x1);
+
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_SHUTDOWN_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 
 void purge(){
-  controller_flags.clear(0x1);
-  controller_flags.set(0x8);
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
+  controller_flags.set(PURGE_EVENT_FLAG);
+
+  fc.increment_purge();
   purge_v.write(true);
   Thread::wait(200);
   purge_v.write(false);
-  controller_flags.set(0x1);
+
+  controller_flags.clear(PURGE_EVENT_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
 }

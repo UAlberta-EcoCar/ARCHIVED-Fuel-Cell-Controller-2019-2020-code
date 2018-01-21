@@ -71,7 +71,7 @@ void update()
 {
   this->lock();
   this->dt.stop();
-  float del = this->dt.read;
+  float del = this->dt.read();
   this->dt.reset();
   this->dt.start();
   this->y=1.0;
