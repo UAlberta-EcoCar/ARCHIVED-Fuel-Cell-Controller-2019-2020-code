@@ -114,3 +114,7 @@ string Fan::toStringInfo()
   this->unlock();
   return ss.str();
 }
+
+const float Fan::max = 0.95;
+const float Fan::min = 0.15;
+const float Fan::off = 0.0;

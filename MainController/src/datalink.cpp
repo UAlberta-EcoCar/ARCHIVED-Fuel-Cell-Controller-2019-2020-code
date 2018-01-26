@@ -7,15 +7,11 @@
 #include "Classes/Fan.h"
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
-#include "Classes/LinearScalable.h"
 #include "Classes/SerialPrinter.h"
 
 // Defs
-#include "Def/constants.h"
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
-#include "Def/thread_def.h"
-#include "Def/semaphore_def.h"
 
 // Thread src
 #include "controller_event_queue.h"
@@ -32,21 +28,17 @@ Semaphore stall(0);
 
 void error_logging(){
     ol_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
-    Thread::wait(1);
     ol_printer.print<int>(fc.get_error_status());
     Thread::wait(1);
     blue_printer.print<string>("\nWARNING AN ERROR HAS OCCURED SHUTTING DOWN: ", 0);
-    Thread::wait(1);
     blue_printer.print<int>(fc.get_error_status());
 }
 
 void blue_logging(){
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
-    Thread::wait(1);
     blue_printer.print<Integrator>(&int_vec, &int_iter, 0);
     Thread::wait(1);
     blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
-    Thread::wait(1);
     blue_printer.print<Fan>(&fan_vec, &fan_iter, 0);
     Thread::wait(1);
     blue_printer.print<FuelCell>(&fc);
@@ -56,11 +48,9 @@ void blue_logging(){
 
 void ol_logging(){
     ol_printer.print_info<Sensor>(&sensor_vec, &sensor_iter, 0);
-    Thread::wait(1);
     ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
     Thread::wait(1);
     ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
-    Thread::wait(1);
     ol_printer.print_info<Fan>(&fan_vec, &fan_iter, 0);
     Thread::wait(1);
     ol_printer.print_info<FuelCell>(&fc);

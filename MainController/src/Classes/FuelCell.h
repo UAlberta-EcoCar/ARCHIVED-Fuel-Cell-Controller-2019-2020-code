@@ -7,6 +7,12 @@
 #define SHUTDOWN_STATE 3
 #define RUN_STATE 2
 #define ALARM_STATE 4
+#define OVERVOLTAGE 1
+#define OVERCURR 2
+#define OVERPRESS 3
+#define OVERTEMP 4
+#define UNDERPRESS 5
+#define UNDERTEMP 6
 
 class FuelCell: public IO{
     private:
@@ -23,6 +29,18 @@ class FuelCell: public IO{
         this->unlock();
     };
 
+    static float query_optimal_temp(float curr){
+        return 1.0;
+    }
+
+    static float query_min_temp(float curr){
+        return 1.0;
+    }
+
+    static float query_max_temp(float curr){
+        return 1.0;
+    }
+    
     void set_fc_status(int status){
         this->lock();
         this->fc_status = status;

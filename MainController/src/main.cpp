@@ -13,6 +13,7 @@
 #include "Classes/HumiditySensor.h"
 #include "Classes/RTC.h"
 #include "Classes/FuelCell.h"
+#include "Classes/FanControl.h"
 
 // Defs
 #include "Def/constants.h"
@@ -107,6 +108,7 @@ vector<Sensor*> sensor_vec;
 vector<Integrator*> int_vec;
 vector<DigitalOut_Ext*> dig_out_vec;
 vector<Fan*> fan_vec;
+vector<Analog_Sensor<LinearScalable<float> >* > temp_vec;
 
 //Iterators
 vector<Sensor*>::iterator sensor_iter;
@@ -114,6 +116,11 @@ vector<Integrator*>::iterator int_iter;
 vector<DigitalOut_Ext*>::iterator dig_out_iter;
 vector<Fan*>::iterator fan_iter;
 
+FanControl<LinearScalable<float>, LinearScalable<float> > fan_cont(
+    &fan_vec, 
+    &temp_vec,
+    &fccurr
+);
 
 // Initilaize threads
 Thread controller_event_thread;

@@ -5,14 +5,16 @@
 #include "IO.h"
 
 class Fan: public IO{
-static const float max;
-static const float min;
 bool __coup;
 float __dutyIn;
 
 PwmIn in;
 PwmOut out;
 public:
+
+static const float max;
+static const float min;
+static const float off;
 
 Fan(
   string name,

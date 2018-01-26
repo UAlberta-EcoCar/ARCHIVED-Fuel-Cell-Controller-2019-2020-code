@@ -76,17 +76,11 @@ class FanControl{
         void lock(){this->mu.lock();};
         void unlock(){this->mu.unlock();};
 
-        void set_max(){
+        void set(float value){
             this->lock();
-            this->_set_fans(1.0);
+            this->_set_fans(value);
             this->unlock();
-        };
-
-        void set_min(){
-            this->lock();
-            this->_set_fans(0.15);
-            this->unlock();
-        };
+        }
 
         void power(bool status = 0, DigitalOut_Ext *power_pin = 0){
             if (power_pin != 0){
@@ -108,14 +102,9 @@ class FanControl{
         void pid_start(){
             this->lock();
             this->dt.start();
+            this->dt.reset();
             this->iterm = 0;
             this->prev_temp_diff = this->_average_temp();
-            this->unlock();
-        };
-
-        void pid_stop(){
-            this->lock();
-            this->dt.stop();
             this->unlock();
         };
 
@@ -124,6 +113,10 @@ class FanControl{
             // Get time passed
             float dt = this->dt.read;
             this->dt.reset();
+
+            if (dt == 0.0 || dt >= 4.0){
+                this->pid_start();
+            }
 
             // Find difference/error
             float temp_diff = this->_average_temp() - this->_query_optimal_temp;

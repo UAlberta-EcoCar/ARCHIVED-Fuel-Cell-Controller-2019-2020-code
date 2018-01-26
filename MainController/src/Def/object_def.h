@@ -8,6 +8,7 @@
 #include "./Classes/Fan.h"
 #include "./Classes/FuelCell.h"
 #include "./Classes/Integrator.h"
+#include "./Classes/FanControl.h"
 
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
@@ -58,6 +59,8 @@ extern Integrator cap_coulumbs;
 extern Integrator cap_joules;
 
 extern FuelCell fc;
+
+extern FanControl<LinearScalable<float>, LinearScalable<float> > fan_cont;
 
 // Interrupts
 extern InterruptIn h2;
