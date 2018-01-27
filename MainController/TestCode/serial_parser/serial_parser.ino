@@ -39,10 +39,14 @@ void parsing(String in){
   pinNum = in.substring(0, in.indexOf(" "));
   pinOutput = in.substring(in.indexOf(" ")+1);
 
-  //change strings to integers
+  //change strings to numerical value
   int setPin = pinNum.toInt();
-  int setOutput = pinOUtput.toInt();
-  
+  float floatOutput = pinOutput.toFloat();
+
+  //scale to write function input range and change to int
+  setOutput *= 51; 
+  int setOutput = (int)floatOutput;
+
   //write to analog pin
   analogWrite(setPin, setOutput);
 }
