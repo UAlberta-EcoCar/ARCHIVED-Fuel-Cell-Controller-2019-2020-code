@@ -62,10 +62,6 @@ extern FuelCell fc;
 
 extern FanControl<LinearScalable<float>, LinearScalable<float> > fan_cont;
 
-// Interrupts
-extern InterruptIn h2;
-extern InterruptIn err;
-
 //Vectors
 extern vector<Sensor*> sensor_vec;
 extern vector<Integrator*> int_vec;

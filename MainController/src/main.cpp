@@ -35,12 +35,6 @@ Initilaize Objects
   -These are used by the Threads
     -want the I/O to be global, local objects are defined locally
 */
-// Interrupt Objects
-InterruptIn h2(H2_OK);
-InterruptIn stop(STOP);
-InterruptIn estop1(ESTOP1);
-InterruptIn estop2(ESTOP2);
-
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
 HumiditySensor humidity("Humidity", &master);
@@ -125,25 +119,12 @@ FanControl<LinearScalable<float>, LinearScalable<float> > fan_cont(
 // Initilaize threads
 Thread controller_event_thread;
 Thread error_event_thread;
+Thread error_event_low_thread;
 Thread data_event_thread;
 Thread FTDI_event_thread;
 Thread monitor;
 
-void error_isr(){
-  cont_queue.break_dispatch();
-  controller_event_thread.terminate();
-  error_cleanup();
-}
-
 int main() {
-  // Attach Interrupts
-  h2.rise(&error_isr); // Works
-  estop1.rise(&error_isr); // Works
-  estop2.rise(&error_isr); // Works
-  estop1.mode(PullDown);
-  h2.mode(PullDown);
-  estop2.mode(PullDown);
-
   //Populate vectors
   sensor_vec.push_back(&fccurr);
   sensor_vec.push_back(&capvolt);
@@ -190,21 +171,17 @@ int main() {
   cap_joules.sensor_add(&capvolt);
 
   // Threads from lowest -> highest priority
-  monitor.set_priority(osPriorityIdle); // Will be running 90% of the time, since other threads are quick
   data_event_thread.set_priority(osPriorityLow);
-  controller_event_thread.set_priority(osPriorityBelowNormal);
-  FTDI_event_thread.set_priority(osPriorityNormal);
-  error_event_thread.set_priority(osPriorityHigh);
+  monitor.set_priority(osPriorityAboveNormal);
+  controller_event_thread.set_priority(osPriorityHigh);
+  error_event_thread.set_priority(osPriorityRealtime1);
+  error_event_low_thread.set_priority(osPriorityRealtime7);
 
   //Start threads
   error_event_thread.start(&error_event_queue);
+  error_event_low_thread.start(&error_event_queue_low);
   controller_event_thread.start(&contoller_event_queue_thread);
-  data_event_thread.start(&datalink_thread);
   monitor.start(&monitoring_thread);
-  
-  
-
-
-  while(1){Thread::wait(1000000);};
+  data_event_thread.start(&datalink_thread);
   return 0;
 }

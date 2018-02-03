@@ -23,6 +23,9 @@ extern EventFlags controller_flags;
 #define START_PURGE_FLAG 0x20000
 #define CLEAR_SIGNAL_FLAG 0xff0000
 
+// Fourth Byte
+#define START_BUTTON_PRESSED 0x1000000
+
 
 void monitoring_thread();
 

@@ -7,12 +7,16 @@
 #define SHUTDOWN_STATE 3
 #define RUN_STATE 2
 #define ALARM_STATE 4
+#define NOERROR 0 
 #define OVERVOLTAGE 1
 #define OVERCURR 2
 #define OVERPRESS 3
 #define OVERTEMP 4
 #define UNDERPRESS 5
 #define UNDERTEMP 6
+#define H2_ALARM 7
+#define ESTOP1_ALARM 8
+#define ESTOP2_ALARM 9
 
 class FuelCell: public IO{
     private:

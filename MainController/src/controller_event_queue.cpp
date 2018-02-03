@@ -19,12 +19,8 @@ void alarm_state();
 void update_leds();
 void purge();
 
-int contoller_event_queue_thread(){
+void contoller_event_queue_thread(){
   cont_queue.dispatch_forever();
-
-
-  while(1){Thread::wait(10000);}
-  return 1;
 }
 
 void update_leds(){
@@ -63,7 +59,6 @@ void start_state(){
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
-  fcc_r.write(false);
   
   // Signal wait for fans
   controller_flags.wait_all(FAN_SPOOLED_FLAG);
@@ -97,7 +92,6 @@ void run_state(){
   motor_r.write(true);
   charge_r.write(false);
   cap_r.write(true);
-  fcc_r.write(true);
 
   // Signal PID for fans
   controller_flags.clear(CLEAR_FAN_FLAG);
@@ -117,7 +111,6 @@ void shut_state(){
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
-  fcc_r.write(false);
 
   controller_flags.clear(CLEAR_FAN_FLAG);
   controller_flags.set(FAN_SHUTDOWN_FLAG);
@@ -137,7 +130,6 @@ void alarm_state(){
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
-  fcc_r.write(false);
 
   controller_flags.clear(CLEAR_FAN_FLAG);
   controller_flags.set(FAN_SHUTDOWN_FLAG);
