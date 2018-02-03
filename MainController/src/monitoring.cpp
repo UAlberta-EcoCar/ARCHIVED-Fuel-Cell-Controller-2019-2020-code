@@ -72,7 +72,7 @@ void monitoring_thread(){
     uint32_t flags = controller_flags.get();
     // Code for digital in's that can't be covered with a interrupt
     // Button Code for start button
-    if ((start_butt.read() == 1) && (flags&ALARM_EVENT_FLAG == 0)){
+    if ((start_butt.read() == 1) && ((flags&ALARM_EVENT_FLAG) == 0)){
       switch (fc.get_fc_status()){
         case SHUTDOWN_STATE:
           start_event.post();

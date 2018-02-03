@@ -22,20 +22,18 @@ class FanControl{
         float iterm;
         float prev_temp_diff;
         vector<Fan*> *fan_vec;
-        vector<Fan*>::iterator fan_iter;
-        vector<Analog_Sensor<T> > *temp_sensor_vec;
-        vector<Analog_Sensor<T> >::iterator temp_sensor_iter;
+        typename vector<Fan*>::iterator fan_iter;
+        vector<Analog_Sensor<T>* > *temp_sensor_vec;
+        typename vector<Analog_Sensor<T>* >::iterator temp_sensor_iter;
         Analog_Sensor<V> *fccurr;
         DigitalOut_Ext *enable_pin;
         Timer dt;
         Mutex mu;
 
         // Methods
-        float _query_optimal_temp(); // TODO: Put in FuelCell as static method
-
         void _set_fans(float value){
             for (fan_iter = (*fan_vec).begin(); fan_iter != (*fan_vec).end(); fan_iter++){
-                *fan_iter.set_out(value);
+                (*(*fan_iter)).set_out(value);
             }
         };
 
@@ -44,7 +42,7 @@ class FanControl{
             float ave = 0;
 
             for (temp_sensor_iter = (*temp_sensor_vec).begin(); temp_sensor_iter != (*temp_sensor_vec).end(); temp_sensor_iter++){
-                ave += *temp_sensor_iter.read();
+                ave += (*(*temp_sensor_iter)).read();
                 count++;
             }
             if (count == 0){
@@ -57,7 +55,7 @@ class FanControl{
 
         // Constructors
         FanControl(vector<Fan*> *fan_vec_ptr,
-                   vector<Analog_Sensor<T>*> *temp_vec_ptr, 
+                   vector<Analog_Sensor<T>* > *temp_vec_ptr, 
                    Analog_Sensor<V>* current, 
                    DigitalOut_Ext *power_pin=0){
             this->lock();
@@ -111,7 +109,8 @@ class FanControl{
         void pid_update(){
             this->lock();
             // Get time passed
-            float dt = this->dt.read;
+            float dt = this->dt.read();
+            float current = (*(this->fccurr)).read();
             this->dt.reset();
 
             if (dt == 0.0 || dt >= 4.0){
@@ -119,7 +118,7 @@ class FanControl{
             }
 
             // Find difference/error
-            float temp_diff = this->_average_temp() - this->_query_optimal_temp;
+            float temp_diff = this->_average_temp() - FuelCell::query_optimal_temp(current);
 
             // Proportional term
             float porp_term = this->p * temp_diff;

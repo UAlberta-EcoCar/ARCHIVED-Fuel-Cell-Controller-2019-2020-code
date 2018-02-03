@@ -128,7 +128,7 @@ void shut_state(){
 void alarm_state(){
   fc.set_fc_status(ALARM_STATE);
   controller_flags.clear(CLEAR_EVENT_FLAG);
-  controller_flags.set(START_EVENT_FLAG);
+  controller_flags.set(ALARM_EVENT_FLAG);
 
   update_leds();
   supply_v.write(false);

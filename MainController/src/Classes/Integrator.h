@@ -5,6 +5,7 @@
 
 #include <vector>
 #include "IO.h"
+#include "Sensor.h"
 
 class Integrator: public IO{
 private:
