@@ -38,7 +38,7 @@ Event<void()> fan_control_event(&mon_queue, fan_control);
 Event<void()> state_control_event(&mon_queue, state_control);
 Event<void()> state_monitoring_event(&mon_queue, state_monitoring);
 
-DigitalIn start_butt(START, PullDown);
+DigitalIn start_butt(BUTT, PullDown);
 DigitalIn ol_rst(OL_RST, PullDown);
 DigitalIn hum_rst(HUM_RST, PullDown);
 DigitalIn button(BUTT, PullDown);
@@ -84,7 +84,6 @@ void state_control(){
         default:
           shutdown_event.post();
       }
-      controller_flags.clear(START_BUTTON_PRESSED);
     }
     else if (flags&START_EVENT_FLAG){
       run_event.post();
@@ -148,6 +147,7 @@ void fan_control(){
 }
 
 void monitoring_thread(){
+  start_button_timer.start();
   update_integrators_event.period(10);
   fan_control_event.period(100);
   state_control_event.period(100);

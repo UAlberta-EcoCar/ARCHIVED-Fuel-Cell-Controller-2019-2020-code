@@ -13,8 +13,6 @@
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
 extern DigitalOut_Ext purge_v;
-extern DigitalOut_Ext other1_v;
-extern DigitalOut_Ext other2_v;
 extern DigitalOut_Ext start_r;
 extern DigitalOut_Ext motor_r;
 extern DigitalOut_Ext charge_r;
@@ -35,21 +33,31 @@ extern Analog_Sensor<LinearScalable<float> > capcurr;
 extern Analog_Sensor<LinearScalable<float> > motorvolt;
 extern Analog_Sensor<LinearScalable<float> > motorcurr;
 extern Analog_Sensor<LinearScalable<float> > press1;
+
+#ifdef ADD_PRESS
 extern Analog_Sensor<LinearScalable<float> > press2;
 extern Analog_Sensor<LinearScalable<float> > press3;
 extern Analog_Sensor<LinearScalable<float> > press4;
+#endif
+
 extern Analog_Sensor<LinearScalable<float> > fctemp1;
 extern Analog_Sensor<LinearScalable<float> > fctemp2;
+
+#ifdef EXT_TEMP
 extern Analog_Sensor<LinearScalable<float> > temp1;
 extern Analog_Sensor<LinearScalable<float> > temp2;
 extern Analog_Sensor<LinearScalable<float> > temp3;
 extern Analog_Sensor<LinearScalable<float> > temp4;
 extern Analog_Sensor<LinearScalable<float> > temp5;
+#endif
 
 //Fans
 extern Fan fan1;
+
+#ifdef ALICE
 extern Fan fan2;
 extern Fan fan3;
+#endif
 
 
 // Intergrators

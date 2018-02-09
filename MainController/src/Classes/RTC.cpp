@@ -14,7 +14,7 @@ RealTimeClock::RealTimeClock(
 };
 
 string RealTimeClock::toString()
-{
+{   
     this->__read();
     stringstream ss;
     ss << this->time.hour;

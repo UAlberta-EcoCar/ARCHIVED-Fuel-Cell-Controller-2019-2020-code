@@ -2,19 +2,17 @@
 #define HUMIDITYSENSOR_H
 
 #include "Sensor.h"
-#include "./Def/SHT31.h"
+#include "SHT31.h"
 using namespace std;
 
 class HumiditySensor: public Sensor{
     private:
     bool _coup;
-    float value;
-    char slave_buffer[6];
-
-    I2C* master;
+    int value;
+    SHT31* sht31;
 
     public:
-    HumiditySensor(string name, I2C* master);
+    HumiditySensor(string name, SHT31* sht31);
     float read(bool update=1);
     void set(float value, bool decouple=0);
     void update();

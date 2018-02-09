@@ -5,6 +5,7 @@
 #include "Def/thread_def.h"
 #include "controller_event_queue.h"
 #include "datalink.h"
+#include "main.h"
 
 EventQueue err_queue(32*EVENTS_EVENT_SIZE);
 EventQueue err_queue_low(32*EVENTS_EVENT_SIZE);
@@ -18,6 +19,7 @@ void post_checks();
 
 // Higher Pri events
 Event<void(int)> error_handler_event(&err_queue, error_handler);
+Event<void()> alarm_event(&err_queue, alarm_state);
 
 // Lower Pri events
 Event<void()> overvoltage_check_event(&err_queue_low, overvoltage_check);
@@ -27,7 +29,6 @@ Event<void()> temp_check_event(&err_queue_low, temp_check);
 Event<void()> post_checks_event(&err_queue_low, post_checks);
 
 // External Queue Events
-Event<void()> alarm_event(&err_queue, alarm_state);
 Event<void()> error_log_event(&err_queue, error_logging);
 
 // Interrupt Objects
@@ -42,9 +43,12 @@ void overvoltage_check(){
     return;
   }
 
+  #ifdef ENABLE_OVERVOLTAGE
   if (fcvolt.read() >= 30.8 || capvolt.read() >= 32.0){
     error_handler_event.post(OVERVOLTAGE);
+    return;
   }
+  #endif
 }
 
 void overcurrent_check(){
@@ -52,9 +56,12 @@ void overcurrent_check(){
     return;
   }
 
+  #ifdef OVERCURR
   if (fccurr.read() >= 70 || capcurr.read() >= 70){
     error_handler_event.post(OVERCURR);
+    return;
   }
+  #endif
 }
 
 void pressure_check(){
@@ -62,13 +69,19 @@ void pressure_check(){
     return;
   }
 
+  #ifdef ENABLE_OVERPRESS
   if (press1.read() >= 8.0){
     error_handler_event.post(OVERPRESS);
+    return;
   }
+  #endif
 
+  #ifdef ENABLE_UNDERPRESS
   if (press1.read() <= 5.0){
     error_handler_event.post(UNDERPRESS);
+    return;
   }
+  #endif
 }
 
 void temp_check(){
@@ -80,13 +93,19 @@ void temp_check(){
   float curr = fccurr.read();
   fccurr.unlock();
 
+  #ifdef  ENABLE_OVERTEMP
   if (fctemp1.read() >= fc.query_max_temp(curr) || fctemp2.read() >= fc.query_max_temp(curr)){
     error_handler_event.post(OVERTEMP);
+    return;
   }
+  #endif
 
+  #ifdef  ENABLE_UNDERTEMP
   if (fctemp1.read() >= fc.query_min_temp(curr) || fctemp2.read() >= fc.query_min_temp(curr)){
     error_handler_event.post(UNDERTEMP);
+    return;
   }
+  #endif
 }
 
 void post_checks(){
@@ -122,12 +141,20 @@ void error_event_queue(){
 
 void error_event_queue_low(){
   // Attach Interrupts
-  h2.rise(&h2_isr);
-  estop1.rise(&estop1_isr);
-  estop2.rise(&estop2_isr);
-  estop1.mode(PullDown);
+  #ifdef ENABLE_H2STOP
+  h2.rise(&h2_isr); // Change to fall
   h2.mode(PullDown);
+  #endif
+
+  #ifdef ENABLE_ESTOP1
+  estop1.rise(&estop1_isr); // Change to fall
+  estop1.mode(PullDown);
+  #endif
+
+  #ifdef ENABLE_ESTOP2
+  estop2.rise(&estop2_isr); // Change to fall
   estop2.mode(PullDown);
+  #endif
 
   post_checks_event.period(10);
   post_checks_event.post();

@@ -7,8 +7,8 @@ class Sensor: public IO{
 
 public:
   Sensor(string name):IO(name){};
-  virtual float read(bool update=0) = 0;
-  virtual void set(float value, bool decouple=1) = 0;
+  virtual float read(bool update=1) = 0;
+  virtual void set(float value, bool decouple=0) = 0;
   virtual void update() = 0;
   virtual void decouple() = 0;
   virtual void couple() = 0;

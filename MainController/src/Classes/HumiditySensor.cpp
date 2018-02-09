@@ -2,12 +2,13 @@
 
 HumiditySensor::HumiditySensor(
     string name, 
-    I2C* master
+    SHT31* sht31
     ):Sensor(name)
     {
         this->lock();
-        this->master = master;
-        this->value = 0.0;
+        this->sht31 = sht31;
+        this->value = 0;
+        this->couple();
         this->unlock();
     };
 
@@ -17,33 +18,36 @@ float HumiditySensor::read(bool update)
             this->update();
         }
 
-        return this->value;
+        return 1.0;
     };
 
 void HumiditySensor::set(float value, bool decouple)
     {
-    if (decouple){
-        this->decouple();
-    }
-    this->lock();
-    this->value = value;
-    this->unlock();
+        if (decouple){
+            this->decouple();
+        }
+
+        this->lock();
+        this->value = (int)value;
+        this->unlock();
     };
 
 void HumiditySensor::update()
     {
         this->lock();
+        char slave_buffer[BUFFERSIZE];
         if (this->_coup){
-            (*this->master).lock();
-            (*this->master).read(SHT31_DEFAULT_ADDR<<1,slave_buffer,6);
-            (*this->master).unlock();
+            (*this->sht31).lock();
+            (*this->sht31).read_slave(slave_buffer);
+            (*this->sht31).unlock();
 
             uint16_t srh = slave_buffer[3];
             srh <<= 8;
             srh |= slave_buffer[4];
             srh *= 100;
             srh /= 0xFFFF;
-            this->value = (float)srh;
+            
+            this->value = srh;
         }
         this->unlock();
     };
@@ -62,18 +66,19 @@ void HumiditySensor::couple()
     };
 
 string HumiditySensor::toString()
-{
-  stringstream ss;
-  ss << this->get_name();
-  ss << ":";
-  ss << fixed << setprecision(2) << this->read();
-  return ss.str();
-};
+    {
+        this->update();
+        stringstream ss;
+        ss << this->get_name();
+        ss << ":";
+        ss << this->value;
+        return ss.str();
+    };
 
 string HumiditySensor::toStringInfo()
-{
-  stringstream ss;
-  ss << fixed << setprecision(2) << this->read();
-  return ss.str();
-
-}
+    {
+        this->update();
+        stringstream ss;
+        ss << this->value;
+        return ss.str();
+    };

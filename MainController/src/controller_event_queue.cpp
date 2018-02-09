@@ -20,6 +20,7 @@ void update_leds();
 void purge();
 
 void contoller_event_queue_thread(){
+  cont_queue.call(start_state);
   cont_queue.dispatch_forever();
 }
 
