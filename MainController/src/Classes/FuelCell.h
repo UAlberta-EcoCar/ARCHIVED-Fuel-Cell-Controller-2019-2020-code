@@ -4,9 +4,11 @@
 #include "IO.h"
 
 #define START_STATE 1
-#define SHUTDOWN_STATE 3
-#define RUN_STATE 2
-#define ALARM_STATE 4
+#define CHARGE_STATE 2
+#define RUN_STATE 3
+#define SHUTDOWN_STATE 4
+#define ALARM_STATE 5
+
 #define NOERROR 0 
 #define OVERVOLTAGE 1
 #define OVERCURR 2

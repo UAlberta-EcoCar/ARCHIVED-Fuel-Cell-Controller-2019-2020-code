@@ -13,6 +13,7 @@
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
 void start_state();
+void charge_state();
 void run_state();
 void shut_state();
 void alarm_state();
@@ -30,19 +31,24 @@ void update_leds(){
   start_led.write(false);
   run_led.write(false);
   fc.lock();
-  if (fc.get_fc_status() == ALARM_STATE){
+  int state = fc.get_fc_status();
+  fc.unlock();
+
+  if (state == ALARM_STATE){
     alarm_led.write(true);
   }
-  else if (fc.get_fc_status() == SHUTDOWN_STATE){
+  else if (state == SHUTDOWN_STATE){
     shut_led.write(true);
   }
-  else if (fc.get_fc_status() == START_STATE){
+  else if (state == START_STATE){
     start_led.write(true);
   }
-  else if (fc.get_fc_status() == RUN_STATE){
+  else if (state == CHARGE_STATE){
+    start_led.write(true);
+  }
+  else if (state == RUN_STATE){
     run_led.write(true);
   }
-  fc.unlock();
 }
 
 void start_state(){
@@ -54,6 +60,8 @@ void start_state(){
   controller_flags.set(FAN_MAX_FLAG);
 
   update_leds();
+
+  // Close all valves, Open all relays
   supply_v.write(false);
   purge_v.write(false);
   start_r.write(false);
@@ -67,18 +75,43 @@ void start_state(){
   // Startup purge
   supply_v.write(true);
   Thread::wait(1000);
-  start_r.write(true);
-  controller_flags.wait_all(START_PURGE_FLAG);
   purge_v.write(true);
   Thread::wait(200);
   purge_v.write(false);
+
+  // Start resistors
+  start_r.write(true);
+  controller_flags.wait_all(START_RESISTOR_FLAG);
   start_r.write(false);
-  charge_r.write(true);
+  Thread::wait(100);
 
   // Signal fans to minimum
   controller_flags.clear(CLEAR_FAN_FLAG);
   controller_flags.set(FAN_MIN_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
+}
+
+void charge_state(){
+  // Sinal charge state
+  controller_flags.clear(CLEAR_EVENT_FLAG);
+  controller_flags.set(CHARGE_EVENT_FLAG);
+  fc.set_fc_status(CHARGE_STATE);
+
+  // For safety
+  start_r.write(false);
+  cap_r.write(false);
+
+  // Charging
+  controller_flags.wait_all(CHARGE_START_FLAG);
+  charge_r.write(true);
+  controller_flags.wait_all(CHARGE_STOP_FLAG);
+  charge_r.write(false);
+
+
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MIN_FLAG);
+  controller_flags.set(FINISHED_EXCUTION_FLAG);
+
 }
 
 void run_state(){
@@ -116,7 +149,6 @@ void shut_state(){
   controller_flags.clear(CLEAR_FAN_FLAG);
   controller_flags.set(FAN_SHUTDOWN_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
-  // Stop fans
 }
 
 void alarm_state(){

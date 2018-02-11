@@ -11,9 +11,14 @@
 #include "controller_event_queue.h"
 #include "monitoring.h"
 
-#define FC_PRES1 5.0f
-#define FC_PRES2 4.0f
-#define FC_VOLT 20.0f
+#define FC_PRES1 5.0
+#define FC_PRES2 4.0
+
+
+#define FC_VOLT 20.0
+#define CAP_VOLT 20.0
+
+#define PURGE_COLUMBS 2300
 
 EventFlags controller_flags;
 EventQueue mon_queue;
@@ -29,6 +34,7 @@ void state_monitoring();
 // Controller events
 Event<void()> shutdown_event(&cont_queue, shut_state);
 Event<void()> start_event(&cont_queue, start_state);
+Event<void()> charge_event(&cont_queue, charge_state);
 Event<void()> run_event(&cont_queue, run_state);
 Event<void()> purge_event(&cont_queue, purge);
 
@@ -44,6 +50,7 @@ DigitalIn hum_rst(HUM_RST, PullDown);
 DigitalIn button(BUTT, PullDown);
 
 bool start_butt_prev = 0;
+int current_event = 0;
 
 void update_integrators(){
   for (int_iter = int_vec.begin(); int_iter != int_vec.end(); int_iter++){
@@ -51,6 +58,7 @@ void update_integrators(){
     }
 }
 
+// Not sure about this
 void button_scanning(){
   uint32_t flags = controller_flags.get();
 
@@ -74,19 +82,31 @@ void state_control(){
   fc.lock();
   int status = fc.get_fc_status();
   fc.unlock();
-  
-  if (!(flags&ALARM_EVENT_FLAG) && (flags&FINISHED_EXCUTION_FLAG)){
+
+  if (!(flags&ALARM_EVENT_FLAG)){
+
     if (flags&START_BUTTON_PRESSED){
       controller_flags.clear(START_BUTTON_PRESSED);
       switch (status){
         case SHUTDOWN_STATE:
-          start_event.post();
+          if (!flags&FINISHED_EXCUTION_FLAG){
+            cont_queue.cancel(current_event);
+          }
+          current_event = start_event.post();
         default:
-          shutdown_event.post();
+          if (!flags&FINISHED_EXCUTION_FLAG){
+            cont_queue.cancel(current_event);
+          }
+          current_event = shutdown_event.post();
       }
     }
-    else if (flags&START_EVENT_FLAG){
-      run_event.post();
+
+    else if (flags&START_EVENT_FLAG && flags&FINISHED_EXCUTION_FLAG){
+      current_event = charge_event.post();
+    }
+
+    else if (flags&CHARGE_EVENT_FLAG && flags&FINISHED_EXCUTION_FLAG){
+      current_event = run_event.post();
     }
   }
 }
@@ -105,15 +125,35 @@ void state_monitoring(){
         fcvolt.lock();
         float volt = fcvolt.read();
         fcvolt.unlock();
-  
+
+        uint32_t flags = controller_flags.get();
+
         if(fan){
           controller_flags.set(FAN_SPOOLED_FLAG);
         }
 
         if(volt > FC_VOLT){
-          controller_flags.set(START_PURGE_FLAG);
+          controller_flags.set(START_RESISTOR_FLAG);
+        }
+
+        if (flags&(START_EVENT_FLAG|FINISHED_EXCUTION_FLAG)){
+          current_event = charge_event.post();
         }
       }
+
+    case CHARGE_STATE:{
+        capvolt.lock();
+        float volt = capvolt.read();
+        capcolt.unlock();
+
+        if (volt < CAP_VOLT){
+          controller_flags.set(CHARGE_START_FLAG);
+        }
+
+        if (volt > CAP_VOLT){
+          controller_flags.set(CHARGE_STOP_FLAG);
+        }
+    }
 
     case RUN_STATE:{
         fc.lock();
@@ -124,8 +164,8 @@ void state_monitoring(){
         float coulumbs = fc_coulumbs.read();
         fc_coulumbs.unlock();
 
-        if ((coulumbs - (float)(num_purge*2300)) > 2300){
-          purge_event.post();
+        if ((coulumbs - (float)(num_purge*PURGE_COLUMBS)) > PURGE_COLUMBS){
+          current_event = purge_event.post();
         }
       }
     default:;
