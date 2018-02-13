@@ -9,7 +9,10 @@
 #include "./Classes/FuelCell.h"
 #include "./Classes/Integrator.h"
 #include "./Classes/FanControl.h"
+#include "./Classes/RTC.h"
 
+// RTC
+extern RealTimeClock rtc;
 // DigitalOut_Ext Objects
 extern DigitalOut_Ext supply_v;
 extern DigitalOut_Ext purge_v;

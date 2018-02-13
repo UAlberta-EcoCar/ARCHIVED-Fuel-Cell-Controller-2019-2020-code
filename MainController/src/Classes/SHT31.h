@@ -19,19 +19,7 @@
 #define CMDSIZE 2
 
 class SHT31 {
-    private:
-        I2C master;
-        char slave_buffer[BUFFERSIZE];
 
-
-    public:
-
-        SHT31(PinName sda, PinName scl);
-
-        void send_command(uint16_t command);
-        void read_slave(char* buffer);
-        void lock();
-        void unlock();
 };
 
 #endif

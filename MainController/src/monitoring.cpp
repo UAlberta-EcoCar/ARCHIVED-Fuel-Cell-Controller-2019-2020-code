@@ -5,9 +5,10 @@
 #include "Classes/Fan.h"
 #include "Classes/Integrator.h"
 #include "Classes/FuelCell.h"
+
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
-#include "Def/constants.h"
+
 #include "controller_event_queue.h"
 #include "monitoring.h"
 
@@ -144,7 +145,7 @@ void state_monitoring(){
     case CHARGE_STATE:{
         capvolt.lock();
         float volt = capvolt.read();
-        capcolt.unlock();
+        capvolt.unlock();
 
         if (volt < CAP_VOLT){
           controller_flags.set(CHARGE_START_FLAG);

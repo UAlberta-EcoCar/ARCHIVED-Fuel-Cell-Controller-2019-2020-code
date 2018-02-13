@@ -8,11 +8,13 @@
 #include "Classes/DigitalOut_Ext.h"
 #include "Classes/Integrator.h"
 #include "Classes/SerialPrinter.h"
-#include "monitoring.h"
+
 
 // Defs
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
+
+#include "monitoring.h"
 #include "main.h"
 
 #define BLUE_PER_MS 2000
@@ -24,7 +26,7 @@
 
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
 
-SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, BLUE_BAUD);
+SerialPrinter blue_printer("Bluetooth", FTDI_TX, FTDI_RX, BLUE_BAUD);
 SerialPrinter ol_printer("Openlog", OL_TX, OL_RX, OL_BAUD);
 
 void error_logging();
@@ -44,6 +46,7 @@ void error_logging(){
 }
 
 void blue_logging(){
+    blue_printer.print<string>(rtc.toString(), 0);
     #ifdef ENABLE_BLUETOOTH_SENSORS
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
@@ -132,6 +135,7 @@ void datalink_thread(){
     #ifdef ENABLE_BLUETOOTH
     blue_logging_event.post();
     #endif
-
+    // Wait seconds for everything to start then start logging
+    Thread::wait(2000);
     data_queue.dispatch_forever();
 }

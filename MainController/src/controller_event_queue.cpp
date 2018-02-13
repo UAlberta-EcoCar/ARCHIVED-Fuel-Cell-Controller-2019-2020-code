@@ -5,10 +5,10 @@
 #include "Classes/FuelCell.h"
 
 // Defs
-#include "Def/constants.h"
 #include "Def/object_def.h"
 
 #include "monitoring.h"
+#include "main.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
@@ -19,9 +19,16 @@ void shut_state();
 void alarm_state();
 void update_leds();
 void purge();
+void test();
 
 void contoller_event_queue_thread(){
-  cont_queue.call(start_state);
+  #ifdef ENABLE_TESTMODE
+  cont_queue.call(test);
+  #endif
+  #ifndef ENABLE_TESTMODE
+  cont_queue.call(shut_state);
+  #endif
+
   cont_queue.dispatch_forever();
 }
 
@@ -181,3 +188,18 @@ void purge(){
   controller_flags.clear(PURGE_EVENT_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
+#ifdef ENABLE_TESTMODE
+void test(){
+  supply_v.write(true);
+  purge_v.write(true);
+  start_r.write(true);
+  motor_r.write(true);
+  charge_r.write(true);
+  cap_r.write(true);
+  alarm_led.write(true);
+  shut_led.write(true);
+  start_led.write(true);
+  run_led.write(true);
+  controller_flags.set(FAN_MIN_FLAG);
+}
+#endif

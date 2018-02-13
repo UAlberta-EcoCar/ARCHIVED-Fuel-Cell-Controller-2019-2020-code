@@ -14,15 +14,12 @@
 #include "Classes/RTC.h"
 #include "Classes/FuelCell.h"
 #include "Classes/FanControl.h"
+#include "Classes/SHT31.h"
 
 // Defs
-#include "Def/constants.h"
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
 #include "Def/thread_def.h"
-#include "Def/semaphore_def.h"
-#include "Def/ds3231.h"
-#include "Classes/SHT31.h"
 
 // Thread src
 #include "controller_event_queue.h"
@@ -36,8 +33,13 @@ Initilaize Objects
     -want the I/O to be global, local objects are defined locally
 */
 //I2C Objects
-SHT31 sht31(I2C_SDA, I2C_SCL);
+I2C master(I2C_SDA, I2C_SCL);
+//SHT31 sht31(I2C_SDA, I2C_SCL);
+#ifdef ENABLE_HUM
 HumiditySensor humidity("Humidity", &sht31);
+#endif
+#ifdef ENABLE_AMBTEMP
+#endif
 
 // Scale objects
 LinearScalable<float> v_s(45.768, 0.2715);
@@ -55,20 +57,36 @@ Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s, "capcurr");
 Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt"); 
 Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s, "motorcurr");
 Analog_Sensor<LinearScalable<float> > press1(PRESS1, press_s, "press1");
-#ifdef ADD_PRESS
+
+#ifdef ENABLE_PRESS2
 Analog_Sensor<LinearScalable<float> > press2(PRESS2, cap_scale, "press2");
+#endif
+#ifdef ENABLE_PRESS3
 Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
+#endif
+#ifdef ENABLE_PRESS4
 Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
 #endif
+
 Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, c_s, "fctemp1");
 Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, c_s, "fctemp2");
-#ifdef EXT_TEMP
+
+#ifdef ENABLE_TEMP1
 Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
+#endif
+#ifdef ENABLE_TEMP2
 Analog_Sensor<LinearScalable<float> > temp2(TEMP2, cap_scale, "temp2");
+#endif
+#ifdef ENABLE_TEMP3
 Analog_Sensor<LinearScalable<float> > temp3(TEMP3, cap_scale, "temp3");
+#endif
+#ifdef ENABLE_TEMP4
 Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
+#endif
+#ifdef ENABLE_TEMP5
 Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 #endif
+RealTimeClock rtc("clock", &master);
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
@@ -138,19 +156,39 @@ int main() {
   sensor_vec.push_back(&motorvolt);
   sensor_vec.push_back(&motorcurr);
   sensor_vec.push_back(&press1);
-  //sensor_vec.push_back(&press2);
-  //sensor_vec.push_back(&press3);
-  //sensor_vec.push_back(&press4);
+
+  #ifdef ENABLE_PRESS2
+  sensor_vec.push_back(&press2);
+  #endif
+  #ifdef ENABLE_PRESS3
+  sensor_vec.push_back(&press3);
+  #endif
+  #ifdef ENABLE_PRESS4
+  sensor_vec.push_back(&press4);
+  #endif
+  
   sensor_vec.push_back(&fctemp1);
   sensor_vec.push_back(&fctemp2);
 
-  //sensor_vec.push_back(&temp1);
-  //sensor_vec.push_back(&temp2);
-  //sensor_vec.push_back(&temp3);
-  //sensor_vec.push_back(&temp4);
-  //sensor_vec.push_back(&temp5);
-  
+  #ifdef ENABLE_TEMP1 
+  sensor_vec.push_back(&temp1);
+  #endif
+  #ifdef ENABLE_TEMP2
+  sensor_vec.push_back(&temp2);
+  #endif
+  #ifdef ENABLE_TEMP3
+  sensor_vec.push_back(&temp3);
+  #endif
+  #ifdef ENABLE_TEMP4
+  sensor_vec.push_back(&temp4);
+  #endif
+  #ifdef ENABLE_TEMP5
+  sensor_vec.push_back(&temp5);
+  #endif
+
+  #ifdef ENABLE_HUM
   sensor_vec.push_back(&humidity);
+  #endif
 
   int_vec.push_back(&fc_coulumbs);
   int_vec.push_back(&fc_joules);
@@ -166,9 +204,16 @@ int main() {
   dig_out_vec.push_back(&fcc_r);
 
   fan_vec.push_back(&fan1);
+
+
   #ifdef ALICE
+  #ifdef ENABLE_FAN2
   fan_vec.push_back(&fan2);
+  #endif
+
+  #ifdef ENABLE_FAN3
   fan_vec.push_back(&fan3);
+  #endif
   #endif
 
   fc_coulumbs.sensor_add(&fccurr);

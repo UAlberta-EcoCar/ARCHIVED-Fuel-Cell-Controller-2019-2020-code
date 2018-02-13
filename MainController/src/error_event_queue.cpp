@@ -1,8 +1,10 @@
 #include <mbed.h>
 #include <mbed_events.h>
+
 #include "Def/pin_def.h"
 #include "Def/object_def.h"
 #include "Def/thread_def.h"
+
 #include "controller_event_queue.h"
 #include "datalink.h"
 #include "main.h"
