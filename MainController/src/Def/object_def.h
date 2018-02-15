@@ -10,7 +10,10 @@
 #include "./Classes/Integrator.h"
 #include "./Classes/FanControl.h"
 #include "./Classes/RTC.h"
+#include "./Classes/SHT31.h"
 
+// SHT31
+extern SHT31 sht31;
 // RTC
 extern RealTimeClock rtc;
 // DigitalOut_Ext Objects

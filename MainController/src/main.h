@@ -19,8 +19,11 @@
 // #define ENABLE_TEMP3
 // #define ENABLE_TEMP4
 // #define ENABLE_TEMP5
-//#define ENABLE_HUM
+#define ENABLE_HUM
 #define ENABLE_AMBTEMP
+
+#define ENABLE_RTC
+#define ENABLE_SHT31
 
 // Fan enable/disable
 #define ENABLE_FAN2

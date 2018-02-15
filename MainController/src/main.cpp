@@ -10,7 +10,6 @@
 #include "Classes/ExpScalable.h"
 #include "Classes/PolyScalable.h"
 #include "Classes/SerialPrinter.h"
-#include "Classes/HumiditySensor.h"
 #include "Classes/RTC.h"
 #include "Classes/FuelCell.h"
 #include "Classes/FanControl.h"
@@ -34,17 +33,20 @@ Initilaize Objects
 */
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
-//SHT31 sht31(I2C_SDA, I2C_SCL);
-#ifdef ENABLE_HUM
-HumiditySensor humidity("Humidity", &sht31);
+
+#ifdef ENABLE_RTC
+RealTimeClock rtc("clock", &master);
 #endif
-#ifdef ENABLE_AMBTEMP
+
+#ifdef ENABLE_SHT31
+SHT31 sht31("SHT31", &master);
 #endif
 
 // Scale objects
 LinearScalable<float> v_s(45.768, 0.2715);
 LinearScalable<float> c_s(48.329, -15.464);
 LinearScalable<float> press_s(49.65, -24.468);
+// TODO fctemp scale.
 
 
 
@@ -86,7 +88,6 @@ Analog_Sensor<LinearScalable<float> > temp4(TEMP4, cap_scale, "temp4");
 #ifdef ENABLE_TEMP5
 Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 #endif
-RealTimeClock rtc("clock", &master);
 
 // DigitalOut_Ext objects
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
@@ -186,9 +187,6 @@ int main() {
   sensor_vec.push_back(&temp5);
   #endif
 
-  #ifdef ENABLE_HUM
-  sensor_vec.push_back(&humidity);
-  #endif
 
   int_vec.push_back(&fc_coulumbs);
   int_vec.push_back(&fc_joules);

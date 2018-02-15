@@ -3,8 +3,7 @@
 
 #include "IO.h"
 
-// Bit Shifted this address the proper address is 0b1101000
-#define DS3231_ADDRESS 0b11010000
+#define DS3231_ADDRESS 0b1101000
 
 #define SECONDS         0x00
 #define MINUTES         0x01
@@ -30,17 +29,20 @@ private:
         int hour;
     }time;
 
+protected:
+    // Device getters
+    void read_device();
+
+
+
 public:
     // Constructor
     RealTimeClock(string name, I2C *master);
 
     // Class getters
-    int get_sec();
-    int get_min();
-    int get_hour();
-
-    // Device getters
-    void read_device();
+    int get_sec(bool update=0);
+    int get_min(bool update=0);
+    int get_hour(bool update=0);
 
     // To class to string...
     string toString(bool json_format = 0);

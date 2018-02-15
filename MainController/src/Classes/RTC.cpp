@@ -6,15 +6,15 @@ RealTimeClock::RealTimeClock(string name, I2C *master):IO(name){
     this->unlock();
 }
 
-int RealTimeClock::get_sec(){
+int RealTimeClock::get_sec(bool update){
     return this->time.sec;
 }
 
-int RealTimeClock::get_min(){
+int RealTimeClock::get_min(bool update){
     return this->time.min;
 }
 
-int RealTimeClock::get_hour(){
+int RealTimeClock::get_hour(bool update){
     return this->time.hour;
 }
 
@@ -23,7 +23,7 @@ void RealTimeClock::read_device(){
 
     // Read a byte from the seconds address of the DS3231, stores byte in data
     (*(this->master)).lock();
-    (*(this->master)).read(DS3231_ADDRESS, data, DS3231_BUFFERSIZE);
+    (*(this->master)).read(DS3231_ADDRESS<<1, data, DS3231_BUFFERSIZE);
     (*(this->master)).unlock();
 
     // If null pointer exit

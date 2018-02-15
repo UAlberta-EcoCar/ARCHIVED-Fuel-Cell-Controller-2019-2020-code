@@ -3,10 +3,10 @@
 #include <string>
 
 // Classes
-#include "Classes/Analog_Sensor.h"
-#include "Classes/Fan.h"
-#include "Classes/DigitalOut_Ext.h"
-#include "Classes/Integrator.h"
+//#include "Classes/Analog_Sensor.h"
+//#include "Classes/Fan.h"
+//#include "Classes/DigitalOut_Ext.h"
+//#include "Classes/Integrator.h"
 #include "Classes/SerialPrinter.h"
 
 
@@ -46,7 +46,14 @@ void error_logging(){
 }
 
 void blue_logging(){
-    blue_printer.print<string>(rtc.toString(), 0);
+    #ifdef ENABLE_RTC
+    blue_printer.print<RealTimeClock>(&rtc, 0);
+    #endif
+
+    #ifdef ENABLE_SHT31
+    blue_printer.print<SHT31>(&sht31, 0);
+    #endif
+
     #ifdef ENABLE_BLUETOOTH_SENSORS
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
@@ -121,21 +128,19 @@ void ol_logging_header(){
 }
 
 void datalink_thread(){
+    // Wait a few seconds for everything to start then start logging
+    Thread::wait(10000);
+    
     blue_logging_event.period(BLUE_PER_MS);
     ol_logging_event.period(OL_PER_MS);
-
     #ifdef ENABLE_OPENLOG_HEADER
     ol_logging_header_event.post();
     #endif
-
     #ifdef ENABLE_OPENLOG
     ol_logging_event.post();
     #endif 
-
     #ifdef ENABLE_BLUETOOTH
     blue_logging_event.post();
     #endif
-    // Wait seconds for everything to start then start logging
-    Thread::wait(2000);
     data_queue.dispatch_forever();
 }

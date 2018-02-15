@@ -1,6 +1,8 @@
 #ifndef SHT31_H
 #define SHT31_H
 #include <mbed.h>
+#include "main.h"
+#include "IO.h"
 
 #define SHT31_DEFAULT_ADDR         0x44
 #define SHT31_MEAS_HIGHREP_STRETCH 0x2C06
@@ -15,11 +17,32 @@
 #define SHT31_HEATEREN             0x306D
 #define SHT31_HEATERDIS            0x3066
 
-#define BUFFERSIZE 6
-#define CMDSIZE 2
+#define SHT31_BUFFERSIZE 6
+#define SHT31_CMDSIZE 2
 
-class SHT31 {
+// For communicating with the SHT31 device
+class SHT31: public IO {
 
+private:
+    I2C *master;
+    struct{
+        int humidity;
+        int temp;
+    }readings;
+
+protected:
+
+    void read_device();
+
+public:
+
+    SHT31(string name, I2C *master);
+
+    int get_temp(bool update=1);
+    int get_hum(bool update=1);
+
+    string toString(bool json_format = 0);
+    string toStringInfo(bool json_format = 0);
 };
 
 #endif
