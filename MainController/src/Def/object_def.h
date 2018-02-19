@@ -11,6 +11,7 @@
 #include "./Classes/FanControl.h"
 #include "./Classes/RTC.h"
 #include "./Classes/SHT31.h"
+#include "./Classes/DigitalOut_Ext.h"
 
 // SHT31
 extern SHT31 sht31;
@@ -60,7 +61,7 @@ extern Analog_Sensor<LinearScalable<float> > temp5;
 //Fans
 extern Fan fan1;
 
-#ifdef ALICE
+#ifdef ALICE_CONFIGURATION
 extern Fan fan2;
 extern Fan fan3;
 #endif

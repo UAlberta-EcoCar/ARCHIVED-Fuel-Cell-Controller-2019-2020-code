@@ -2,18 +2,9 @@
 #include <mbed_events.h>
 
 // Classes
-#include "Classes/Analog_Sensor.h"
-#include "Classes/Fan.h"
-#include "Classes/DigitalOut_Ext.h"
-#include "Classes/Integrator.h"
 #include "Classes/LinearScalable.h"
 #include "Classes/ExpScalable.h"
 #include "Classes/PolyScalable.h"
-#include "Classes/SerialPrinter.h"
-#include "Classes/RTC.h"
-#include "Classes/FuelCell.h"
-#include "Classes/FanControl.h"
-#include "Classes/SHT31.h"
 
 // Defs
 #include "Def/pin_def.h"
@@ -71,7 +62,10 @@ Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
 #endif
 
 Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, c_s, "fctemp1");
+
+#ifdef ALICE_CONFIGURATION
 Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, c_s, "fctemp2");
+#endif
 
 #ifdef ENABLE_TEMP1
 Analog_Sensor<LinearScalable<float> > temp1(TEMP1, cap_scale, "temp1");
@@ -108,7 +102,8 @@ DigitalOut_Ext start_led(START_LED, "START_LED");
 
 // Fan objects
 Fan fan1("fan1",PWM_1,TACH_1);
-#ifdef ALICE
+
+#ifdef ALICE_CONFIGURATION
 Fan fan2("fan2",PWM_2,TACH_2);
 Fan fan3("fan3",PWM_3,TACH_3);
 #endif
@@ -169,7 +164,10 @@ int main() {
   #endif
   
   sensor_vec.push_back(&fctemp1);
+  
+  #ifdef ALICE_CONFIGURATION
   sensor_vec.push_back(&fctemp2);
+  #endif
 
   #ifdef ENABLE_TEMP1 
   sensor_vec.push_back(&temp1);
@@ -204,7 +202,7 @@ int main() {
   fan_vec.push_back(&fan1);
 
 
-  #ifdef ALICE
+  #ifdef ALICE_CONFIGURATION
   #ifdef ENABLE_FAN2
   fan_vec.push_back(&fan2);
   #endif

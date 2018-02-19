@@ -1,9 +1,6 @@
 #include <mbed.h>
 #include <mbed_events.h>
 
-#include "Classes/DigitalOut_Ext.h"
-#include "Classes/FuelCell.h"
-
 // Defs
 #include "Def/object_def.h"
 
@@ -13,7 +10,12 @@
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
 
 void start_state();
+void start_purge();
+void start_res_start();
+void start_res_end();
 void charge_state();
+void charge_start();
+void charge_stop();
 void run_state();
 void shut_state();
 void alarm_state();
@@ -52,20 +54,20 @@ void update_leds(){
   }
   else if (state == CHARGE_STATE){
     start_led.write(true);
+    run_led.write(true);
   }
   else if (state == RUN_STATE){
     run_led.write(true);
   }
 }
 
+// Start state setup
 void start_state(){
-  controller_flags.clear(CLEAR_EVENT_FLAG);
-  controller_flags.set(START_EVENT_FLAG);
+  controller_flags.clear((CLEAR_EVENT_FLAG|CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.set((START_EVENT_FLAG|FAN_MAX_FLAG));
   fc.set_fc_status(START_STATE);
-  // Signal fans to high
-  controller_flags.clear(CLEAR_FAN_FLAG);
-  controller_flags.set(FAN_MAX_FLAG);
 
+  // Move this to a monitoring task
   update_leds();
 
   // Close all valves, Open all relays
@@ -76,9 +78,14 @@ void start_state(){
   charge_r.write(false);
   cap_r.write(false);
   
-  // Signal wait for fans
-  controller_flags.wait_all(FAN_SPOOLED_FLAG);
+  // Signal setup complete
+  controller_flags.set((FINISHED_EXCUTION_FLAG|SIGNAL_STARTSETUPCOMPLETE));
+}
 
+void start_purge(){
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MAX_FLAG);
   // Startup purge
   supply_v.write(true);
   Thread::wait(1000);
@@ -86,45 +93,73 @@ void start_state(){
   Thread::wait(200);
   purge_v.write(false);
 
+  controller_flags.set((SIGNAL_STARTPURGECOMPLETE|FINISHED_EXCUTION_FLAG));
+}
+
+void start_res_start(){
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MAX_FLAG);
   // Start resistors
+  cap_r.write(false);
+  charge_r.write(false);
+  Thread::wait(100);
   start_r.write(true);
-  controller_flags.wait_all(START_RESISTOR_FLAG);
+
+  controller_flags.set((SIGNAL_STARTRESSTARTED|FINISHED_EXCUTION_FLAG));
+}
+
+void start_res_end(){
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MAX_FLAG);
+
   start_r.write(false);
   Thread::wait(100);
 
-  // Signal fans to minimum
-  controller_flags.clear(CLEAR_FAN_FLAG);
-  controller_flags.set(FAN_MIN_FLAG);
-  controller_flags.set(FINISHED_EXCUTION_FLAG);
+  controller_flags.set((SIGNAL_STARTRESCOMPLETE|FINISHED_EXCUTION_FLAG));
 }
 
 void charge_state(){
   // Sinal charge state
-  controller_flags.clear(CLEAR_EVENT_FLAG);
-  controller_flags.set(CHARGE_EVENT_FLAG);
+  controller_flags.clear((CLEAR_EVENT_FLAG|CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.set((CHARGE_EVENT_FLAG|FAN_MIN_FLAG));
   fc.set_fc_status(CHARGE_STATE);
 
+  update_leds();
   // For safety
   start_r.write(false);
   cap_r.write(false);
 
-  // Charging
-  controller_flags.wait_all(CHARGE_START_FLAG);
-  charge_r.write(true);
-  controller_flags.wait_all(CHARGE_STOP_FLAG);
-  charge_r.write(false);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set((FINISHED_EXCUTION_FLAG|FAN_MIN_FLAG|SIGNAL_CHARGESETUPCOMPLETE));
+}
 
-
+void charge_start(){
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
   controller_flags.clear(CLEAR_FAN_FLAG);
   controller_flags.set(FAN_MIN_FLAG);
-  controller_flags.set(FINISHED_EXCUTION_FLAG);
+  // Charging
+  charge_r.write(true);
+
+  controller_flags.set((FINISHED_EXCUTION_FLAG|SIGNAL_CHARGESTARTED));
+}
+
+void charge_stop(){
+  controller_flags.clear(FINISHED_EXCUTION_FLAG);
+  controller_flags.clear(CLEAR_FAN_FLAG);
+  controller_flags.set(FAN_MIN_FLAG);
+
+  charge_r.write(false);
+
+  controller_flags.set((FINISHED_EXCUTION_FLAG|SIGNAL_CHARGECOMPLETED));
 
 }
 
 void run_state(){
-  controller_flags.clear(CLEAR_EVENT_FLAG);
+  controller_flags.clear((CLEAR_EVENT_FLAG|CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.set((RUN_EVENT_FLAG|FAN_PID_FLAG));
   fc.set_fc_status(RUN_STATE);
-  controller_flags.set(RUN_EVENT_FLAG);
 
   update_leds();
   supply_v.write(true);
@@ -134,16 +169,13 @@ void run_state(){
   charge_r.write(false);
   cap_r.write(true);
 
-  // Signal PID for fans
-  controller_flags.clear(CLEAR_FAN_FLAG);
-  controller_flags.set(FAN_PID_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 
 void shut_state(){
+  controller_flags.clear((CLEAR_EVENT_FLAG|CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.set((SHUT_EVENT_FLAG|FAN_SHUTDOWN_FLAG));
   fc.set_fc_status(SHUTDOWN_STATE);
-  controller_flags.clear(CLEAR_EVENT_FLAG);
-  controller_flags.set(SHUT_EVENT_FLAG);
 
   update_leds();
   supply_v.write(false);
@@ -153,15 +185,13 @@ void shut_state(){
   charge_r.write(false);
   cap_r.write(false);
 
-  controller_flags.clear(CLEAR_FAN_FLAG);
-  controller_flags.set(FAN_SHUTDOWN_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 
 void alarm_state(){
+  controller_flags.clear((CLEAR_EVENT_FLAG|CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.set((ALARM_EVENT_FLAG|FAN_SHUTDOWN_FLAG));
   fc.set_fc_status(ALARM_STATE);
-  controller_flags.clear(CLEAR_EVENT_FLAG);
-  controller_flags.set(ALARM_EVENT_FLAG);
 
   update_leds();
   supply_v.write(false);
@@ -171,8 +201,6 @@ void alarm_state(){
   charge_r.write(false);
   cap_r.write(false);
 
-  controller_flags.clear(CLEAR_FAN_FLAG);
-  controller_flags.set(FAN_SHUTDOWN_FLAG);
   controller_flags.set(FINISHED_EXCUTION_FLAG);
 }
 

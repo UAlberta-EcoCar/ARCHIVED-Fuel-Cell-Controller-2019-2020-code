@@ -3,10 +3,6 @@
 #include <string>
 
 // Classes
-//#include "Classes/Analog_Sensor.h"
-//#include "Classes/Fan.h"
-//#include "Classes/DigitalOut_Ext.h"
-//#include "Classes/Integrator.h"
 #include "Classes/SerialPrinter.h"
 
 
@@ -17,11 +13,12 @@
 #include "monitoring.h"
 #include "main.h"
 
-#define BLUE_PER_MS 2000
+#define FTDI_PER_MS 1000
+#define BLUE_PER_MS 5000
 #define OL_PER_MS 500
 
 #define FTDI_BAUD 1000000
-#define BLUE_BAUD 1000000
+#define BLUE_BAUD 9600
 #define OL_BAUD 115200
 
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
@@ -46,6 +43,7 @@ void error_logging(){
 }
 
 void blue_logging(){
+    blue_printer.print<int>(controller_flags.get(),0);
     #ifdef ENABLE_RTC
     blue_printer.print<RealTimeClock>(&rtc, 0);
     #endif
@@ -58,7 +56,7 @@ void blue_logging(){
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
 
-    #ifdef ENABLE_BLUETOOTH_INTG
+    #ifdef ENABLE_BLUETOOTH_INTG_VALUES
     blue_printer.print<Integrator>(&int_vec, &int_iter, 0);
     #endif
 
@@ -83,7 +81,7 @@ void ol_logging(){
     ol_printer.print_info<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
 
-    #ifdef ENABLE_OPENLOG_INTG
+    #ifdef ENABLE_OPENLOG_INTG_VALUES
     ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
     #endif
 
@@ -108,7 +106,7 @@ void ol_logging_header(){
     ol_printer.print_name<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
 
-    #ifdef ENABLE_OPENLOG_INTG
+    #ifdef ENABLE_OPENLOG_INTG_VALUES
     ol_printer.print_name<Integrator>(&int_vec, &int_iter, 0);
     #endif
 
@@ -130,7 +128,7 @@ void ol_logging_header(){
 void datalink_thread(){
     // Wait a few seconds for everything to start then start logging
     Thread::wait(10000);
-    
+
     blue_logging_event.period(BLUE_PER_MS);
     ol_logging_event.period(OL_PER_MS);
     #ifdef ENABLE_OPENLOG_HEADER

@@ -29,14 +29,16 @@
 #define ENABLE_FAN2
 #define ENABLE_FAN3
 
+// Start Button 
+//#define ENABLE_EXTERNAL_START
+
 // In code
 // Define feature enable/disable
-// #define ENABLE_ERRORS
+//#define ENABLE_ERRORS
 #define ENABLE_DATALOGGING
-// not in code
-#define ENABLE_ANALYTICS
+//does nothing rn
+//#define ENABLE_ANALYTICS
 
-//In code
 // Datalogging Specifics enable/disable
 #define ENABLE_BLUETOOTH
 #define ENABLE_OPENLOG
@@ -52,7 +54,6 @@
 #define ENABLE_OPENLOG_FCSTATUS
 #define ENABLE_OPENLOG_FANS
 
-// In code
 // Error's enable/disable
 #define ENABLE_OVERVOLTAGE
 #define ENABLE_OVERCURR
@@ -64,8 +65,10 @@
 #define ENABLE_ESTOP1
 #define ENABLE_ESTOP2
 
+// TESTING DIRECTIVES
 // NEVER ENABLE THIS WHEN ATTACHING FCC TO FUEL CELL
 //  -Closes all relays, opens all valves, turns all fans on.
 //#define ENABLE_TESTMODE
+#define ENABLE_RELAY_TEST
 
 #endif

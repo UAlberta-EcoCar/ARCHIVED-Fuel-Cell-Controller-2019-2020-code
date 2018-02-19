@@ -9,6 +9,27 @@
 #include "datalink.h"
 #include "main.h"
 
+#ifndef ALICE_CONFIGURATION
+#define MAX_FC_CURR 30
+#define MAX_FC_VOLT 30.8
+#define MAX_CAP_CURR 30
+#define MAX_CAP_VOLT 32.0
+#define MAX_PRESS 8.0
+#define MIN_PRESS 5.0
+#endif
+
+// TODO: Find alice specifics, ask erin
+#ifdef ALICE_CONFIGURATION
+#define MAX_FC_CURR 30
+#define MAX_FC_VOLT 30.8
+#define MAX_CAP_CURR 30
+#define MAX_CAP_VOLT 32.0
+#define MAX_PRESS 8.0
+#define MIN_PRESS 5.0
+#endif
+
+
+
 EventQueue err_queue(32*EVENTS_EVENT_SIZE);
 EventQueue err_queue_low(32*EVENTS_EVENT_SIZE);
 
@@ -96,17 +117,34 @@ void temp_check(){
   fccurr.unlock();
 
   #ifdef  ENABLE_OVERTEMP
+  #ifdef ALICE_CONFIGURATION
   if (fctemp1.read() >= fc.query_max_temp(curr) || fctemp2.read() >= fc.query_max_temp(curr)){
     error_handler_event.post(OVERTEMP);
     return;
   }
   #endif
 
+  #ifndef ALICE_CONFIGURATION
+  if (fctemp1.read() >= fc.query_max_temp(curr)){
+    error_handler_event.post(OVERTEMP);
+    return;
+  }
+  #endif
+  #endif
+
   #ifdef  ENABLE_UNDERTEMP
+  #ifdef ALICE_CONFIGURATION
   if (fctemp1.read() >= fc.query_min_temp(curr) || fctemp2.read() >= fc.query_min_temp(curr)){
     error_handler_event.post(UNDERTEMP);
     return;
   }
+  #endif
+  #ifndef ALICE_CONFIGURATION
+  if (fctemp1.read() >= fc.query_min_temp(curr)){
+    error_handler_event.post(UNDERTEMP);
+    return;
+  }
+  #endif
   #endif
 }
 
