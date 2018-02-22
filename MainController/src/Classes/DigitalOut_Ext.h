@@ -2,6 +2,7 @@
 #define DIGITALOUT_EXT_H
 
 #include "IO.h"
+#include "Printable.h"
 #include <string>
 // Class is used to make DigitalOut thread safe
 
@@ -23,5 +24,7 @@ void write(bool value);
 int read();
 string toString();
 string toStringInfo();
+string toStringHeader();
+string toJsonObject();
 };
 #endif

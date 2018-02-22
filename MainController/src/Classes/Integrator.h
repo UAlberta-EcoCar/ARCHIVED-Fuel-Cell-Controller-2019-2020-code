@@ -117,6 +117,15 @@ string toStringInfo()
   return ss.str();
 
 };
+
+string toStringHeader()
+{
+  return this->get_name();
+};
+
+string toJsonObject(){
+  return "Not Implemented";
+};
 };
 
 

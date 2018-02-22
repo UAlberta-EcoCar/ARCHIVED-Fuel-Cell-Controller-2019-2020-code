@@ -4,43 +4,21 @@
 #include "Scalable.h"
 
 template <class T>
-class LinearScalable: public Scalable{
+class LinearScalable: public Scalable<T>{
 private:
   T a;
   T b;
 
 public:
-  LinearScalable(
-  )
-  {
-    this->set_params();
-  };
-  LinearScalable(
-    T a
-  )
-  {
-    this->set_params(a);
-  };
-  LinearScalable(
-    T a,
-    T b
-  )
-  {
-    this->set_params(a, b);
-  };
+  LinearScalable(){this->set_params();};
+  LinearScalable(T a){this->set_params(a);};
+  LinearScalable(T a, T b){this->set_params(a, b);};
 
-  T scale(
-    T value
-  )
-  {
+  T scale(T value){
     return (a*value) + b;
   };
 
-  void set_params(
-    T a=1,
-    T b=0
-  )
-  {
+  void set_params(T a=1, T b=0){
     this->a = a;
     this->b = b;
   };

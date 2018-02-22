@@ -34,6 +34,8 @@ void couple();
 void decouple();
 string toString();
 string toStringInfo();
+string toStringHeader();
+string toJsonObject();
 
 };
 

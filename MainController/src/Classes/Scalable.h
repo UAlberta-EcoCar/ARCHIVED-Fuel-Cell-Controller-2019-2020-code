@@ -2,12 +2,11 @@
 #define SCALABLE_H
 
 #include <math.h>
-
+template <class T>
 class Scalable{
 
 public:
-  virtual float scale(float value) = 0;
-  virtual void set_params(float a=1, float b=0) = 0;
+  virtual T scale(T value) = 0;
 };
 
 #endif

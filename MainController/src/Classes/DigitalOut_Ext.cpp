@@ -38,3 +38,13 @@ string DigitalOut_Ext::toStringInfo()
   ss << this->read();
   return ss.str();
 };
+
+string DigitalOut_Ext::toStringHeader()
+{
+  return this->get_name();
+};
+
+string DigitalOut_Ext::toJsonObject()
+{
+  return "Not Implemented";
+};

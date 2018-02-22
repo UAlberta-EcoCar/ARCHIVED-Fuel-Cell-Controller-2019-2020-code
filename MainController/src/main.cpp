@@ -37,16 +37,13 @@ SHT31 sht31("SHT31", &master);
 LinearScalable<float> v_s(45.768, 0.2715);
 LinearScalable<float> c_s(48.329, -15.464);
 LinearScalable<float> press_s(49.65, -24.468);
-// TODO fctemp scale.
-
-
+PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.2785, -2818.1076);
 
 // AnalogIn_Ext Objects
 Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, v_s, "capvolt");
 Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, c_s, "fccurr");
 Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, v_s, "fcvolt");
 Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s, "capcurr");
-// Assuming current and voltage sensing is the same as fc for motor, might be a good assumption for cap as well
 Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt"); 
 Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s, "motorcurr");
 Analog_Sensor<LinearScalable<float> > press1(PRESS1, press_s, "press1");
@@ -61,10 +58,10 @@ Analog_Sensor<LinearScalable<float> > press3(PRESS3, cap_scale, "press3");
 Analog_Sensor<LinearScalable<float> > press4(PRESS4, cap_scale, "press4");
 #endif
 
-Analog_Sensor<LinearScalable<float> > fctemp1(FCTEMP1, c_s, "fctemp1");
+Analog_Sensor<PolyScalable<float> > fctemp1(FCTEMP1, fctemp_s, "fctemp1");
 
 #ifdef ALICE_CONFIGURATION
-Analog_Sensor<LinearScalable<float> > fctemp2(FCTEMP2, c_s, "fctemp2");
+Analog_Sensor<PolyScalable<float> > fctemp2(FCTEMP2, fctemp_s, "fctemp2");
 #endif
 
 #ifdef ENABLE_TEMP1

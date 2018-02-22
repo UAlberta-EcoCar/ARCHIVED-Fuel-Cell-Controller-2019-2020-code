@@ -3,7 +3,6 @@
 
 #include "Sensor.h"
 #include "Scalable.h"
-#include "LinearScalable.h"
 
 using namespace std;
 
@@ -32,23 +31,21 @@ Analog_Sensor(
 };
 
 void update(){
+  
+};
+
+float read()
+{
   this->lock();
   if (this->_coup){
     this->set(this->scaler.scale(this->pin.read()));
   }
   this->unlock();
-};
-
-float read(bool update=1)
-{
-  if (update){
-    this->update();
-  }
+  
   return this->value;
 };
 
-void set(float value, bool decouple=0)
-{
+void set(float value, bool decouple=0){
   if (decouple){
     this->decouple();
   }
@@ -57,22 +54,19 @@ void set(float value, bool decouple=0)
   this->unlock();
 };
 
-void couple()
-{
+void couple(){
   this->lock();
   this->_coup = 1;
   this->unlock();
 };
 
-void decouple()
-{
+void decouple(){
   this->lock();
   this->_coup = 0;
   this->unlock();
 };
 
-virtual string toString()
-{
+string toString(){
   stringstream ss;
   ss << this->get_name();
   ss << ":";
@@ -80,15 +74,20 @@ virtual string toString()
   return ss.str();
 };
 
-virtual string toStringInfo()
-{
+string toStringInfo(){
   stringstream ss;
   ss << fixed << setprecision(2) << this->read();
   return ss.str();
+};
 
-}
+string toStringHeader(){
+  return this->get_name();
+};
 
-
+string toJsonObject(){
+  stringstream ss;
+  return "Not Implemented";
+};
 };
 
 #endif

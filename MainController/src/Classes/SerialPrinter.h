@@ -80,7 +80,7 @@ public:
   };
 
   template <class T>
-  void print_name(
+  void print_header(
     vector<T*>* T_vec,
     typename vector<T*>::iterator* T_iter,
     bool newline=1
@@ -90,7 +90,7 @@ public:
     stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
       (*(*(*T_iter))).lock();
-      ss << (*(*(*T_iter))).get_name() + " ";
+      ss << (*(*(*T_iter))).toStringHeader() + " ";
       (*(*(*T_iter))).unlock();
     }
     if (newline){
@@ -102,7 +102,7 @@ public:
   };
 
   template <class T>
-  void print_name(
+  void print_header(
     T* obj,
     bool newline = 1
   )
@@ -110,7 +110,7 @@ public:
     this->lock();
     stringstream ss;
     (*obj).lock();
-    ss << (*obj).get_name();
+    ss << (*obj).toStringHeader();
     (*obj).unlock();
     if (newline){
       ss << "\n";

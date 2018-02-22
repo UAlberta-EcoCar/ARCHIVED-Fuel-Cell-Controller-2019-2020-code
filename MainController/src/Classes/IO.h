@@ -8,7 +8,9 @@
 #include <iomanip>
 #include <mbed.h>
 
-class IO{
+#include "Printable.h"
+
+class IO: public Printable{
 private:
   string __name;
   Mutex mu;
@@ -50,6 +52,14 @@ public:
 
   string toStringInfo(){
     return this->get_name();
+  };
+
+  string toStringHeader(){
+    return this->get_name();
+  };
+
+  string toJsonObject(){
+    return "";
   };
 };
 

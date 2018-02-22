@@ -5,72 +5,73 @@
 #include <vector>
 
 template <class T>
-class PolyScalable: public Scalable{
+class PolyScalable: public Scalable<T>{
 private:
   vector<T> param_vec;
   typename vector<T>::iterator param_iter;
 
 public:
-  PolyScalable(
-  )
-  {
-  };
-  PolyScalable(
-    T a
-  )
-  {
+  // Constructor's
+  PolyScalable(){};
+
+  PolyScalable(T a){
     this->param_vec.push_back(a);
     this->param_vec.push_back(0.0);
   };
-  PolyScalable(
-    T a,
-    T b
-  )
-  {
+
+  PolyScalable(T a, T b){
     this->param_vec.push_back(a);
     this->param_vec.push_back(b);
   };
-  PolyScalable(
-    vector<T> params
-  )
-  {
+
+  PolyScalable(T a, T b, T c){
+    this->param_vec.push_back(a);
+    this->param_vec.push_back(b);
+    this->param_vec.push_back(c);
+  };
+
+  PolyScalable(T a, T b, T c, T d){
+    this->param_vec.push_back(a);
+    this->param_vec.push_back(b);
+    this->param_vec.push_back(c);
+    this->param_vec.push_back(d);
+  };
+
+  PolyScalable(T a, T b, T c, T d, T e){
+    this->param_vec.push_back(a);
+    this->param_vec.push_back(b);
+    this->param_vec.push_back(c);
+    this->param_vec.push_back(d);
+    this->param_vec.push_back(e);
+  };
+
+  PolyScalable(T a, T b, T c, T d, T e, T f){
+    this->param_vec.push_back(a);
+    this->param_vec.push_back(b);
+    this->param_vec.push_back(c);
+    this->param_vec.push_back(d);
+    this->param_vec.push_back(e);
+    this->param_vec.push_back(f);
+  };
+
+  PolyScalable(vector<T> params){
     this->param_vec = params;
   };
-  /*
-  PolyScalable(
-    T a, T b, ...
-  )
-  {
-    va_list arguments;
-    va_start(arguments, b);
-    for (int i = 0)
-  }
-  */
 
-  T scale(
-    T value
-  )
-  {
+  T scale(T value){
+    T scaled = 0;
     int count = 0;
-    T val = 0;
-    for (this->param_iter = this->param_vec.begin(); this->param_iter != this->param_vec.end(); this->param_iter++){
-      val += (*this->param_iter)*pow(value, count);
-      count++;
+    for(param_iter = param_vec.begin(); param_iter < param_vec.end(); param_iter++){
+      if ((*param_iter) != 0){
+        scaled += (*param_iter)*pow(value, count);
+        count++;
+      }
     }
-    return val;
+
+    return scaled;
   };
 
-  void set_params(
-    T a=1,
-    T b=0
-  )
-  {
-  };
-
-  void set_params(
-    vector<T> params
-  )
-  {
+  void set_params(vector<T> params){
     this->param_vec = params;
   };
 };

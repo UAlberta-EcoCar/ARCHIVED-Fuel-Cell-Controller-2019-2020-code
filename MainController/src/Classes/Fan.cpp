@@ -115,6 +115,16 @@ string Fan::toStringInfo()
   return ss.str();
 }
 
+string Fan::toStringHeader()
+{
+  return this->get_name();
+}
+
+string Fan::toJsonObject()
+{
+  return "Not Implemented";
+}
+
 const float Fan::max = 0.95;
 const float Fan::min = 0.15;
 const float Fan::off = 0.0;

@@ -47,8 +47,8 @@ extern Analog_Sensor<LinearScalable<float> > press3;
 extern Analog_Sensor<LinearScalable<float> > press4;
 #endif
 
-extern Analog_Sensor<LinearScalable<float> > fctemp1;
-extern Analog_Sensor<LinearScalable<float> > fctemp2;
+extern Analog_Sensor<PolyScalable<float> > fctemp1;
+extern Analog_Sensor<PolyScalable<float> > fctemp2;
 
 #ifdef EXT_TEMP
 extern Analog_Sensor<LinearScalable<float> > temp1;
