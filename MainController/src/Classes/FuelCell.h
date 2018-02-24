@@ -6,8 +6,9 @@
 #define START_STATE 1
 #define CHARGE_STATE 2
 #define RUN_STATE 3
-#define SHUTDOWN_STATE 4
-#define ALARM_STATE 5
+#define PURGE_STATE 4
+#define SHUTDOWN_STATE 5
+#define ALARM_STATE 6
 
 #define NOERROR 0 
 #define OVERVOLTAGE 1
@@ -85,6 +86,8 @@ class FuelCell: public IO{
         ss << " Error_Status:";
         ss << this->get_error_status();
         ss << " ";
+        ss << "Purge Count:";
+        ss << this->get_num_purges();
         this->unlock();
         return ss.str();
     };
@@ -96,9 +99,20 @@ class FuelCell: public IO{
         ss << " ";
         ss << this->get_error_status();
         ss << " ";
+        ss << this->get_num_purges();
         this->unlock();
         return ss.str();
     };
+
+    string toStringHeader(){
+        stringstream ss;
+        this->lock();
+        ss << "FC_Status ";
+        ss << " Error_Status ";
+        ss << "Purge_Count";
+        this->unlock();
+        return ss.str();
+    }
 };
 
 

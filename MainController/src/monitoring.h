@@ -2,15 +2,16 @@
 #define MONITORING_H
 
 extern EventFlags controller_flags;
-// First Byte: State Flags
-#define FINISHED_EXCUTION_FLAG 0x1
-#define START_EVENT_FLAG 0x2
-#define CHARGE_EVENT_FLAG 0x4
-#define RUN_EVENT_FLAG 0x8
-#define PURGE_EVENT_FLAG 0x10
-#define SHUT_EVENT_FLAG 0x20
-#define ALARM_EVENT_FLAG 0x40
-#define CLEAR_EVENT_FLAG 0xef
+
+// First Byte: Signal Flags
+#define SIGNAL_STARTSETUPCOMPLETE 0x1
+#define SIGNAL_STARTPURGECOMPLETE 0x2
+#define SIGNAL_FCCHARGESTARTED 0x4
+#define SIGNAL_FCCHARGECOMPLETE 0x8
+#define SIGNAL_CHARGESETUPCOMPLETE 0x10
+#define SIGNAL_CHARGESTARTED 0x20
+#define SIGNAL_CHARGECOMPLETED 0x40
+#define CLEAR_SIGNAL_FLAG 0xff
 
 // Second Byte: Fan Flags
 #define FAN_SHUTDOWN_FLAG 0x100
@@ -19,20 +20,7 @@ extern EventFlags controller_flags;
 #define FAN_PID_FLAG 0x800
 #define CLEAR_FAN_FLAG 0xff00
 
-// Thrid Byte: Signal Flags
-#define SIGNAL_STARTSETUPCOMPLETE 0x10000
-#define SIGNAL_STARTPURGECOMPLETE 0x20000
-#define SIGNAL_STARTRESSTARTED 0x40000
-#define SIGNAL_STARTRESCOMPLETE 0x80000
-#define SIGNAL_CHARGESETUPCOMPLETE 0x100000
-#define SIGNAL_CHARGESTARTED 0x200000
-#define SIGNAL_CHARGECOMPLETED 0x400000
-#define CLEAR_SIGNAL_FLAG 0xff0000
-
-// Fourth Byte: Button Flags
-#define START_BUTTON_PRESSED 0x1000000
-
-
+void state_monitoring();
 void monitoring_thread();
 
 #endif

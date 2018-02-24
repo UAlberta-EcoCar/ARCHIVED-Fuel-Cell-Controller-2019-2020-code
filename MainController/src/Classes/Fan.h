@@ -5,37 +5,30 @@
 #include "IO.h"
 
 class Fan: public IO{
-bool __coup;
-float __dutyIn;
+  private:
+    bool __coup;
 
-PwmIn in;
-PwmOut out;
-public:
+    PwmOut out;
 
-static const float max;
-static const float min;
-static const float off;
+  public:
 
-Fan(
-  string name,
-  PinName out_pin,
-  PinName in_pin
-);
+  static const float max;
+  static const float min;
+  static const float off;
 
-// Getters/Setters
-void set_out(float percentage);
-void set_in(float percentage, bool couple=0);
-float get_out();
-float get_in();
+  Fan(string name, PinName out_pin, PinName in_pin);
 
-// Other Methods
-bool is_spooled();
-void couple();
-void decouple();
-string toString();
-string toStringInfo();
-string toStringHeader();
-string toJsonObject();
+  // Getters/Setters
+  void set_out(float percentage);
+  float get_out();
+
+  // Other Methods
+  void couple();
+  void decouple();
+  string toString();
+  string toStringInfo();
+  string toStringHeader();
+  string toJsonObject();
 
 };
 

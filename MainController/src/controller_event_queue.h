@@ -3,17 +3,19 @@
 
 void contoller_event_queue_thread();
 
-void alarm_state();
 void start_state();
 void start_purge();
-void start_res_start();
-void start_res_end();
+void fc_charge_entry();
+void fc_charge_exit();
 void charge_state();
-void charge_start();
-void charge_stop();
+void cap_charge_entry();
+void cap_charge_exit();
 void run_state();
-void shut_state();
 void purge();
+void shut_state();
+void alarm_state();
+void update_leds();
+void test();
 
 extern EventQueue cont_queue;
 

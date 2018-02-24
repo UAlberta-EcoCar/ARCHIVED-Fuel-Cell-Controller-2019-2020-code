@@ -141,85 +141,11 @@ Thread FTDI_event_thread;
 Thread monitor;
 
 int main() {
-  //Populate vectors
-  sensor_vec.push_back(&fccurr);
-  sensor_vec.push_back(&capvolt);
-  sensor_vec.push_back(&fcvolt);
-  sensor_vec.push_back(&capcurr);
-  sensor_vec.push_back(&motorvolt);
-  sensor_vec.push_back(&motorcurr);
-  sensor_vec.push_back(&press1);
-
-  #ifdef ENABLE_PRESS2
-  sensor_vec.push_back(&press2);
-  #endif
-  #ifdef ENABLE_PRESS3
-  sensor_vec.push_back(&press3);
-  #endif
-  #ifdef ENABLE_PRESS4
-  sensor_vec.push_back(&press4);
-  #endif
   
-  sensor_vec.push_back(&fctemp1);
-  
-  #ifdef ALICE_CONFIGURATION
-  sensor_vec.push_back(&fctemp2);
-  #endif
-
-  #ifdef ENABLE_TEMP1 
-  sensor_vec.push_back(&temp1);
-  #endif
-  #ifdef ENABLE_TEMP2
-  sensor_vec.push_back(&temp2);
-  #endif
-  #ifdef ENABLE_TEMP3
-  sensor_vec.push_back(&temp3);
-  #endif
-  #ifdef ENABLE_TEMP4
-  sensor_vec.push_back(&temp4);
-  #endif
-  #ifdef ENABLE_TEMP5
-  sensor_vec.push_back(&temp5);
-  #endif
-
-
-  int_vec.push_back(&fc_coulumbs);
-  int_vec.push_back(&fc_joules);
-  int_vec.push_back(&cap_coulumbs);
-  int_vec.push_back(&cap_joules);
-
-  dig_out_vec.push_back(&supply_v);
-  dig_out_vec.push_back(&purge_v);
-  dig_out_vec.push_back(&start_r);
-  dig_out_vec.push_back(&motor_r);
-  dig_out_vec.push_back(&charge_r);
-  dig_out_vec.push_back(&cap_r);
-  dig_out_vec.push_back(&fcc_r);
-
-  fan_vec.push_back(&fan1);
-
-
-  #ifdef ALICE_CONFIGURATION
-  #ifdef ENABLE_FAN2
-  fan_vec.push_back(&fan2);
-  #endif
-
-  #ifdef ENABLE_FAN3
-  fan_vec.push_back(&fan3);
-  #endif
-  #endif
-
-  fc_coulumbs.sensor_add(&fccurr);
-  fc_joules.sensor_add(&fccurr);
-  fc_joules.sensor_add(&fcvolt);
-  cap_coulumbs.sensor_add(&capcurr);
-  cap_joules.sensor_add(&capcurr);
-  cap_joules.sensor_add(&capvolt);
-
   // Threads from lowest -> highest priority
-  data_event_thread.set_priority(osPriorityLow);
-  monitor.set_priority(osPriorityAboveNormal);
-  controller_event_thread.set_priority(osPriorityHigh);
+  monitor.set_priority(osPriorityAboveNormal7);
+  controller_event_thread.set_priority(osPriorityAboveNormal);
+    data_event_thread.set_priority(osPriorityHigh);
   error_event_thread.set_priority(osPriorityRealtime1);
   error_event_low_thread.set_priority(osPriorityRealtime7);
 

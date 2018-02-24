@@ -30,19 +30,19 @@
 #define ENABLE_FAN3
 
 // Start Button 
-//#define ENABLE_EXTERNAL_START
+#define ENABLE_EXTERNAL_START
 
 // In code
 // Define feature enable/disable
 //#define ENABLE_ERRORS
-#define ENABLE_DATALOGGING
+//#define ENABLE_DATALOGGING
 //does nothing rn
 //#define ENABLE_ANALYTICS
 
 // Datalogging Specifics enable/disable
-#define ENABLE_BLUETOOTH
-#define ENABLE_OPENLOG
-#define ENABLE_OPENLOG_HEADER
+//#define ENABLE_BLUETOOTH
+//#define ENABLE_OPENLOG
+//#define ENABLE_OPENLOG_HEADER
 #define ENABLE_BLUETOOTH_SENSORS
 #define ENABLE_BLUETOOTH_INTG_VALUES
 #define ENABLE_BLUETOOTH_VANDR
@@ -69,6 +69,6 @@
 // NEVER ENABLE THIS WHEN ATTACHING FCC TO FUEL CELL
 //  -Closes all relays, opens all valves, turns all fans on.
 //#define ENABLE_TESTMODE
-#define ENABLE_RELAY_TEST
+//#define ENABLE_RELAY_TEST
 
 #endif
