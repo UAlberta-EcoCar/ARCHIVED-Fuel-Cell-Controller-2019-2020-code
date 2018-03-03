@@ -11,6 +11,7 @@ extern EventFlags controller_flags;
 #define SIGNAL_CHARGESETUPCOMPLETE 0x10
 #define SIGNAL_CHARGESTARTED 0x20
 #define SIGNAL_CHARGECOMPLETED 0x40
+#define SIGNAL_STATETRANSITION 0x80
 #define CLEAR_SIGNAL_FLAG 0xff
 
 // Second Byte: Fan Flags

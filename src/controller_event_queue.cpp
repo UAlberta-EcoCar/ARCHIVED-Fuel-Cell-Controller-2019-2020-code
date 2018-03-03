@@ -69,7 +69,7 @@ void update_leds(){
 
 // Start state setup
 void start_state(){
-  controller_flags.clear((CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.clear();
   fc.set_fc_status(START_STATE);
 
   // Move this to a monitoring task
@@ -90,8 +90,8 @@ void start_state(){
 
 void start_purge(){
   // Header
-  controller_flags.clear();controller_flags.clear();
-  
+  controller_flags.clear();
+
   // Event
   purge_v.write(false);
   start_r.write(false);
@@ -110,6 +110,7 @@ void start_purge(){
 }
 
 void fc_charge_entry(){
+  // Header
   controller_flags.clear();
 
   // Start resistors
@@ -122,6 +123,7 @@ void fc_charge_entry(){
   Thread::wait(100);
   start_r.write(true);
 
+  // Footer
   controller_flags.set((SIGNAL_FCCHARGESTARTED|FAN_MAX_FLAG));
   state_event.post();
 }
@@ -137,8 +139,8 @@ void fc_charge_exit(){
   cap_r.write(false);
   Thread::wait(100);
 
-  controller_flags.set((FAN_MAX_FLAG));
-  cont_queue.call(charge_state);
+  controller_flags.set((SIGNAL_STATETRANSITION|FAN_MAX_FLAG));
+  //cont_queue.call(charge_state);
 }
 
 void charge_state(){
@@ -183,8 +185,8 @@ void cap_charge_exit(){
   charge_r.write(false);
   cap_r.write(false);
 
-  controller_flags.set((FAN_MIN_FLAG));
-  cont_queue.call(run_state);
+  controller_flags.set((SIGNAL_STATETRANSITION|FAN_MIN_FLAG));
+  //cont_queue.call(run_state);
 }
 
 void run_state(){
@@ -208,7 +210,6 @@ void purge(){
   controller_flags.clear();
   fc.set_fc_status(PURGE_STATE);
   fc.increment_purge();
-
   update_leds();
 
   // Event
@@ -222,8 +223,8 @@ void purge(){
   purge_v.write(false);
 
   // Footer
-  controller_flags.set(FAN_PID_FLAG);
-  cont_queue.call(run_state);
+  controller_flags.set((SIGNAL_STATETRANSITION|FAN_PID_FLAG));
+  //cont_queue.call(run_state);
 }
 
 void shut_state(){
@@ -239,11 +240,10 @@ void shut_state(){
   cap_r.write(false);
 
   controller_flags.set(FAN_SHUTDOWN_FLAG);
-  state_event.post();
 }
 
 void alarm_state(){
-  controller_flags.clear((CLEAR_SIGNAL_FLAG|CLEAR_FAN_FLAG));
+  controller_flags.clear();
   fc.set_fc_status(ALARM_STATE);
 
   update_leds();

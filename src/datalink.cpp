@@ -49,28 +49,32 @@ void ftdi_logging(){
     #ifdef ENABLE_RTC
     fdti_printer.print<RealTimeClock>(&rtc, 0);
     #endif
-    
-    #ifdef ENABLE_SHT31
-    fdti_printer.print<SHT31>(&sht31, 0);
-    #endif
-    #ifdef ENABLE_BLUETOOTH_SENSORS
-    fdti_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
-    #endif
 
-    #ifdef ENABLE_BLUETOOTH_INTG_VALUES
-    fdti_printer.print<Integrator>(&int_vec, &int_iter, 0);
-    #endif
-
-    #ifdef ENABLE_BLUETOOTH_VANDR
-    fdti_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    #ifdef ENABLE_BLUETOOTH_FCSTATUS
+    fdti_printer.print<FuelCell>(&fc, 0);
     #endif
 
     #ifdef ENABLE_BLUETOOTH_FANS
-    fdti_printer.print<Fan>(&fan_vec, &fan_iter, 0);
+    fdti_printer.print<Fan>(&fan_vec, &fan_iter);
     #endif
-    #ifdef ENABLE_BLUETOOTH_FCSTATUS
-    fdti_printer.print<FuelCell>(&fc);
+
+    #ifdef ENABLE_SHT31
+    fdti_printer.print<SHT31>(&sht31, 0);
     #endif
+
+    #ifdef ENABLE_BLUETOOTH_SENSORS
+    fdti_printer.print<Sensor>(&sensor_vec, &sensor_iter);
+    #endif
+
+    #ifdef ENABLE_BLUETOOTH_INTG_VALUES
+    fdti_printer.print<Integrator>(&int_vec, &int_iter);
+    #endif
+
+    #ifdef ENABLE_BLUETOOTH_VANDR
+    fdti_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
+    #endif
+
+    fdti_printer.print<string>("\n");
 }
 
 void blue_logging(){
@@ -79,29 +83,33 @@ void blue_logging(){
     blue_printer.print<RealTimeClock>(&rtc, 0);
     #endif
 
+    #ifdef ENABLE_BLUETOOTH_FCSTATUS
+    blue_printer.print<FuelCell>(&fc, 0);
+    #endif
+
+    #ifdef ENABLE_BLUETOOTH_FANS
+    blue_printer.print<Fan>(&fan_vec, &fan_iter);
+    #endif
+
     #ifdef ENABLE_SHT31
     blue_printer.print<SHT31>(&sht31, 0);
     #endif
 
     #ifdef ENABLE_BLUETOOTH_SENSORS
-    blue_printer.print<Sensor>(&sensor_vec, &sensor_iter, 0);
+    blue_printer.print<Sensor>(&sensor_vec, &sensor_iter);
     #endif
 
     #ifdef ENABLE_BLUETOOTH_INTG_VALUES
-    blue_printer.print<Integrator>(&int_vec, &int_iter, 0);
+    blue_printer.print<Integrator>(&int_vec, &int_iter);
     #endif
 
     #ifdef ENABLE_BLUETOOTH_VANDR
-    blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter, 0);
+    blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
     #endif
 
-    #ifdef ENABLE_BLUETOOTH_FANS
-    blue_printer.print<Fan>(&fan_vec, &fan_iter, 0);
-    #endif
+    blue_printer.print<string>("\n");
 
-    #ifdef ENABLE_BLUETOOTH_FCSTATUS
-    blue_printer.print<FuelCell>(&fc);
-    #endif
+    
 }
 
 void ol_logging(){
@@ -237,18 +245,17 @@ void datalink_thread(){
     ol_logging_event.period(OL_PER_MS);
     ftdi_logging_event.period(FTDI_PER_MS);
 
+    Thread::wait(2000);
+
     #ifdef ENABLE_OPENLOG_HEADER
     ol_logging_header_event.post();
     #endif
-
     #ifdef ENABLE_OPENLOG
     ol_logging_event.post();
     #endif 
-
     #ifdef ENABLE_BLUETOOTH
     blue_logging_event.post();
     #endif
-
     ftdi_logging_event.post();
     
     data_queue.dispatch_forever();

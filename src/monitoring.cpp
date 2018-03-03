@@ -98,29 +98,32 @@ InterruptIn button(BUTT);
 
 // BUTTON ISR'S
 void start_button_rise(){
-  alarm_led.write(true);
+  debug_led.write(true);
   start_button_timer.start();
 }
 
 void start_button_fall(){
-  if (start_button_timer.read() > 20){
+  if (start_button_timer.read_ms() > 20){
     start_button_event.post();
-  }
+  }    
+
   start_button_timer.stop();
   start_button_timer.reset();
-  alarm_led.write(false);
+  debug_led.write(false);
 }
 
 void button_rise(){
-  start_button_timer.start();
+  debug_led.write(true);
+  button_timer.start();
 }
 
 void button_fall(){
-  if (start_button_timer.read() > 20){
+  if (start_button_timer.read_ms() > 20){
     start_button_event.post();
   }
   button_timer.stop();
   button_timer.reset();
+  debug_led.write(false);
 }
 
 
@@ -146,13 +149,15 @@ void fan_control(){
 }
 
 void start_button(){
-  switch(fc.get_fc_status()){
-    case SHUTDOWN_STATE:{
-      start_event.post();
-    }
-    default:{
-      shutdown_event.post();
-    }
+  fc.lock();
+  int status = fc.get_fc_status();
+  fc.unlock();
+
+  if (status == SHUTDOWN_STATE){
+    start_event.post();
+  }
+  else if (status != ALARM_STATE){
+    shutdown_event.post();
   }
 }
 
@@ -299,6 +304,11 @@ void state_monitoring(){
           return;
         }
 
+        if (flags&SIGNAL_STATETRANSITION){
+          charge_event.post();
+          return;
+        }
+
         state_monitoring_event.delay(50);
         state_monitoring_event.post();
         
@@ -315,11 +325,23 @@ void state_monitoring(){
           return;
         }
 
+        if (flags&SIGNAL_STATETRANSITION){
+          run_event.post();
+          return;
+        }
+
         state_monitoring_event.delay(50);
         state_monitoring_event.post();
     }
+    
     case RUN_STATE:{
       purge_entry_check_event.post();
+    }
+
+    case PURGE_STATE:{
+      if (flags&SIGNAL_STATETRANSITION){
+        run_event.post();
+      }
     }
 
     case SHUTDOWN_STATE:{
@@ -328,9 +350,7 @@ void state_monitoring(){
       #endif
     }
 
-    case ALARM_STATE:{
-
-    }
+    case ALARM_STATE:{}
   }
 }
 

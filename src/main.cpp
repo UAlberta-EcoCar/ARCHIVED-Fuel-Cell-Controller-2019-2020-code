@@ -145,7 +145,7 @@ int main() {
   // Threads from lowest -> highest priority
   monitor.set_priority(osPriorityAboveNormal7);
   controller_event_thread.set_priority(osPriorityAboveNormal);
-    data_event_thread.set_priority(osPriorityHigh);
+  data_event_thread.set_priority(osPriorityHigh);
   error_event_thread.set_priority(osPriorityRealtime1);
   error_event_low_thread.set_priority(osPriorityRealtime7);
 
