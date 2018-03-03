@@ -86,7 +86,7 @@ class FuelCell: public IO{
         ss << " Error_Status:";
         ss << this->get_error_status();
         ss << " ";
-        ss << "Purge Count:";
+        ss << "Purge_Count:";
         ss << this->get_num_purges();
         this->unlock();
         return ss.str();

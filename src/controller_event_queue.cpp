@@ -26,10 +26,10 @@ void update_leds();
 void test();
 
 void contoller_event_queue_thread(){
-  #ifdef ENABLE_TESTMODE
+  #ifdef ENABLE_TESTSTATE
   cont_queue.call(test);
   #endif
-  #ifndef ENABLE_TESTMODE
+  #ifndef ENABLE_TESTSTATE
   cont_queue.call(shut_state);
   #endif
 

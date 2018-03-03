@@ -115,6 +115,10 @@ void blue_logging(){
 }
 
 void ol_logging(){
+    #ifdef ENABLE_RTC
+    ol_printer.print<RealTimeClock>(&rtc, 0);
+    #endif
+
     #ifdef ENABLE_OPENLOG_FCSTATUS
     ol_printer.print_info<FuelCell>(&fc, 0);
     #endif
@@ -128,13 +132,17 @@ void ol_logging(){
     #endif
 
     #ifdef ENABLE_OPENLOG_INTG_VALUES
-    ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
+    ol_printer.print_info<Integrator>(&int_vec, &int_iter);
     #endif
 }
 
 void ol_logging_header(){
+    #ifdef ENABLE_RTC
+    ol_printer.print<string>("Time", 0);
+    #endif
+
     #ifdef ENABLE_OPENLOG_FCSTATUS
-    ol_printer.print<FuelCell>(&fc, 0);
+    ol_printer.print_header<FuelCell>(&fc, 0);
     #endif
 
     #ifdef ENABLE_OPENLOG_FANS
@@ -233,10 +241,10 @@ void datalink_thread(){
 
     Thread::wait(START_DELAY);
 
+    #ifdef ENABLE_OPENLOG
     #ifdef ENABLE_OPENLOG_HEADER
     ol_logging_header_event.post();
     #endif
-    #ifdef ENABLE_OPENLOG
     ol_logging_event.post();
     #endif 
     #ifdef ENABLE_BLUETOOTH

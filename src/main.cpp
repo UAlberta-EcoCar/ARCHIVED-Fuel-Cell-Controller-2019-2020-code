@@ -143,9 +143,9 @@ Thread monitor;
 int main() {
   
   // Threads from lowest -> highest priority
+  data_event_thread.set_priority(osPriorityLow);
   monitor.set_priority(osPriorityAboveNormal7);
   controller_event_thread.set_priority(osPriorityAboveNormal);
-  data_event_thread.set_priority(osPriorityHigh);
   error_event_thread.set_priority(osPriorityRealtime1);
   error_event_low_thread.set_priority(osPriorityRealtime7);
 
@@ -157,8 +157,10 @@ int main() {
   error_event_low_thread.start(&error_event_queue_low);
   #endif
 
+  #ifdef ENABLE_STATEMACHINE
   controller_event_thread.start(&contoller_event_queue_thread);
   monitor.start(&monitoring_thread);
+  #endif
 
   #ifdef ENABLE_DATALOGGING
   data_event_thread.start(&datalink_thread);
