@@ -118,7 +118,7 @@ void button_rise(){
 }
 
 void button_fall(){
-  if (start_button_timer.read_ms() > 20){
+  if (button_timer.read_ms() > 20){
     start_button_event.post();
   }
   button_timer.stop();
@@ -136,15 +136,17 @@ void update_integrators(){
 
 void fan_control(){
   uint32_t flags = controller_flags.get();
-  switch((flags)&CLEAR_FAN_FLAG){
-    case FAN_SHUTDOWN_FLAG:
-      fan_cont.set(Fan::off);
-    case FAN_MIN_FLAG:
-      fan_cont.set(Fan::min);
-    case FAN_MAX_FLAG:
-      fan_cont.set(Fan::max);
-    case FAN_PID_FLAG:
-      fan_cont.pid_update();
+  if (flags&FAN_SHUTDOWN_FLAG){
+    fan_cont.set(Fan::off);
+  }
+  else if (flags&FAN_MIN_FLAG){
+    fan_cont.set(Fan::min);
+  }
+  else if (flags&FAN_MAX_FLAG){
+    fan_cont.set(Fan::max); 
+  }
+  else if (flags&FAN_PID_FLAG){
+    fan_cont.pid_update();
   }
 }
 
@@ -166,6 +168,7 @@ void start_button(){
 void start_purge_check(){
   #ifdef ENABLE_RELAY_TEST
   if (true){
+    relay_delay_event.post();
     start_purge_event.post();
   }
   #endif
@@ -187,6 +190,7 @@ void fc_charge_entry_check(){
 void fc_charge_exit_check(){
   #ifdef ENABLE_RELAY_TEST
   if (true){
+    relay_delay_event.post();
     fc_charge_exit_event.post();
   }
   #endif
@@ -210,6 +214,7 @@ void cap_charge_entry_check(){
 
   #ifdef ENABLE_RELAY_TEST
   if (true){
+    relay_delay_event.post();
     cap_charge_entry_event.post();
   }
   #endif
@@ -221,6 +226,9 @@ void cap_charge_entry_check(){
   if (volt < CAP_VOLT){
     cap_charge_entry_event.post();
   }
+  if (volt > CAP_VOLT){
+    cap_charge_exit_check_event.post();
+  }
   #endif
   else{
     state_monitoring_event.delay(50);
@@ -231,6 +239,7 @@ void cap_charge_entry_check(){
 void cap_charge_exit_check(){
   #ifdef ENABLE_RELAY_TEST
   if (true){
+    relay_delay_event.post();
     cap_charge_exit_event.post();
   }
   #endif
@@ -254,6 +263,7 @@ void purge_entry_check(){
 
   #ifdef ENABLE_RELAY_TEST
   if (true){
+    relay_delay_event.post();
     purge_event.post();
   }
   #endif
@@ -276,81 +286,81 @@ void purge_entry_check(){
   }
 }
 
+void start_state_flags(uint32_t flags){
+  if (flags&SIGNAL_STARTSETUPCOMPLETE){
+    start_purge_check_event.post();
+    return;
+  }
+
+  if (flags&SIGNAL_STARTPURGECOMPLETE){
+    fc_charge_entry_check_event.post();
+    return;
+  }
+
+  if (flags&SIGNAL_FCCHARGESTARTED){
+    fc_charge_exit_check_event.post();
+    return;
+  }
+
+  if (flags&SIGNAL_STATETRANSITION){
+    charge_event.post();
+    return;
+  }
+
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
+}
+
+void charge_state_flags(uint32_t flags){
+  if (flags&SIGNAL_CHARGESETUPCOMPLETE){
+    cap_charge_entry_check_event.post();
+    return;
+  }
+  if (flags&SIGNAL_CHARGESTARTED){
+    cap_charge_exit_check_event.post();
+    return;
+  }
+  if (flags&SIGNAL_STATETRANSITION){
+    run_event.post();
+    return;
+  }
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
+}
+
+void purge_state_flags(uint32_t flags){
+  if (flags&SIGNAL_STATETRANSITION){
+    run_event.post();
+    return;
+  }
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
+}
+
 void state_monitoring(){
   fc.lock();
   int status = fc.get_fc_status();
   fc.unlock();
+  fan_control();
 
   uint32_t flags = controller_flags.get();
-
-  #ifdef ENABLE_RELAY_TEST
-  relay_delay_event.post();
-  #endif
-  switch (status) {
-    case START_STATE:{
-        
-        if (flags&SIGNAL_STARTSETUPCOMPLETE){
-          start_purge_check_event.post();
-          return;
-        }
-
-        if (flags&SIGNAL_STARTPURGECOMPLETE){
-          fc_charge_entry_check_event.post();
-          return;
-        }
-
-        if (flags&SIGNAL_FCCHARGESTARTED){
-          fc_charge_exit_check_event.post();
-          return;
-        }
-
-        if (flags&SIGNAL_STATETRANSITION){
-          charge_event.post();
-          return;
-        }
-
-        state_monitoring_event.delay(50);
-        state_monitoring_event.post();
-        
-      }
-
-    case CHARGE_STATE:{
-        if (flags&SIGNAL_CHARGESETUPCOMPLETE){
-          cap_charge_entry_check_event.post();
-          return;
-        }
-        
-        if (flags&SIGNAL_CHARGESTARTED){
-          cap_charge_exit_check_event.post();
-          return;
-        }
-
-        if (flags&SIGNAL_STATETRANSITION){
-          run_event.post();
-          return;
-        }
-
-        state_monitoring_event.delay(50);
-        state_monitoring_event.post();
-    }
-    
-    case RUN_STATE:{
-      purge_entry_check_event.post();
-    }
-
-    case PURGE_STATE:{
-      if (flags&SIGNAL_STATETRANSITION){
-        run_event.post();
-      }
-    }
-
-    case SHUTDOWN_STATE:{
-      #ifdef ENABLE_RELAY_TEST
-      start_event.post();
-      #endif
-    }
-
-    case ALARM_STATE:{}
+  if (status == START_STATE){
+    start_state_flags(flags);
+  }
+  else if (status == CHARGE_STATE){
+    charge_state_flags(flags);
+  }
+  else if (status == RUN_STATE){
+    purge_entry_check_event.post();
+  }
+  else if (status == PURGE_STATE){
+    purge_state_flags(flags);
+  }
+  else if (status == SHUTDOWN_STATE){
+    #ifdef ENABLE_RELAY_TEST
+    relay_delay_event.post();
+    start_event.post();
+    #endif
   }
 }
 
@@ -371,9 +381,11 @@ void monitoring_thread(){
 
 
   update_integrators_event.period(10);
-  fan_control_event.period(100);
+  //fan_control_event.period(100);
 
   update_integrators_event.post();
-  fan_control_event.post();
-  mon_queue.dispatch();
+  //fan_control_event.post();
+  while(true){
+    mon_queue.dispatch(-1);
+  }
 }

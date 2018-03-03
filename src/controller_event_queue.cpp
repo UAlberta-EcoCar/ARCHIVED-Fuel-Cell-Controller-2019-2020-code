@@ -30,7 +30,7 @@ void contoller_event_queue_thread(){
   cont_queue.call(test);
   #endif
   #ifndef ENABLE_TESTMODE
-  cont_queue.call(start_state);
+  cont_queue.call(shut_state);
   #endif
 
   cont_queue.dispatch_forever();
@@ -140,6 +140,7 @@ void fc_charge_exit(){
   Thread::wait(100);
 
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MAX_FLAG));
+  state_event.post();
   //cont_queue.call(charge_state);
 }
 
@@ -186,6 +187,7 @@ void cap_charge_exit(){
   cap_r.write(false);
 
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MIN_FLAG));
+  state_event.post();
   //cont_queue.call(run_state);
 }
 
@@ -224,6 +226,7 @@ void purge(){
 
   // Footer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_PID_FLAG));
+  state_event.post();
   //cont_queue.call(run_state);
 }
 
@@ -240,6 +243,7 @@ void shut_state(){
   cap_r.write(false);
 
   controller_flags.set(FAN_SHUTDOWN_FLAG);
+  state_event.post();
 }
 
 void alarm_state(){

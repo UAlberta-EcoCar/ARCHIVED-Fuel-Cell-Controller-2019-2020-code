@@ -149,6 +149,8 @@ int main() {
   error_event_thread.set_priority(osPriorityRealtime1);
   error_event_low_thread.set_priority(osPriorityRealtime7);
 
+  Thread::wait(5000);
+
   //Start threads
   #ifdef ENABLE_ERRORS
   error_event_thread.start(&error_event_queue);

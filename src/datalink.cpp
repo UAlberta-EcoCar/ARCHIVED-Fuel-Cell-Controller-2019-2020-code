@@ -14,12 +14,14 @@
 #include "main.h"
 
 #define FTDI_PER_MS 2000
-#define BLUE_PER_MS 5000
-#define OL_PER_MS 500
+#define BLUE_PER_MS 2000
+#define OL_PER_MS 2000
 
 #define FTDI_BAUD 1000000
 #define BLUE_BAUD 115200
 #define OL_BAUD 115200
+
+#define START_DELAY 2000
 
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
 
@@ -128,14 +130,6 @@ void ol_logging(){
     #ifdef ENABLE_OPENLOG_INTG_VALUES
     ol_printer.print_info<Integrator>(&int_vec, &int_iter, 0);
     #endif
-
-    #ifdef ENABLE_OPENLOG_VANDR
-    ol_printer.print_info<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-    #endif
-
-    #ifndef ENABLE_OPENLOG_VANDR
-    ol_printer.print<string>("\n", 0);
-    #endif
 }
 
 void ol_logging_header(){
@@ -152,15 +146,7 @@ void ol_logging_header(){
     #endif
 
     #ifdef ENABLE_OPENLOG_INTG_VALUES
-    ol_printer.print_header<Integrator>(&int_vec, &int_iter, 0);
-    #endif
-
-    #ifdef ENABLE_OPENLOG_VANDR
-    ol_printer.print_header<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
-    #endif
-
-    #ifndef ENABLE_OPENLOG_VANDR
-    ol_printer.print<string>("\n", 0);
+    ol_printer.print_header<Integrator>(&int_vec, &int_iter);
     #endif
 }
 
@@ -245,7 +231,7 @@ void datalink_thread(){
     ol_logging_event.period(OL_PER_MS);
     ftdi_logging_event.period(FTDI_PER_MS);
 
-    Thread::wait(2000);
+    Thread::wait(START_DELAY);
 
     #ifdef ENABLE_OPENLOG_HEADER
     ol_logging_header_event.post();

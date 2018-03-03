@@ -19,28 +19,28 @@
 // #define ENABLE_TEMP3
 // #define ENABLE_TEMP4
 // #define ENABLE_TEMP5
-#define ENABLE_HUM
-#define ENABLE_AMBTEMP
+//#define ENABLE_HUM
+//#define ENABLE_AMBTEMP
 
 #define ENABLE_RTC
-#define ENABLE_SHT31
+//#define ENABLE_SHT31
 
 // Fan enable/disable
 #define ENABLE_FAN2
 #define ENABLE_FAN3
 
 // Start Button 
-#define ENABLE_EXTERNAL_START
+//#define ENABLE_EXTERNAL_START
 
 // In code
 // Define feature enable/disable
 //#define ENABLE_ERRORS
-//#define ENABLE_DATALOGGING
+#define ENABLE_DATALOGGING
 //does nothing rn
 //#define ENABLE_ANALYTICS
 
 // Datalogging Specifics enable/disable
-//#define ENABLE_BLUETOOTH
+#define ENABLE_BLUETOOTH
 //#define ENABLE_OPENLOG
 //#define ENABLE_OPENLOG_HEADER
 #define ENABLE_BLUETOOTH_SENSORS
