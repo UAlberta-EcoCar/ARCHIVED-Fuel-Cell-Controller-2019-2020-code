@@ -25,6 +25,7 @@
 
 EventQueue data_queue(32*EVENTS_EVENT_SIZE);
 
+// Serial printer is gross.
 SerialPrinter blue_printer("Bluetooth", BLUE_TX, BLUE_RX, BLUE_BAUD);
 SerialPrinter ol_printer("Openlog", OL_TX, OL_RX, OL_BAUD);
 SerialPrinter fdti_printer("FTDI", FTDI_TX, FTDI_RX, FTDI_BAUD);

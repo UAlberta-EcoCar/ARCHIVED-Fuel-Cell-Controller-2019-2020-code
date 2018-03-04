@@ -9,6 +9,7 @@
 #include "datalink.h"
 #include "main.h"
 
+// Sofie
 #ifndef ALICE_CONFIGURATION
 #define MAX_FC_CURR 30
 #define MAX_FC_VOLT 30.8
@@ -18,12 +19,12 @@
 #define MIN_PRESS 5.0
 #endif
 
-// TODO: Find alice specifics, ask erin
+// Alice
 #ifdef ALICE_CONFIGURATION
-#define MAX_FC_CURR 30
-#define MAX_FC_VOLT 30.8
-#define MAX_CAP_CURR 30
-#define MAX_CAP_VOLT 32.0
+#define MAX_FC_CURR 70
+#define MAX_FC_VOLT 50.6
+#define MAX_CAP_CURR 70
+#define MAX_CAP_VOLT 51.8
 #define MAX_PRESS 8.0
 #define MIN_PRESS 5.0
 #endif
@@ -100,7 +101,7 @@ void pressure_check(){
   #endif
 
   #ifdef ENABLE_UNDERPRESS
-  if (press1.read() <= 5.0){
+  if (press1.read() <= 5.0 && fc.get_fc_status() != SHUTDOWN_STATE){
     error_handler_event.post(UNDERPRESS);
     return;
   }
@@ -149,18 +150,37 @@ void temp_check(){
 }
 
 void post_checks(){
-  overvoltage_check_event.post();
-  overcurrent_check_event.post();
-  pressure_check_event.post();
-  temp_check_event.post();
+  if (fc.get_fc_status() != ALARM_STATE){
+    overvoltage_check_event.post();
+    overcurrent_check_event.post();
+    pressure_check_event.post();
+    temp_check_event.post();
+  }
 }
 
 void error_handler(int error_code){
+  // Enter critical section
+  __disable_irq();
+
   cont_queue.break_dispatch();
+  err_queue_low.break_dispatch();
   controller_event_thread.terminate();
   fc.set_error_status(error_code);
   alarm_event.post();
   error_log_event.post();
+
+  // Dettach Interrupts
+  #ifdef ENABLE_H2STOP
+  h2.rise(NULL); // Change to fall
+  #endif
+  #ifdef ENABLE_ESTOP1
+  estop1.rise(NULL); // Change to fall
+  #endif
+  #ifdef ENABLE_ESTOP2
+  estop2.rise(NULL); // Change to fall
+  #endif
+
+  __enable_irq();
 }
 
 void h2_isr(){

@@ -38,9 +38,9 @@ void contoller_event_queue_thread(){
 
 void update_leds(){
   alarm_led.write(false);
-  shut_led.write(false);
-  start_led.write(false);
-  run_led.write(false);
+  shut_led.write(false); // Red
+  start_led.write(false); // Blue
+  run_led.write(false); // Green
   fc.lock();
   int state = fc.get_fc_status();
   fc.unlock();
@@ -69,13 +69,12 @@ void update_leds(){
 
 // Start state setup
 void start_state(){
+  // Header
   controller_flags.clear();
   fc.set_fc_status(START_STATE);
 
-  // Move this to a monitoring task
+  // Transition
   update_leds();
-
-  // Close all valves, Open all relays
   supply_v.write(false);
   purge_v.write(false);
   start_r.write(false);
@@ -83,7 +82,7 @@ void start_state(){
   charge_r.write(false);
   cap_r.write(false);
   
-  // Signal setup complete
+  // Trailer
   controller_flags.set((SIGNAL_STARTSETUPCOMPLETE|FAN_MAX_FLAG));
   state_event.post();
 }
@@ -92,7 +91,7 @@ void start_purge(){
   // Header
   controller_flags.clear();
 
-  // Event
+  // Transition
   purge_v.write(false);
   start_r.write(false);
   motor_r.write(false);
@@ -104,7 +103,7 @@ void start_purge(){
   Thread::wait(200);
   purge_v.write(false);
 
-  // Footer
+  // Trailer
   controller_flags.set((SIGNAL_STARTPURGECOMPLETE|FAN_MAX_FLAG));
   state_event.post();
 }
@@ -129,8 +128,10 @@ void fc_charge_entry(){
 }
 
 void fc_charge_exit(){
+  // Header
   controller_flags.clear();
 
+  // Transition
   supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
@@ -139,17 +140,18 @@ void fc_charge_exit(){
   cap_r.write(false);
   Thread::wait(100);
 
+  // Trailer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MAX_FLAG));
   state_event.post();
-  //cont_queue.call(charge_state);
 }
 
 void charge_state(){
+  // Header
   controller_flags.clear();
   fc.set_fc_status(CHARGE_STATE);
 
+  // Transition
   update_leds();
-  // For safety
   supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
@@ -157,13 +159,16 @@ void charge_state(){
   charge_r.write(false);
   cap_r.write(false);
 
+  // Trailer
   controller_flags.set((FAN_MIN_FLAG|SIGNAL_CHARGESETUPCOMPLETE));
   state_event.post();
 }
 
 void cap_charge_entry(){
+  // Header
   controller_flags.clear();
-  // Charging
+
+  // Transistion
   supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
@@ -171,14 +176,16 @@ void cap_charge_entry(){
   cap_r.write(false);
   charge_r.write(true);
 
-
+  // Trailer
   controller_flags.set((FAN_MIN_FLAG|SIGNAL_CHARGESTARTED));
   state_event.post();
 }
 
 void cap_charge_exit(){
+  // Header
   controller_flags.clear();
 
+  // Transistion
   supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
@@ -186,16 +193,18 @@ void cap_charge_exit(){
   charge_r.write(false);
   cap_r.write(false);
 
+  // Trailer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MIN_FLAG));
   state_event.post();
-  //cont_queue.call(run_state);
 }
 
 void run_state(){
+  // Header
   controller_flags.clear();
   fc.set_fc_status(RUN_STATE);
+
+  // Transition
   update_leds();
-  
   supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
@@ -203,6 +212,7 @@ void run_state(){
   charge_r.write(false);
   cap_r.write(true);
 
+  // Trailer
   controller_flags.set(FAN_PID_FLAG);
   state_event.post();
 }
@@ -212,9 +222,9 @@ void purge(){
   controller_flags.clear();
   fc.set_fc_status(PURGE_STATE);
   fc.increment_purge();
-  update_leds();
 
-  // Event
+  // Transition
+  update_leds();
   supply_v.write(true);
   purge_v.write(true);
   start_r.write(false);
@@ -224,16 +234,16 @@ void purge(){
   Thread::wait(200);
   purge_v.write(false);
 
-  // Footer
+  // Trailer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_PID_FLAG));
   state_event.post();
-  //cont_queue.call(run_state);
 }
 
 void shut_state(){
   controller_flags.clear();
   fc.set_fc_status(SHUTDOWN_STATE);
 
+  // Transition 
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -242,14 +252,17 @@ void shut_state(){
   charge_r.write(false);
   cap_r.write(false);
 
+  // Trailer
   controller_flags.set(FAN_SHUTDOWN_FLAG);
   state_event.post();
 }
 
 void alarm_state(){
+  // Header
   controller_flags.clear();
   fc.set_fc_status(ALARM_STATE);
 
+  // Transition
   update_leds();
   supply_v.write(false);
   purge_v.write(false);
@@ -258,7 +271,9 @@ void alarm_state(){
   charge_r.write(false);
   cap_r.write(false);
 
+  // Trailer
   controller_flags.set(FAN_SHUTDOWN_FLAG);
+  state_event.post();
 }
 
 #ifdef ENABLE_TESTMODE

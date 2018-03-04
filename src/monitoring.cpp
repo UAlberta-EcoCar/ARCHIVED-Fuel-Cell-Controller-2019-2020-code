@@ -10,10 +10,6 @@
 #include "controller_event_queue.h"
 #include "monitoring.h"
 
-
-#define FC_PRES1 5.0
-#define FC_PRES2 4.0
-
 #ifndef ALICE_CONFIGURATION
 #define FC_VOLT 20.0
 #define CAP_VOLT 20.0
@@ -184,6 +180,18 @@ void start_purge_check(){
 }
 
 void fc_charge_entry_check(){
+  #ifndef ENABLE_RELAY_TEST
+  fcvolt.lock();
+  float volt = fcvolt.read();
+  fcvolt.unlock();
+
+  // If voltage already acheived skip to after charge
+  if (volt > FC_VOLT){
+    fc_charge_exit_event.post();
+    return;
+  }
+  #endif
+
   fc_charge_entry_event.post();
 }
 
@@ -211,29 +219,18 @@ void fc_charge_exit_check(){
 
 // Charge State
 void cap_charge_entry_check(){
-
-  #ifdef ENABLE_RELAY_TEST
-  if (true){
-    relay_delay_event.post();
-    cap_charge_entry_event.post();
-  }
-  #endif
   #ifndef ENABLE_RELAY_TEST
   capvolt.lock();
   float volt = capvolt.read();
   capvolt.unlock();
 
-  if (volt < CAP_VOLT){
-    cap_charge_entry_event.post();
-  }
+  // If voltage already acheived skip to after charge
   if (volt > CAP_VOLT){
-    cap_charge_exit_check_event.post();
+    cap_charge_exit_event.post();
+    return;
   }
   #endif
-  else{
-    state_monitoring_event.delay(50);
-    state_monitoring_event.post();
-  }
+  cap_charge_entry_event.post();
 }
 
 void cap_charge_exit_check(){

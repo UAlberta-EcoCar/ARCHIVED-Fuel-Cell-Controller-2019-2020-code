@@ -21,6 +21,10 @@ The six threads are as follows, in order of highest to lowest priority:
 Each thread essentially is just an eventqueue, which dispatches forever, and a collection of events. Some events are posted to the queue periodically, and some posted after certain conditions are met.
 
 ### Datalogging
+*Please note the current datalogging was not designed well and as a result is inefficeint and prone to causing system deadlock. This will be adressed in datalogging 2.0 [To be worked on after FCC-code 1.0 release]*
+
+**Datalogging 1.0 works, however not very well due to the sheer # of blocking requests**
+
 Datalogging consists of three periodically posted tasks, each task queries global I/O objects and then writes the data to it's respective serial port.
 
 Since we have three serial ports being used (OpenLog, Bluetooth, FTDI) there are three tasks. At the moment bluetooth and the FTDI chip share the same data formatting. Openlog log prints a header on start up detailing column names, follwed by only the respective values in the following records. FTDI and the bluetooth follow the "name:value" format at this moment.
@@ -55,7 +59,7 @@ void transition(){
     // Trailer
 }
 ```
-The header is responsible for clearing/setting up flags and setting the the fuel-cell state group (if transistioning between state groups). The transition is self explanitory. The trailer is responsible for indicating to the transistion controller the transition is complete. This is done with an `Event`.
+The header is responsible for clearing old flags and additional set up (state group if transistioning between state groups). The transition is self explanitory. The trailer is responsible for setting flags and indicating to the transistion controller the transition is complete. This is done with an `Event`.
 
 > State Groups & States
 > * Start 
@@ -78,12 +82,16 @@ The header is responsible for clearing/setting up flags and setting the the fuel
 >
 >*Alarm is not actually a part of the state machine, will be explained later*
 
-State groups are a collection of multiple smaller sub-states. This is because a state-machine is static, any transformation of the state is a transition. The states required to achevieve an overall task (such as start-up) are grouped together. 
+State groups are a collection of multiple smaller sub-states. This is because a state-machine is static, any transformation of the state is a transition. The states required to achevieve an overall task (such as start-up) are grouped together.
+
+*Purges are not split into two states*
 
 #### Transition Control
 
+
+
 ### Error's
-Error's in the FCC are found by using the polling method. Every 50ms an `Event` for each error we want to monitor is posted to the lower error queue. Some error's use the interrupt method, such as the hydrogen alarm and emergency stop button's. This allows them to be delt with near instantly as opposed to having to wait to be polled, one of the main drawbacks of the polling method.
+Error's in the FCC are found by using the polling method. Every 50ms an `Event` for each error we want to monitor is posted to the lower error queue. Error's use the interrupt method whenever possible, such as the hydrogen alarm and emergency stop button's. This allows them to be delt with near instantly as opposed to having to wait to be polled, one of the main drawbacks of the polling method.
 
 Each error check `Event` is a short method that preforms a few checks, posting an error `Event` to the higher error queue. These error `Events` can be specific although at the moment all error's use a single error handling task. This task kill's the statemachine thread and queue then set's the FCC into `ALARM_STATE`
 

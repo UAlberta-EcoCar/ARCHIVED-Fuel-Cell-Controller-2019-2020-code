@@ -146,12 +146,12 @@ class FanControl{
 };
 
 template <class T, class V>
-const float FanControl<T,V>::p = 1.0;
+const float FanControl<T,V>::p = 25.0;
 
 template <class T, class V>
-const float FanControl<T,V>::i = 1.0;
+const float FanControl<T,V>::i = 0.1;
 
 template <class T, class V>
-const float FanControl<T,V>::d = 1.0;
+const float FanControl<T,V>::d = 0.0;
 
 #endif

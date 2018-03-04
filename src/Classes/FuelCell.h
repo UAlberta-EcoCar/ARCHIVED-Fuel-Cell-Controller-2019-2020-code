@@ -37,15 +37,27 @@ class FuelCell: public IO{
     };
 
     static float query_optimal_temp(float curr){
-        return (0.5295*curr + 26.032);
+        float temp = 0.5295*curr + 26.032;
+        if (temp >= 70){
+            temp = 70;
+        }
+        return temp;
     }
 
     static float query_min_temp(float curr){
-        return (0.6057*curr + 4.4979);
+        float temp = 0.6057*curr + 4.4979;
+        if (temp >= 70){
+            temp = 70;
+        }
+        return temp;
     }
 
     static float query_max_temp(float curr){
-        return (0.287*curr + 53.218);
+        float temp = 0.287*curr + 53.218;
+        if (temp >= 70){
+            temp = 70;
+        }
+        return temp;
     }
     
     void set_fc_status(int status){
