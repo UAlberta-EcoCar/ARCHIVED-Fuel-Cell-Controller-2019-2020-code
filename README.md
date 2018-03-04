@@ -87,8 +87,7 @@ State groups are a collection of multiple smaller sub-states. This is because a 
 *Purges are not split into two states*
 
 #### Transition Control
-
-
+<img src="tranc.jpeg" alt="Drawing" style="width: 600px;" align="middle"/>
 
 ### Error's
 Error's in the FCC are found by using the polling method. Every 50ms an `Event` for each error we want to monitor is posted to the lower error queue. Error's use the interrupt method whenever possible, such as the hydrogen alarm and emergency stop button's. This allows them to be delt with near instantly as opposed to having to wait to be polled, one of the main drawbacks of the polling method.
