@@ -3,16 +3,10 @@
 
 using namespace std;
 
-DigitalOut_Ext::DigitalOut_Ext(
-  PinName pin,
-  string name
-):IO(name), pin(pin){};
+DigitalOut_Ext::DigitalOut_Ext(PinName pin, string name):IO(name), pin(pin){};
 
 // Method declaration
-void DigitalOut_Ext::write(
-  bool value
-)
-{
+void DigitalOut_Ext::write(bool value){
   this->lock();
   this->value = value;
   this->pin.write(value);
@@ -23,8 +17,7 @@ int DigitalOut_Ext::read(){
   return this->value;
 };
 
-string DigitalOut_Ext::toString()
-{
+string DigitalOut_Ext::toString(){
   stringstream ss;
   ss << this->get_name();
   ss << ":";
@@ -32,19 +25,16 @@ string DigitalOut_Ext::toString()
   return ss.str();
 };
 
-string DigitalOut_Ext::toStringInfo()
-{
+string DigitalOut_Ext::toStringInfo(){
   stringstream ss;
   ss << this->read();
   return ss.str();
 };
 
-string DigitalOut_Ext::toStringHeader()
-{
+string DigitalOut_Ext::toStringHeader(){
   return this->get_name();
 };
 
-string DigitalOut_Ext::toJsonObject()
-{
+string DigitalOut_Ext::toJsonObject(){
   return "Not Implemented";
 };

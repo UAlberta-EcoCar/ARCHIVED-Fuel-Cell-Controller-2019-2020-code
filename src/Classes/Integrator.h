@@ -19,10 +19,7 @@ private:
 
 public:
 //Constructor
-Integrator(
-  std::string name = "default"
-):IO(name)
-{
+Integrator(std::string name = "default"):IO(name){
   this->lock();
   this->value = 0.0;
   this->_coup = 1;
@@ -31,45 +28,32 @@ Integrator(
 };
 
 // Methods
-void sensor_add(
-  Sensor* obj
-)
-{
+void sensor_add(Sensor* obj){
   this->lock();
   this->vec.push_back(obj);
   this->unlock();
 };
 
-void set_const(
-  float constant
-)
-{
+void set_const(float constant){
   this->lock();
   this->constant = constant;
   this->unlock();
 };
 
-float read(
-  bool update=1
-)
-{
+float read(bool update=1){
   if (update){
     this->update();
   }
   return this->value;
 };
 
-void set(
-  float value
-)
-{
+void set(float value){
   this->lock();
   this->value = value;
   this->unlock();
 };
 
-void update()
-{
+void update(){
   this->lock();
   this->dt.stop();
   float del = this->dt.read();
@@ -92,17 +76,13 @@ void start(){
   this->unlock();
 };
 
-void couple(
-  bool couple=1
-)
-{
+void couple(bool couple=1){
   this->lock();
   this->_coup = couple;
   this->unlock();
 };
 
-string toString()
-{
+string toString(){
   stringstream ss;
   ss << this->get_name();
   ss << ":";
@@ -110,16 +90,14 @@ string toString()
   return ss.str();
 };
 
-string toStringInfo()
-{
+string toStringInfo(){
   stringstream ss;
   ss << fixed << setprecision(2) << this->read();
   return ss.str();
 
 };
 
-string toStringHeader()
-{
+string toStringHeader(){
   return this->get_name();
 };
 

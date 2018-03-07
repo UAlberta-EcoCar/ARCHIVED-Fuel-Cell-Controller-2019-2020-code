@@ -10,23 +10,14 @@ private:
   string stat;
 public:
 
-  SerialPrinter(
-    string name,
-    PinName tx,
-    PinName rx,
-    int baud
-  ):IO(name), printer(tx,rx,baud){
+  SerialPrinter(string name, PinName tx, PinName rx, int baud):IO(name), printer(tx,rx,baud){
     this->lock();
     this->stat = "";
     this->unlock();
   };
 
   template <class T>
-  void print(
-    vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter,
-    bool newline=1
-  ){
+  void print(vector<T*>* T_vec, typename vector<T*>::iterator* T_iter, bool newline=1){
     this->lock();
     stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
@@ -42,12 +33,8 @@ public:
     this->unlock();
   };
 
-    template <class T>
-  void print(
-    T* obj,
-    bool newline = 1
-  )
-  {
+  template <class T>
+  void print(T* obj, bool newline = 1){
     this->lock();
     stringstream ss;
     (*obj).lock();
@@ -62,11 +49,7 @@ public:
   };
 
   template <class T>
-  void print(
-    T obj,
-    bool newline = 1
-  )
-  {
+  void print(T obj, bool newline = 1){
     this->lock();
     stringstream ss;
     ss << obj;
@@ -80,12 +63,7 @@ public:
   };
 
   template <class T>
-  void print_header(
-    vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter,
-    bool newline=1
-  )
-  {
+  void print_header(vector<T*>* T_vec, typename vector<T*>::iterator* T_iter, bool newline=1){
     this->lock();
     stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
@@ -102,11 +80,7 @@ public:
   };
 
   template <class T>
-  void print_header(
-    T* obj,
-    bool newline = 1
-  )
-  {
+  void print_header(T* obj, bool newline = 1){
     this->lock();
     stringstream ss;
     (*obj).lock();
@@ -121,12 +95,7 @@ public:
   };
 
   template <class T>
-  void print_info(
-    vector<T*>* T_vec,
-    typename vector<T*>::iterator* T_iter,
-    bool newline=1
-  )
-  {
+  void print_info(vector<T*>* T_vec, typename vector<T*>::iterator* T_iter, bool newline=1){
     this->lock();
     stringstream ss;
     for((*T_iter) = (*T_vec).begin(); (*T_iter) != (*T_vec).end(); (*T_iter)++){
@@ -143,11 +112,7 @@ public:
   };
 
   template <class T>
-  void print_info(
-    T* obj,
-    bool newline = 1
-  )
-  {
+  void print_info(T* obj, bool newline = 1){
     this->lock();
     stringstream ss;
     (*obj).lock();

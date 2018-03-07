@@ -19,23 +19,15 @@ Method declaration
 */
 public:
 // Constructor
-Analog_Sensor(
-  PinName pin,
-  T scaler,
-  string name="default"
-):Sensor(name), pin(pin)
-{
+Analog_Sensor(PinName pin, T scaler, string name="default"):Sensor(name), pin(pin){
   this->value = 0.0;
   this->scaler = scaler;
   this->couple();
 };
 
-void update(){
-  
-};
+void update(){};
 
-float read()
-{
+float read(){
   this->lock();
   if (this->_coup){
     this->set(this->scaler.scale(this->pin.read()));

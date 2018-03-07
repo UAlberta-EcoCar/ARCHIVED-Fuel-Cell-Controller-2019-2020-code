@@ -22,6 +22,9 @@ Initilaize Objects
   -These are used by the Threads
     -want the I/O to be global, local objects are defined locally
 */
+
+#define DIGITAL_READ_TO_V 3.3
+
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
 
@@ -34,9 +37,9 @@ SHT31 sht31("SHT31", &master);
 #endif
 
 // Scale objects
-LinearScalable<float> v_s(45.768, 0.2715);
-LinearScalable<float> c_s(48.329, -15.464);
-LinearScalable<float> press_s(49.65, -24.468);
+LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
+LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
+LinearScalable<float> press_s(3.3, 0.0);
 PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.2785, -2818.1076);
 
 // AnalogIn_Ext Objects

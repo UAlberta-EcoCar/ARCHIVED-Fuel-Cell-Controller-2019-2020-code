@@ -51,7 +51,7 @@
 // Define feature enable/disable
 //
 //
-#define ENABLE_ERRORS
+//#define ENABLE_ERRORS
 #define ENABLE_DATALOGGING
 #define ENABLE_STATEMACHINE
 
@@ -91,6 +91,6 @@
 //
 //
 //#define ENABLE_TESTSTATE
-//#define ENABLE_RELAY_TEST
+#define ENABLE_RELAY_TEST
 
 #endif
