@@ -276,24 +276,10 @@ void alarm_state(){
   state_event.post();
 }
 
-#ifdef ENABLE_TESTMODE
+#ifdef ENABLE_TESTSTATE
 void test(){
   supply_v.write(true);
-  Thread::wait(5000);
-  purge_v.write(true);
-  Thread::wait(1000);
-  start_r.write(true);
-  Thread::wait(1000);
-  motor_r.write(true);
-  Thread::wait(1000);
-  charge_r.write(true);
-  Thread::wait(1000);
-  cap_r.write(true);
-  Thread::wait(1000);
-  alarm_led.write(true);
-  shut_led.write(true);
-  start_led.write(true);
-  run_led.write(true);
+  purge_v.write(false);
   controller_flags.set(FAN_MIN_FLAG);  
 }
 #endif

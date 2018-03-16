@@ -90,7 +90,7 @@
 // TESTING DIRECTIVES
 //
 //
-//#define ENABLE_TESTSTATE
-#define ENABLE_RELAY_TEST
+#define ENABLE_TESTSTATE
+//#define ENABLE_RELAY_TEST
 
 #endif
