@@ -33,8 +33,8 @@ void update_integrators();
 void fan_control();
 void start_button();
 void state_monitoring();
+
 void start_purge_check();
-void fc_charge_entry_check();
 void fc_charge_exit_check();
 void cap_charge_entry_check();
 void cap_charge_exit_check();
@@ -52,7 +52,6 @@ Event<void()> shutdown_event(&cont_queue, shut_state);
 // Start up events
 Event<void()> start_event(&cont_queue, start_state);
 Event<void()> start_purge_event(&cont_queue, start_purge);
-Event<void()> fc_charge_entry_event(&cont_queue, fc_charge_entry);
 Event<void()> fc_charge_exit_event(&cont_queue, fc_charge_exit);
 
 // Charge events
@@ -79,7 +78,6 @@ Event<void()> start_button_event(&mon_queue, start_button);
 Event<void()> state_monitoring_event(&mon_queue, state_monitoring);
 // Start
 Event<void()> start_purge_check_event(&mon_queue, start_purge_check);
-Event<void()> fc_charge_entry_check_event(&mon_queue, fc_charge_entry_check);
 Event<void()> fc_charge_exit_check_event(&mon_queue, fc_charge_exit_check);
 //Charge
 Event<void()> cap_charge_entry_check_event(&mon_queue, cap_charge_entry_check);
@@ -166,33 +164,22 @@ void start_purge_check(){
   if (true){
     relay_delay_event.post();
     start_purge_event.post();
+    return;
   }
   #endif
-  #ifndef ENABLE_RELAY_TEST
-  if (true){
-    start_purge_event.post();
-  }
-  #endif
-  else{
-    state_monitoring_event.delay(50);
-    state_monitoring_event.post();
-  }
-}
-
-void fc_charge_entry_check(){
   #ifndef ENABLE_RELAY_TEST
   fcvolt.lock();
   float volt = fcvolt.read();
   fcvolt.unlock();
 
-  // If voltage already acheived skip to after charge
   if (volt > FC_VOLT){
-    fc_charge_exit_event.post();
+    start_purge_event.post();
     return;
   }
   #endif
 
-  fc_charge_entry_event.post();
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
 }
 
 void fc_charge_exit_check(){
@@ -200,6 +187,7 @@ void fc_charge_exit_check(){
   if (true){
     relay_delay_event.post();
     fc_charge_exit_event.post();
+    return;
   }
   #endif
   #ifndef ENABLE_RELAY_TEST
@@ -209,12 +197,12 @@ void fc_charge_exit_check(){
 
   if (volt > FC_VOLT){
     fc_charge_exit_event.post();
+    return;
   }
   #endif
-  else{
-    state_monitoring_event.delay(50);
-    state_monitoring_event.post();
-  }
+  
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
 }
 
 // Charge State
@@ -238,6 +226,7 @@ void cap_charge_exit_check(){
   if (true){
     relay_delay_event.post();
     cap_charge_exit_event.post();
+    return;
   }
   #endif
   #ifndef ENABLE_RELAY_TEST
@@ -247,12 +236,12 @@ void cap_charge_exit_check(){
 
   if (volt > CAP_VOLT){
     cap_charge_exit_event.post();
+    return;
   }
   #endif
-  else{
-    state_monitoring_event.delay(50);
-    state_monitoring_event.post();
-  }
+  
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
 }
 
 // Run State
@@ -275,12 +264,12 @@ void purge_entry_check(){
 
   if ((coulumbs - (float)(num_purge*PURGE_COLUMBS)) > PURGE_COLUMBS){
     purge_event.post();
+    return;
   }
   #endif
-  else{
-    state_monitoring_event.delay(50);
-    state_monitoring_event.post();
-  }
+
+  state_monitoring_event.delay(50);
+  state_monitoring_event.post();
 }
 
 void start_state_flags(uint32_t flags){
@@ -290,11 +279,6 @@ void start_state_flags(uint32_t flags){
   }
 
   if (flags&SIGNAL_STARTPURGECOMPLETE){
-    fc_charge_entry_check_event.post();
-    return;
-  }
-
-  if (flags&SIGNAL_FCCHARGESTARTED){
     fc_charge_exit_check_event.post();
     return;
   }

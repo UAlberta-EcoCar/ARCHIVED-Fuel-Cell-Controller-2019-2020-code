@@ -8,21 +8,32 @@
 #include "main.h"
 
 EventQueue cont_queue(32*EVENTS_EVENT_SIZE);
-
 Event<void()> state_event(&cont_queue, state_monitoring);
+void update_leds();
 
+// START
 void start_state();
 void start_purge();
-void fc_charge_entry();
 void fc_charge_exit();
+
+// RUN
 void charge_state();
 void cap_charge_entry();
 void cap_charge_exit();
+
+// RUN
 void run_state();
+
+// PURGE
 void purge();
+
+// SHUTDOWN AND ALARM
 void shut_state();
 void alarm_state();
-void update_leds();
+
+// TEST STATE
+// ESSENTIALLY ALLOWS A MINI PROGRAM TO BE RUN WITHIN THE TEST FUNCTION.
+// MEANT TO BE MODIFIED AND USED HOWEVER NEEDED.
 void test();
 
 void contoller_event_queue_thread(){
@@ -75,7 +86,7 @@ void start_state(){
 
   // Transition
   update_leds();
-  supply_v.write(false);
+  supply_v.write(true);
   purge_v.write(false);
   start_r.write(false);
   motor_r.write(false);
@@ -90,10 +101,11 @@ void start_state(){
 void start_purge(){
   // Header
   controller_flags.clear();
+  // Enable low pressure error
 
   // Transition
   purge_v.write(false);
-  start_r.write(false);
+  start_r.write(true);
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
@@ -108,25 +120,6 @@ void start_purge(){
   state_event.post();
 }
 
-void fc_charge_entry(){
-  // Header
-  controller_flags.clear();
-
-  // Start resistors
-  supply_v.write(true);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(false);
-  Thread::wait(100);
-  start_r.write(true);
-
-  // Footer
-  controller_flags.set((SIGNAL_FCCHARGESTARTED|FAN_MAX_FLAG));
-  state_event.post();
-}
-
 void fc_charge_exit(){
   // Header
   controller_flags.clear();
@@ -138,7 +131,6 @@ void fc_charge_exit(){
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
-  Thread::wait(100);
 
   // Trailer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MAX_FLAG));
