@@ -39,7 +39,7 @@ SHT31 sht31("SHT31", &master);
 // Scale objects
 LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
 LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
-LinearScalable<float> press_s(3.3, 0.0);
+LinearScalable<float> press_s((18.729*DIGITAL_READ_TO_V), -23.353);
 PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.2785, -2818.1076);
 
 // AnalogIn_Ext Objects
@@ -168,6 +168,8 @@ int main() {
   #ifdef ENABLE_DATALOGGING
   data_event_thread.start(&datalink_thread);
   #endif
+
+  fcc_r.write(true);
   
   return 0;
 }

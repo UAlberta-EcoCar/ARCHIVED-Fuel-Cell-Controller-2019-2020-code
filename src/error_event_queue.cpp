@@ -171,13 +171,13 @@ void error_handler(int error_code){
 
   // Dettach Interrupts
   #ifdef ENABLE_H2STOP
-  h2.rise(NULL); // Change to fall
+  h2.fall(NULL); // Change to fall
   #endif
   #ifdef ENABLE_ESTOP1
-  estop1.rise(NULL); // Change to fall
+  estop1.fall(NULL); // Change to fall
   #endif
   #ifdef ENABLE_ESTOP2
-  estop2.rise(NULL); // Change to fall
+  estop2.fall(NULL); // Change to fall
   #endif
 
   __enable_irq();
@@ -195,6 +195,10 @@ void estop2_isr(){
   error_handler_event.post(ESTOP2_ALARM);
 }
 
+void stop_isr(){
+  error_handler_event.post(STOP_ALARM);
+}
+
 void error_event_queue(){
   err_queue.dispatch_forever();
 }
@@ -202,18 +206,23 @@ void error_event_queue(){
 void error_event_queue_low(){
   // Attach Interrupts
   #ifdef ENABLE_H2STOP
-  h2.rise(&h2_isr); // Change to fall
+  h2.fall(&h2_isr); // Change to fall
   h2.mode(PullDown);
   #endif
 
   #ifdef ENABLE_ESTOP1
   estop1.rise(&estop1_isr); // Change to fall
-  estop1.mode(PullDown);
+  estop1.mode(PullUp);
   #endif
 
   #ifdef ENABLE_ESTOP2
   estop2.rise(&estop2_isr); // Change to fall
-  estop2.mode(PullDown);
+  estop2.mode(PullUp);
+  #endif
+
+  #ifdef ENABLE_STOP
+  stop.fall(&stop_isr);
+  stop.mode(PullUp);
   #endif
 
   post_checks_event.period(10);

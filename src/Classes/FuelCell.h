@@ -20,6 +20,7 @@
 #define H2_ALARM 7
 #define ESTOP1_ALARM 8
 #define ESTOP2_ALARM 9
+#define STOP_ALARM 10
 
 class FuelCell: public IO{
     private:

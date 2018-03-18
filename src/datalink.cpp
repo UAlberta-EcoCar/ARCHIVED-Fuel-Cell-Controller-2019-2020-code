@@ -17,7 +17,7 @@
 #define BLUE_PER_MS 2000
 #define OL_PER_MS 2000
 
-#define FTDI_BAUD 1000000
+#define FTDI_BAUD 115200
 #define BLUE_BAUD 115200
 #define OL_BAUD 115200
 
@@ -238,7 +238,7 @@ void datalink_thread(){
 
     blue_logging_event.period(BLUE_PER_MS);
     ol_logging_event.period(OL_PER_MS);
-    ftdi_logging_event.period(FTDI_PER_MS);
+    //ftdi_logging_event.period(FTDI_PER_MS);
 
     Thread::wait(START_DELAY);
 
@@ -251,7 +251,7 @@ void datalink_thread(){
     #ifdef ENABLE_BLUETOOTH
     blue_logging_event.post();
     #endif
-    ftdi_logging_event.post();
+    //ftdi_logging_event.post();
     
     data_queue.dispatch_forever();
 }
