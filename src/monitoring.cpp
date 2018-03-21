@@ -31,7 +31,6 @@ Timer button_timer;
 // Function definitions
 void update_integrators();
 void fan_control();
-void start_button();
 void state_monitoring();
 
 void start_purge_check();
@@ -89,6 +88,7 @@ Event<void()> purge_entry_check_event(&mon_queue, purge_entry_check);
 InterruptIn start_butt(START);
 #endif
 InterruptIn button(BUTT);
+InterruptIn pressureize_line(USER_BUTTON);
 
 // BUTTON ISR'S
 void start_button_rise(){
@@ -118,6 +118,14 @@ void button_fall(){
   button_timer.stop();
   button_timer.reset();
   debug_led.write(false);
+}
+
+void pressureize_line_rise(){
+  supply_v.write(true);
+}
+
+void pressureize_line_fall(){
+  supply_v.write(false);
 }
 
 
@@ -358,6 +366,10 @@ void monitoring_thread(){
   #endif
 
   button.mode(PullDown);
+
+  pressureize_line.rise(&pressureize_line_rise);
+  pressureize_line.fall(&pressureize_line_fall);
+  pressureize_line.mode(PullDown);
 
 
 

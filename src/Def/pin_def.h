@@ -20,9 +20,8 @@
 
 // Start
 #define START PF_12
-
-// Button (Which i think is the same use as start?)
 #define BUTT PF_2
+
 /*
 Valves
   -Ethernet #8
@@ -115,6 +114,7 @@ Analog voltage readings (Temperture Sensors)
 #define MOTOR_RX PB_11//RX 3
 
 //Error Interrupt
+// Not used
 #define ERROR_ISR PH_1
 #define ERROR_ISR_THROW PH_0
 

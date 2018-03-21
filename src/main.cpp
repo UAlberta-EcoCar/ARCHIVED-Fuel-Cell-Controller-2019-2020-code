@@ -144,6 +144,7 @@ Thread FTDI_event_thread;
 Thread monitor;
 
 int main() {
+  fcc_r.write(true);
   
   // Threads from lowest -> highest priority
   data_event_thread.set_priority(osPriorityLow);
@@ -168,8 +169,6 @@ int main() {
   #ifdef ENABLE_DATALOGGING
   data_event_thread.start(&datalink_thread);
   #endif
-
-  fcc_r.write(true);
   
   return 0;
 }
