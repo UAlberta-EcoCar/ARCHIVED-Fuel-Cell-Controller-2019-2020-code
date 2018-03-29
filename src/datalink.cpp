@@ -53,25 +53,37 @@ void ftdi_logging(){
     fdti_printer.print<RealTimeClock>(&rtc, 0);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_BLUETOOTH_FCSTATUS
     fdti_printer.print<FuelCell>(&fc, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_BLUETOOTH_FANS
     fdti_printer.print<Fan>(&fan_vec, &fan_iter);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_SHT31
     fdti_printer.print<SHT31>(&sht31, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_BLUETOOTH_SENSORS
     fdti_printer.print<Sensor>(&sensor_vec, &sensor_iter);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_BLUETOOTH_INTG_VALUES
     fdti_printer.print<Integrator>(&int_vec, &int_iter);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_BLUETOOTH_VANDR
     fdti_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
@@ -86,29 +98,43 @@ void blue_logging(){
     blue_printer.print<RealTimeClock>(&rtc, 0);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_BLUETOOTH_FCSTATUS
     blue_printer.print<FuelCell>(&fc, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_BLUETOOTH_FANS
     blue_printer.print<Fan>(&fan_vec, &fan_iter);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_SHT31
     blue_printer.print<SHT31>(&sht31, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_BLUETOOTH_SENSORS
     blue_printer.print<Sensor>(&sensor_vec, &sensor_iter);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_BLUETOOTH_INTG_VALUES
     blue_printer.print<Integrator>(&int_vec, &int_iter);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_BLUETOOTH_VANDR
     blue_printer.print<DigitalOut_Ext>(&dig_out_vec, &dig_out_iter);
     #endif
+
+    Thread::yield();
 
     blue_printer.print<string>("\n");
 
@@ -120,17 +146,25 @@ void ol_logging(){
     ol_printer.print<RealTimeClock>(&rtc, 0);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_OPENLOG_FCSTATUS
     ol_printer.print_info<FuelCell>(&fc, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_OPENLOG_FANS
     ol_printer.print_info<Fan>(&fan_vec, &fan_iter, 0);
     #endif
 
+    Thread::yield();
+
     #ifdef ENABLE_OPENLOG_SENSORS
     ol_printer.print_info<Sensor>(&sensor_vec, &sensor_iter, 0);
     #endif
+
+    Thread::yield();
 
     #ifdef ENABLE_OPENLOG_INTG_VALUES
     ol_printer.print_info<Integrator>(&int_vec, &int_iter);
@@ -157,6 +191,8 @@ void ol_logging_header(){
     #ifdef ENABLE_OPENLOG_INTG_VALUES
     ol_printer.print_header<Integrator>(&int_vec, &int_iter);
     #endif
+
+    Thread::yield();
 }
 
 void datalink_thread(){

@@ -116,7 +116,7 @@ public:
     this->lock();
     stringstream ss;
     (*obj).lock();
-    ss << (*obj).toStringInfo();
+    ss << (*obj).toStringInfo() + " ";
     (*obj).unlock();
     if (newline){
       ss << "\n";

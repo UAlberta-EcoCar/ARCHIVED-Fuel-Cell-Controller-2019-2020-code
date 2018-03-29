@@ -122,7 +122,7 @@ class FuelCell: public IO{
         this->lock();
         ss << "FC_Status ";
         ss << " Error_Status ";
-        ss << "Purge_Count";
+        ss << "Purge_Count ";
         this->unlock();
         return ss.str();
     }

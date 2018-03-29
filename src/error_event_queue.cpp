@@ -34,6 +34,8 @@
 EventQueue err_queue(32*EVENTS_EVENT_SIZE);
 EventQueue err_queue_low(32*EVENTS_EVENT_SIZE);
 
+Timer low_pressure;
+
 void error_handler(int error_code);
 void overvoltage_check();
 void overcurrent_check();
@@ -102,6 +104,14 @@ void pressure_check(){
 
   #ifdef ENABLE_UNDERPRESS
   if (press1.read() <= 5.0 && fc.get_fc_status() != SHUTDOWN_STATE){
+    low_pressure.start();
+  }
+  else{
+    low_pressure.stop();
+    low_pressure.reset();
+  }
+
+  if (low_pressure.read() > 2.0){
     error_handler_event.post(UNDERPRESS);
     return;
   }

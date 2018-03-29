@@ -11,8 +11,8 @@
 #include "monitoring.h"
 
 #ifndef ALICE_CONFIGURATION
-#define FC_VOLT 20.0
-#define CAP_VOLT 20.0
+#define FC_VOLT 18.0
+#define CAP_VOLT 18.0
 #endif
 
 #ifdef ALICE_CONFIGURATION
@@ -32,9 +32,9 @@ Timer button_timer;
 void update_integrators();
 void fan_control();
 void state_monitoring();
+void start_button();
 
 void start_purge_check();
-void fc_charge_exit_check();
 void cap_charge_entry_check();
 void cap_charge_exit_check();
 void purge_entry_check();
@@ -51,7 +51,6 @@ Event<void()> shutdown_event(&cont_queue, shut_state);
 // Start up events
 Event<void()> start_event(&cont_queue, start_state);
 Event<void()> start_purge_event(&cont_queue, start_purge);
-Event<void()> fc_charge_exit_event(&cont_queue, fc_charge_exit);
 
 // Charge events
 Event<void()> charge_event(&cont_queue, charge_state);
@@ -69,7 +68,6 @@ Event<void()> relay_delay_event(&cont_queue, relay_delay);
 
 // Monitoring events
 Event<void()> update_integrators_event(&mon_queue, update_integrators);
-Event<void()> fan_control_event(&mon_queue, fan_control);
 Event<void()> start_button_event(&mon_queue, start_button);
 
 
@@ -77,7 +75,7 @@ Event<void()> start_button_event(&mon_queue, start_button);
 Event<void()> state_monitoring_event(&mon_queue, state_monitoring);
 // Start
 Event<void()> start_purge_check_event(&mon_queue, start_purge_check);
-Event<void()> fc_charge_exit_check_event(&mon_queue, fc_charge_exit_check);
+
 //Charge
 Event<void()> cap_charge_entry_check_event(&mon_queue, cap_charge_entry_check);
 Event<void()> cap_charge_exit_check_event(&mon_queue, cap_charge_exit_check);
@@ -120,6 +118,7 @@ void button_fall(){
   debug_led.write(false);
 }
 
+// Potential bug if used after startup
 void pressureize_line_rise(){
   supply_v.write(true);
 }
@@ -186,29 +185,6 @@ void start_purge_check(){
   }
   #endif
 
-  state_monitoring_event.delay(50);
-  state_monitoring_event.post();
-}
-
-void fc_charge_exit_check(){
-  #ifdef ENABLE_RELAY_TEST
-  if (true){
-    relay_delay_event.post();
-    fc_charge_exit_event.post();
-    return;
-  }
-  #endif
-  #ifndef ENABLE_RELAY_TEST
-  fcvolt.lock();
-  float volt = fcvolt.read();
-  fcvolt.unlock();
-
-  if (volt > FC_VOLT){
-    fc_charge_exit_event.post();
-    return;
-  }
-  #endif
-  
   state_monitoring_event.delay(50);
   state_monitoring_event.post();
 }
@@ -283,11 +259,6 @@ void purge_entry_check(){
 void start_state_flags(uint32_t flags){
   if (flags&SIGNAL_STARTSETUPCOMPLETE){
     start_purge_check_event.post();
-    return;
-  }
-
-  if (flags&SIGNAL_STARTPURGECOMPLETE){
-    fc_charge_exit_check_event.post();
     return;
   }
 
@@ -371,13 +342,9 @@ void monitoring_thread(){
   pressureize_line.fall(&pressureize_line_fall);
   pressureize_line.mode(PullDown);
 
-
-
   update_integrators_event.period(10);
-  //fan_control_event.period(100);
-
   update_integrators_event.post();
-  //fan_control_event.post();
+
   while(true){
     mon_queue.dispatch(-1);
   }

@@ -14,7 +14,6 @@ void update_leds();
 // START
 void start_state();
 void start_purge();
-void fc_charge_exit();
 
 // RUN
 void charge_state();
@@ -114,23 +113,6 @@ void start_purge(){
   purge_v.write(true);
   Thread::wait(200);
   purge_v.write(false);
-
-  // Trailer
-  controller_flags.set((SIGNAL_STARTPURGECOMPLETE|FAN_MAX_FLAG));
-  state_event.post();
-}
-
-void fc_charge_exit(){
-  // Header
-  controller_flags.clear();
-
-  // Transition
-  supply_v.write(true);
-  purge_v.write(false);
-  start_r.write(false);
-  motor_r.write(false);
-  charge_r.write(false);
-  cap_r.write(false);
 
   // Trailer
   controller_flags.set((SIGNAL_STATETRANSITION|FAN_MAX_FLAG));
