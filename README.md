@@ -96,12 +96,12 @@ Each error check `Event` is a short method that preforms a few checks, posting a
 
 #### Supported Error's
 There are multiple error's that the FCC detects.
-* FC Over-voltage
-* FC Over-current
-* Cap Over-voltage
-* Cap Over-current
-* Hydrogen Line Under-Pressure
-* Hydrogen Line Over-Pressure
+* FC Over-voltage [code = 1]
+* FC Over-current [code = 2]
+* Cap Over-voltage [code = 3]
+* Cap Over-current [code = 4]
+* Hydrogen Line Under-Pressure [code = 5]
+* Hydrogen Line Over-Pressure [code = 6]
 * FC Over-Temp
 * FC Under-Temp
 * H2 Sensor Alarm

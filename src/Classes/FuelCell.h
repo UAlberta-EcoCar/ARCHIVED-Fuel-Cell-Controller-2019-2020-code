@@ -3,6 +3,7 @@
 
 #include "IO.h"
 
+// States
 #define START_STATE 1
 #define CHARGE_STATE 2
 #define RUN_STATE 3
@@ -10,6 +11,7 @@
 #define SHUTDOWN_STATE 5
 #define ALARM_STATE 6
 
+// Error Codes
 #define NOERROR 0 
 #define OVERVOLTAGE 1
 #define OVERCURR 2
