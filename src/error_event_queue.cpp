@@ -181,13 +181,13 @@ void error_handler(int error_code){
 
   // Dettach Interrupts
   #ifdef ENABLE_H2STOP
-  h2.fall(NULL); // Change to fall
+  h2.fall(NULL);
   #endif
   #ifdef ENABLE_ESTOP1
-  estop1.fall(NULL); // Change to fall
+  estop1.fall(NULL);
   #endif
   #ifdef ENABLE_ESTOP2
-  estop2.fall(NULL); // Change to fall
+  estop2.fall(NULL);
   #endif
 
   __enable_irq();

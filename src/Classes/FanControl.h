@@ -18,6 +18,7 @@ class FanControl{
         static const float p;
         static const float i;
         static const float d;
+        static const float pidTimeOut;
         float out;
         float iterm;
         float prev_temp_diff;
@@ -27,7 +28,7 @@ class FanControl{
         typename vector<Analog_Sensor<T>* >::iterator temp_sensor_iter;
         Analog_Sensor<V> *fccurr;
         DigitalOut_Ext *enable_pin;
-        Timer dt;
+        Timer dTimer;
         Mutex mu;
 
         // Methods
@@ -49,6 +50,11 @@ class FanControl{
                 return 0;
             }
             return (ave/count);
+        };
+
+        void _pid_reset(){
+            this->iterm = 0;
+            this->prev_temp_diff = this->_average_temp();
         };
 
     public:
@@ -97,26 +103,21 @@ class FanControl{
         };
 
         // Functional Methods
-        void pid_start(){
-            this->lock();
-            this->dt.start();
-            this->dt.reset();
-            this->iterm = 0;
-            this->prev_temp_diff = this->_average_temp();
-            this->unlock();
-        };
-
         void pid_update(){
             this->lock();
             // Get time passed
-            float dt = this->dt.read();
-            float current = (*(this->fccurr)).read();
-            this->dt.reset();
+            this->dTimer.stop();
+            float dt = this->dTimer.read();
+            this->dTimer.reset();
+            this->dTimer.start();
 
-            if (dt == 0.0 || dt >= 4.0){
-                this->pid_start();
+            if (dt >= this->pidTimeOut){
+                this->_pid_reset();
             }
 
+            // Get current
+            float current = (*(this->fccurr)).read();
+            
             // Find difference/error
             float temp_diff = this->_average_temp() - FuelCell::query_optimal_temp(current);
 
@@ -149,9 +150,12 @@ template <class T, class V>
 const float FanControl<T,V>::p = 25.0;
 
 template <class T, class V>
-const float FanControl<T,V>::i = 0.1;
+const float FanControl<T,V>::i = 3.0;
 
 template <class T, class V>
-const float FanControl<T,V>::d = 0.0;
+const float FanControl<T,V>::d = 2.0;
+
+template <class T, class V>
+const float FanControl<T,V>::pidTimeOut = 1.0;
 
 #endif

@@ -252,8 +252,10 @@ void alarm_state(){
 
 #ifdef ENABLE_TESTSTATE
 void test(){
-  supply_v.write(true);
-  purge_v.write(false);
-  controller_flags.set(FAN_MIN_FLAG);  
+  while(true){
+    fan_cont.pid_update();
+    Thread::wait(50);
+
+  }
 }
 #endif
