@@ -39,8 +39,8 @@ SHT31 sht31("SHT31", &master);
 // Scale objects
 LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
 //LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
-LinearScalable<float> c_s50(47.796*DIGITAL_READ_TO_V, -59.599+1.5); //50 Amp Current Sensor
-LinearScalable<float> c_s100(DIGITAL_READ_TO_V*47.796*2,-59.599*2+3.2); //100 Amp Current Sensor
+LinearScalable<float> c_s50((47.796*DIGITAL_READ_TO_V),(-59.599+1.5)); //50 Amp Current Sensor
+LinearScalable<float> c_s100((DIGITAL_READ_TO_V*47.796*2),(-59.599*2+3.2)); //100 Amp Current Sensor
 LinearScalable<float> press_s((18.729*DIGITAL_READ_TO_V), -23.353);
 PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.2785, -2818.1076);
 
