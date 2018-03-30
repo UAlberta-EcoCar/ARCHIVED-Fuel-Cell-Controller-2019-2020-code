@@ -38,17 +38,19 @@ SHT31 sht31("SHT31", &master);
 
 // Scale objects
 LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
-LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
+//LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
+LinearScalable<float> c_s50((47.796*DIGITAL_READ_TO_V),(-59.599+1.5)); //50 Amp Current Sensor
+LinearScalable<float> c_s100((DIGITAL_READ_TO_V*47.796*2),(-59.599*2+3.2)); //100 Amp Current Sensor
 LinearScalable<float> press_s((18.729*DIGITAL_READ_TO_V), -23.353);
 PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.2785, -2818.1076);
 
 // AnalogIn_Ext Objects
 Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, v_s, "capvolt");
-Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, c_s, "fccurr");
+Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, c_s50, "fccurr");
 Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, v_s, "fcvolt");
-Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s, "capcurr");
-Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt"); 
-Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s, "motorcurr");
+Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s50, "capcurr");
+Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt");
+Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s100, "motorcurr");
 Analog_Sensor<LinearScalable<float> > press1(PRESS1, press_s, "press1");
 
 #ifdef ENABLE_PRESS2
@@ -145,7 +147,7 @@ Thread monitor;
 
 int main() {
   fcc_r.write(true);
-  
+
   // Threads from lowest -> highest priority
   data_event_thread.set_priority(osPriorityLow);
   monitor.set_priority(osPriorityAboveNormal7);
@@ -167,6 +169,6 @@ int main() {
   #ifdef ENABLE_DATALOGGING
   data_event_thread.start(&datalink_thread);
   #endif
-  
+
   return 0;
 }
