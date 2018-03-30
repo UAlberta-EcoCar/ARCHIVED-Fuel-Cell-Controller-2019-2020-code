@@ -75,13 +75,14 @@ extern Integrator cap_joules;
 
 extern FuelCell fc;
 
-extern FanControl<LinearScalable<float>, LinearScalable<float> > fan_cont;
+extern FanControl<PolyScalable<float>, LinearScalable<float> > fan_cont;
 
 //Vectors
 extern vector<Sensor*> sensor_vec;
 extern vector<Integrator*> int_vec;
 extern vector<DigitalOut_Ext*> dig_out_vec;
 extern vector<Fan*> fan_vec;
+extern vector<Analog_Sensor<PolyScalable<float> >* > temp_vec;
 
 //Iterators
 extern vector<Sensor*>::iterator sensor_iter;

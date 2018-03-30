@@ -82,9 +82,9 @@
 #define ENABLE_UNDERPRESS
 #define ENABLE_OVERTEMP
 //#define ENABLE_UNDERTEMP
-#define ENABLE_H2STOP
-#define ENABLE_ESTOP1
-#define ENABLE_ESTOP2
+//#define ENABLE_H2STOP
+//#define ENABLE_ESTOP1
+//#define ENABLE_ESTOP2
 #define ENABLE_STOP
 
 

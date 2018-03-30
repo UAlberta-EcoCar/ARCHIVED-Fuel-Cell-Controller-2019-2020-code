@@ -147,13 +147,13 @@ class FanControl{
 };
 
 template <class T, class V>
-const float FanControl<T,V>::p = 50.0;
+const float FanControl<T,V>::p = 25.0;
 
 template <class T, class V>
-const float FanControl<T,V>::i = 0.01;
+const float FanControl<T,V>::i = 3.0;
 
 template <class T, class V>
-const float FanControl<T,V>::d = 100.0;
+const float FanControl<T,V>::d = 2.0;
 
 template <class T, class V>
 const float FanControl<T,V>::pidTimeOut = 1.0;
