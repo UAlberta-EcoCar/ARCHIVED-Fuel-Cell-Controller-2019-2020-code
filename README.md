@@ -86,6 +86,14 @@ State groups are a collection of multiple smaller sub-states. This is because a 
 
 *Purges are not split into two states*
 
+State Codes:
+* Start State [code = 1]
+* Charge State [code = 2]
+* Run State [code = 3]
+* Purge State [code = 4]
+* Shutdown State [code = 5]
+* Alarm State [code = 6]
+
 #### Transition Control
 <img src="tranc.jpeg" alt="Drawing" style="width: 600px;" align="middle"/>
 
