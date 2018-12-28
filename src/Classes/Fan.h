@@ -6,16 +6,18 @@
 
 class Fan: public IO{
   private:
-    bool __coup;
+    bool __coup; // Used as a conditional variable within Fan.cpp to indicate whether or not the fan is allowed to be set.
 
-    PwmOut out;
+    PwmOut out; // Declares object of Mbed class PwmOut.
 
   public:
 
+  // Constant declarations	
   static const float max;
   static const float min;
   static const float off;
 
+  // Constructors
   Fan(string name, PinName out_pin, PinName in_pin);
 
   // Getters/Setters
