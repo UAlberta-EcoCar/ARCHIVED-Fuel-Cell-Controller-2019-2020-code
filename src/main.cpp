@@ -23,7 +23,7 @@ Initilaize Objects
     -want the I/O to be global, local objects are defined locally
 */
 
-#define DIGITAL_READ_TO_V 3.3
+#define DIGITAL_READ_TO_V 3.3 //ADC Reference Voltage is 3.3 V
 
 //I2C Objects
 I2C master(I2C_SDA, I2C_SCL);
@@ -36,7 +36,7 @@ RealTimeClock rtc("clock", &master);
 SHT31 sht31("SHT31", &master);
 #endif
 
-// Scale objects
+// Scale objects - Apply linear transform for converting sensor readings to actual readings
 LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
 //LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
 LinearScalable<float> c_s50((47.796*DIGITAL_READ_TO_V),(-59.599+1.5)); //50 Amp Current Sensor
@@ -86,16 +86,20 @@ Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 #endif
 
 // DigitalOut_Ext objects
+  //Valves
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
 DigitalOut_Ext purge_v(PURGE_V, "PURGE_V");
 DigitalOut_Ext other1_v(VALVE3, "VALVE3");
 DigitalOut_Ext other2_v(VALVE4, "VALVE4");
+  //Relays
 DigitalOut_Ext start_r(START_R, "START_R");
 DigitalOut_Ext motor_r(MOTOR_R, "MOTOR_R");
 DigitalOut_Ext charge_r(CHARGE_R, "CHARGE_R");
 DigitalOut_Ext cap_r(CAP_R, "CAP_R");
 DigitalOut_Ext fcc_r(FCC_R, "FCC_R");
+ //Error Interrupt Pin
 DigitalOut_Ext error_throw(ERROR_ISR_THROW, "ERROR_ISR_THROW");
+ //LEDs
 DigitalOut_Ext alarm_led(ALARM_LED, "ALARM_LED");
 DigitalOut_Ext debug_led(DEBUG_LED, "DEBUG_LED");
 DigitalOut_Ext shut_led(SHUT_LED, "SHUT_LED");
@@ -132,7 +136,7 @@ vector<DigitalOut_Ext*>::iterator dig_out_iter;
 vector<Fan*>::iterator fan_iter;
 
 FanControl<PolyScalable<float>, LinearScalable<float> > fan_cont(
-    &fan_vec, 
+    &fan_vec,
     &temp_vec,
     &fccurr
 );

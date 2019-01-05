@@ -4,6 +4,8 @@
 #include "Scalable.h"
 #include <vector>
 
+//Class template for applying up a up to 5 order polynomial scaling
+//derivered from Scalable.h
 template <class T>
 class PolyScalable: public Scalable<T>{
 private:
@@ -15,6 +17,7 @@ public:
   PolyScalable(){};
 
   PolyScalable(T a){
+    //see https://stackoverflow.com/questions/13324431/c-vectors-insert-push-back-difference
     this->param_vec.push_back(a);
     this->param_vec.push_back(0.0);
   };
