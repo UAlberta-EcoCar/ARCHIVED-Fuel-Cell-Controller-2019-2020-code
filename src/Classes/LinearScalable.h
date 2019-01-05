@@ -3,11 +3,13 @@
 
 #include "Scalable.h"
 
+//Class for applying linear transform to data
+//Derived from Scalable.h
 template <class T>
 class LinearScalable: public Scalable<T>{
 private:
-  T a;
-  T b;
+  T a;  //slope
+  T b;  //intercept
 
 public:
   LinearScalable(){this->set_params();};
