@@ -12,14 +12,17 @@ private:
   T b;  //intercept
 
 public:
+  //class constructors
   LinearScalable(){this->set_params();};
-  LinearScalable(T a){this->set_params(a);};
+  LinearScalable(T a){this->set_params(a);}; //b defaults to 0
   LinearScalable(T a, T b){this->set_params(a, b);};
 
+  //apply's linear scale
   T scale(T value){
     return (a*value) + b;
   };
 
+  //changes scale factors
   void set_params(T a=1, T b=0){
     this->a = a;
     this->b = b;

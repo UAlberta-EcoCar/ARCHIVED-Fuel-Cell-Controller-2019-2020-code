@@ -3,7 +3,8 @@
 
 #include "IO.h"
 
-//base class for reading sensors
+//class for reading sensors
+//derived from IO.h
 class Sensor: public IO{
 
 public:

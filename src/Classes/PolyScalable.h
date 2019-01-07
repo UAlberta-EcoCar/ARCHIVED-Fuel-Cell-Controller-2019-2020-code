@@ -19,7 +19,7 @@ public:
   PolyScalable(T a){
     //see https://stackoverflow.com/questions/13324431/c-vectors-insert-push-back-difference
     this->param_vec.push_back(a);
-    this->param_vec.push_back(0.0);
+    this->param_vec.push_back(0.0); //b=0
   };
 
   PolyScalable(T a, T b){
@@ -61,6 +61,7 @@ public:
     this->param_vec = params;
   };
 
+  //applies scale
   T scale(T value){
     T scaled = 0;
     int count = 0;
@@ -74,6 +75,7 @@ public:
     return scaled;
   };
 
+  //for changing scale factors
   void set_params(vector<T> params){
     this->param_vec = params;
   };

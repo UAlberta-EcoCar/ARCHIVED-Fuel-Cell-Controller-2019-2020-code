@@ -1,7 +1,7 @@
 #ifndef IO_H
 #define IO_H
 
-// Multi inheritance is bad, but whatever
+// Multi inheritance is bad, but whatever :(
 // Private inheritance means the functions inherited can only be used internally
 #include <string>
 #include <sstream>
@@ -15,18 +15,15 @@ private:
   string __name;
   Mutex mu;
 public:
-  IO(
-    string name
-  )
+  //constructor
+  IO(string name)
   {
     mu.lock();
     this->__name = name;
     mu.unlock();
   };
 
-  void set_name(
-    string name
-  )
+  void set_name(string name)
   {
     mu.lock();
     this->__name = name;
@@ -38,27 +35,33 @@ public:
     return this->__name;
   };
 
-  void lock(){
+  void lock()
+  {
     mu.lock();
   };
 
-  void unlock(){
+  void unlock()
+  {
     mu.unlock();
   };
 
-  string toString(){
+  string toString()
+  {
     return this->get_name();
   };
 
-  string toStringInfo(){
+  string toStringInfo()
+  {
     return this->get_name();
   };
 
-  string toStringHeader(){
+  string toStringHeader()
+  {
     return this->get_name();
   };
 
-  string toJsonObject(){
+  string toJsonObject()
+  {
     return "";
   };
 };
