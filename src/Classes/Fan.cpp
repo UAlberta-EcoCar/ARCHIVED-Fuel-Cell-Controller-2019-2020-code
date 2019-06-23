@@ -84,5 +84,5 @@ string Fan::toJsonObject()
 }
 
 const float Fan::max = 0.95;
-const float Fan::min = 0.15;
+const float Fan::min = 0.40;
 const float Fan::off = 0.0;

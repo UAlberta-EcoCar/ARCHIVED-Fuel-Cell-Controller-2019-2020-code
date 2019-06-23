@@ -38,6 +38,8 @@ SHT31 sht31("SHT31", &master);
 
 // Scale objects
 LinearScalable<float> v_s((8.0914*DIGITAL_READ_TO_V), -0.0357);
+LinearScalable<float> v_s_fc((8.0914*DIGITAL_READ_TO_V), -0.0357+0.48585); //adjusted based on Feb 4 calibration
+LinearScalable<float> v_s_cap((8.0914*DIGITAL_READ_TO_V), -0.0357+0.0986); //adjusted based on Feb 16 calibration
 //LinearScalable<float> c_s((47.796*DIGITAL_READ_TO_V), -59.599);
 LinearScalable<float> c_s50((47.796*DIGITAL_READ_TO_V),(-59.599+1.5)); //50 Amp Current Sensor
 LinearScalable<float> c_s100((DIGITAL_READ_TO_V*47.796*2),(-59.599*2+3.2)); //100 Amp Current Sensor
@@ -47,9 +49,9 @@ PolyScalable<float> fctemp_s(140.0978, -899.05152, 3595.492, -7539.7506, 7471.27
 // AnalogIn_Ext Objects
 Analog_Sensor<LinearScalable<float> > capvolt(CAPVOLT, v_s, "capvolt");
 Analog_Sensor<LinearScalable<float> > fccurr(FCCURR, c_s50, "fccurr");
-Analog_Sensor<LinearScalable<float> > fcvolt(FCVOLT, v_s, "fcvolt");
-Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s50, "capcurr");
-Analog_Sensor<LinearScalable<float> > motorvolt(MOTORVOLT, v_s, "motorvolt");
+Analog_Sensor<LinearScalable<float> > motorvolt(FCVOLT, v_s, "motorvoltisnonsense"); //motor and fc pins seem to be switched
+Analog_Sensor<LinearScalable<float> > capcurr(CAPCURR, c_s50, "capcurrisnonsense");
+Analog_Sensor<LinearScalable<float> > fcvolt(MOTORVOLT, v_s_fc, "fcvolt"); //motor and fc pins seem to be switched
 Analog_Sensor<LinearScalable<float> > motorcurr(MOTORCURR, c_s100, "motorcurr");
 Analog_Sensor<LinearScalable<float> > press1(PRESS1, press_s, "press1");
 
@@ -86,16 +88,20 @@ Analog_Sensor<LinearScalable<float> > temp5(TEMP5, cap_scale, "temp5");
 #endif
 
 // DigitalOut_Ext objects
+ //Valves
 DigitalOut_Ext supply_v(SUPPLY_V, "Supply_V");
 DigitalOut_Ext purge_v(PURGE_V, "PURGE_V");
 DigitalOut_Ext other1_v(VALVE3, "VALVE3");
 DigitalOut_Ext other2_v(VALVE4, "VALVE4");
+ //Relays
 DigitalOut_Ext start_r(START_R, "START_R");
 DigitalOut_Ext motor_r(MOTOR_R, "MOTOR_R");
 DigitalOut_Ext charge_r(CHARGE_R, "CHARGE_R");
 DigitalOut_Ext cap_r(CAP_R, "CAP_R");
 DigitalOut_Ext fcc_r(FCC_R, "FCC_R");
+ //Error INterrupt Pin
 DigitalOut_Ext error_throw(ERROR_ISR_THROW, "ERROR_ISR_THROW");
+ //LEDs
 DigitalOut_Ext alarm_led(ALARM_LED, "ALARM_LED");
 DigitalOut_Ext debug_led(DEBUG_LED, "DEBUG_LED");
 DigitalOut_Ext shut_led(SHUT_LED, "SHUT_LED");
@@ -132,7 +138,7 @@ vector<DigitalOut_Ext*>::iterator dig_out_iter;
 vector<Fan*>::iterator fan_iter;
 
 FanControl<PolyScalable<float>, LinearScalable<float> > fan_cont(
-    &fan_vec, 
+    &fan_vec,
     &temp_vec,
     &fccurr
 );

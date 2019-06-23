@@ -6,7 +6,7 @@
     A list of what they do can be found in the documentation.
         -Commenting them out disables them
 */
-// Vehicle Specifier 
+// Vehicle Specifier
 //  - Default configuration is for Sofie.
 //
 // #define ALICE_CONFIGURATION
@@ -17,7 +17,7 @@
 //
 // #define ENABLE_PRESS2
 // #define ENABLE_PRESS3
-// #define ENABLE_PRESS4 
+// #define ENABLE_PRESS4
 // #define ENABLE_TEMP1
 // #define ENABLE_TEMP2
 // #define ENABLE_TEMP3
@@ -38,8 +38,8 @@
 // Fan enable/disable
 //
 //
-#define ENABLE_FAN2
-#define ENABLE_FAN3
+//#define ENABLE_FAN2
+//#define ENABLE_FAN3
 
 
 // Start Button
@@ -77,11 +77,13 @@
 //
 //
 #define ENABLE_OVERVOLTAGE
+#define ENABLE_UNDERVOLTAGE
 #define ENABLE_OVERCURR
 #define ENABLE_OVERPRESS
 #define ENABLE_UNDERPRESS
 #define ENABLE_OVERTEMP
-//#define ENABLE_UNDERTEMP
+#define ENABLE_H2ESTOP
+#define ENABLE_UNDERTEMP
 //#define ENABLE_H2STOP
 //#define ENABLE_ESTOP1
 //#define ENABLE_ESTOP2

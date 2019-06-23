@@ -61,8 +61,8 @@ class FanControl{
 
         // Constructors
         FanControl(vector<Fan*> *fan_vec_ptr,
-                   vector<Analog_Sensor<T>* > *temp_vec_ptr, 
-                   Analog_Sensor<V>* current, 
+                   vector<Analog_Sensor<T>* > *temp_vec_ptr,
+                   Analog_Sensor<V>* current,
                    DigitalOut_Ext *power_pin=0){
             this->lock();
             this->fan_vec = fan_vec_ptr;
@@ -117,7 +117,7 @@ class FanControl{
 
             // Get current
             float current = (*(this->fccurr)).read();
-            
+
             // Find difference/error
             float temp_diff = this->_average_temp() - FuelCell::query_optimal_temp(current);
 
@@ -131,14 +131,14 @@ class FanControl{
             float der_term = (this->d * (temp_diff - this->prev_temp_diff))/dt;
 
             // Sum then limit
-            this->out = porp_term + der_term + this->iterm;
+            this->out = (porp_term + der_term + this->iterm)/100; // divided by 100 to scale from 0 to 1
             if (this->out > Fan::max){
                 this->out = Fan::max;
             }
             else if (this->out < Fan::min){
                 this->out = Fan::min;
             }
-            
+
             this->_set_fans(this->out);
             this->prev_temp_diff = temp_diff;
             this->unlock();
@@ -147,7 +147,7 @@ class FanControl{
 };
 
 template <class T, class V>
-const float FanControl<T,V>::p = 25.0;
+const float FanControl<T,V>::p = 80.0;
 
 template <class T, class V>
 const float FanControl<T,V>::i = 3.0;

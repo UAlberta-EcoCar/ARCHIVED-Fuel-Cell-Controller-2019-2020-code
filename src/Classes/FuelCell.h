@@ -12,7 +12,7 @@
 #define ALARM_STATE 6
 
 // Error Codes
-#define NOERROR 0 
+#define NOERROR 0
 #define OVERVOLTAGE 1
 #define OVERCURR 2
 #define OVERPRESS 3
@@ -23,6 +23,8 @@
 #define ESTOP1_ALARM 8
 #define ESTOP2_ALARM 9
 #define STOP_ALARM 10
+#define UNDERVOLTAGE 11
+#define H2ESTOP 12
 
 class FuelCell: public IO{
     private:
@@ -62,7 +64,7 @@ class FuelCell: public IO{
         }
         return temp;
     }
-    
+
     void set_fc_status(int status){
         this->lock();
         this->fc_status = status;

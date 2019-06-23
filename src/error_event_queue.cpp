@@ -12,11 +12,12 @@
 // Sofie
 #ifndef ALICE_CONFIGURATION
 #define MAX_FC_CURR 30
-#define MAX_FC_VOLT 30.8
+#define MAX_FC_VOLT 34
+#define MIN_FC_VOLT 10
 #define MAX_CAP_CURR 30
 #define MAX_CAP_VOLT 32.0
-#define MAX_PRESS 8.0
-#define MIN_PRESS 5.0
+#define MAX_PRESS 11.0
+#define MIN_PRESS 3.0
 #endif
 
 // Alice
@@ -25,8 +26,8 @@
 #define MAX_FC_VOLT 50.6
 #define MAX_CAP_CURR 70
 #define MAX_CAP_VOLT 51.8
-#define MAX_PRESS 8.0
-#define MIN_PRESS 5.0
+#define MAX_PRESS 11.0
+#define MIN_PRESS 3.0
 #endif
 
 
@@ -38,6 +39,8 @@ Timer low_pressure;
 
 void error_handler(int error_code);
 void overvoltage_check();
+void undervoltage_check();
+void h2estop_check();
 void overcurrent_check();
 void pressure_check();
 void temp_check();
@@ -49,6 +52,8 @@ Event<void()> alarm_event(&err_queue, alarm_state);
 
 // Lower Pri events
 Event<void()> overvoltage_check_event(&err_queue_low, overvoltage_check);
+Event<void()> undervoltage_check_event(&err_queue_low, undervoltage_check);
+Event<void()> h2estop_check_event(&err_queue_low, h2estop_check);
 Event<void()> overcurrent_check_event(&err_queue_low, overcurrent_check);
 Event<void()> pressure_check_event(&err_queue_low, pressure_check);
 Event<void()> temp_check_event(&err_queue_low, temp_check);
@@ -70,8 +75,34 @@ void overvoltage_check(){
   }
 
   #ifdef ENABLE_OVERVOLTAGE
-  if (fcvolt.read() >= 30.8 || capvolt.read() >= 32.0){
+  if (fcvolt.read() >= MAX_FC_VOLT || capvolt.read() >= MAX_CAP_VOLT){
     error_handler_event.post(OVERVOLTAGE);
+    return;
+  }
+  #endif
+}
+
+void undervoltage_check(){
+  if (fc.get_error_status() != NOERROR){
+    return;
+  }
+
+  #ifdef ENABLE_UNDERVOLTAGE
+  if (fcvolt.read() <= MIN_FC_VOLT && fc.get_fc_status() == RUN_STATE){
+    error_handler_event.post(UNDERVOLTAGE);
+    return;
+  }
+  #endif
+}
+
+void h2estop_check(){
+  if (fc.get_error_status() != NOERROR){
+    return;
+  }
+
+  #ifdef ENABLE_H2ESTOP
+  if (STOP == false){
+    error_handler_event.post(H2ESTOP);
     return;
   }
   #endif
@@ -96,14 +127,14 @@ void pressure_check(){
   }
 
   #ifdef ENABLE_OVERPRESS
-  if (press1.read() >= 8.0){
+  if (press1.read() >= MAX_PRESS){
     error_handler_event.post(OVERPRESS);
     return;
   }
   #endif
 
   #ifdef ENABLE_UNDERPRESS
-  if (press1.read() <= 5.0 && fc.get_fc_status() != SHUTDOWN_STATE){
+  if (press1.read() <= MIN_PRESS && fc.get_fc_status() != SHUTDOWN_STATE){
     low_pressure.start();
   }
   else{
@@ -162,6 +193,8 @@ void temp_check(){
 void post_checks(){
   if (fc.get_fc_status() != ALARM_STATE){
     overvoltage_check_event.post();
+    undervoltage_check_event.post();
+    h2estop_check_event.post();
     overcurrent_check_event.post();
     pressure_check_event.post();
     temp_check_event.post();

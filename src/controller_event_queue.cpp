@@ -91,7 +91,7 @@ void start_state(){
   motor_r.write(false);
   charge_r.write(false);
   cap_r.write(false);
-  
+
   // Trailer
   controller_flags.set((SIGNAL_STARTSETUPCOMPLETE|FAN_MAX_FLAG));
   state_event.post();
@@ -187,7 +187,7 @@ void run_state(){
   cap_r.write(true);
 
   // Trailer
-  controller_flags.set(FAN_PID_FLAG);
+  controller_flags.set(FAN_MIN_FLAG);
   state_event.post();
 }
 
@@ -217,7 +217,7 @@ void shut_state(){
   controller_flags.clear();
   fc.set_fc_status(SHUTDOWN_STATE);
 
-  // Transition 
+  // Transition
   update_leds();
   supply_v.write(false);
   purge_v.write(false);

@@ -6,6 +6,8 @@
 
 using namespace std;
 
+//class template for reading analog sensors and converting the readings to actual values
+//derived from Sensor.h base class
 template <class T>
 class Analog_Sensor: public Sensor{
 private:
@@ -33,7 +35,7 @@ float read(){
     this->set(this->scaler.scale(this->pin.read()));
   }
   this->unlock();
-  
+
   return this->value;
 };
 

@@ -138,7 +138,7 @@ void blue_logging(){
 
     blue_printer.print<string>("\n");
 
-    
+
 }
 
 void ol_logging(){
@@ -215,14 +215,14 @@ void datalink_thread(){
     #ifdef ENABLE_PRESS4
     sensor_vec.push_back(&press4);
     #endif
-  
+
     sensor_vec.push_back(&fctemp1);
-  
+
     #ifdef ALICE_CONFIGURATION
     sensor_vec.push_back(&fctemp2);
     #endif
 
-    #ifdef ENABLE_TEMP1 
+    #ifdef ENABLE_TEMP1
     sensor_vec.push_back(&temp1);
     #endif
     #ifdef ENABLE_TEMP2
@@ -285,11 +285,11 @@ void datalink_thread(){
     ol_logging_header_event.post();
     #endif
     ol_logging_event.post();
-    #endif 
+    #endif
     #ifdef ENABLE_BLUETOOTH
     blue_logging_event.post();
     #endif
     ftdi_logging_event.post();
-    
+
     data_queue.dispatch_forever();
 }
