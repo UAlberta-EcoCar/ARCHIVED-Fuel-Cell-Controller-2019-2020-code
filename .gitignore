@@ -8,3 +8,7 @@
 .vscode/launch.json
 .vscode/*.db
 .vscode/.browse.c_cpp.db*
+*.o
+*.d
+*.pio/build/*
+*.bak
