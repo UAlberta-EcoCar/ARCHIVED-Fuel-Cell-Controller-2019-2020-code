@@ -18,7 +18,10 @@ DigitalIn start(START);
 Timer timer;
 
 void fc_state_machine_thread() {
-    while (state != FC_FAULT) {
+    while (true) {
+        if (check_all_errors()) {
+            state = FC_FAULT;
+        }
 
         if (state == FC_INIT){
             if (start) {
@@ -43,5 +46,4 @@ void fc_state_machine_thread() {
         }
         ThisThread::sleep_for(0.05);
     }
-    // Turn off all digital outputs here in case fault state somehow missed them
 }

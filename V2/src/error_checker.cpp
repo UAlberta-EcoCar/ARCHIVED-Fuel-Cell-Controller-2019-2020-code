@@ -6,11 +6,21 @@
 #include <analogs.h>
 #include <fc_state_machine.h>
 
+// Options I've considered for storing error state:
+    // a map: slow
+    // an array: fast. keeping track of indexes and array length is a pain
+    // an uint: fast. keeping track of bits is a pain. Bitshifts are a pain
+    // a struct: fast. Don't have to keep track of indexes. Can't iterate
 error_state_struct error_state;
 
 error_state_struct get_error_state() {
-    // provides readonly access to the error states
+    // provides read-only access to the error states
     return error_state;
+}
+
+bool check_all_errors() {
+    // This is ugly but for now just manually list everything out here
+    return error_state.fcvolt_high | error_state.fcvolt_low;
 }
 
 bool expect_low_voltage(uint32_t fc_state) {

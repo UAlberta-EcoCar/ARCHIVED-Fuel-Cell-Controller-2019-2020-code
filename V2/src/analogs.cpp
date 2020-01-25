@@ -14,6 +14,10 @@ AnalogIn fccurr(FCCURR);
 AnalogIn motorcurr(MOTORCURR);
 AnalogIn capcurr(CAPCURR);
 
+// Possible options for storing data:
+    // Map: having key: value pairs would make datalogging a lot easier. Lookup is slow.
+    // array: Keeping track of indexes is a pain.
+    // struct: pain to type but fast.
 analog_values_struct analog_values;
 
 analog_values_struct get_analog_values() {

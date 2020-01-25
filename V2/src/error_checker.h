@@ -8,6 +8,8 @@ struct error_state_struct {
 
 error_state_struct get_error_state();
 
+bool check_all_errors();
+
 void error_checker_thread();
 
 #endif
