@@ -4,6 +4,12 @@
 struct error_state_struct {
    bool fcvolt_high;
    bool fcvolt_low;
+   bool capvolt_high;
+   bool capvolt_low;
+   bool fccurr_high;
+   bool capcurr_high;
+   bool press_high;
+   bool press_low;
 };
 
 error_state_struct get_error_state();
