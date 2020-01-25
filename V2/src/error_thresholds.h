@@ -1,0 +1,9 @@
+#ifndef ERROR_THRESHOLDS_H
+#define ERROR_THRESHOLDS_H
+
+#define FCVOLT_MAX 30
+#define FCVOLT_MIN 12
+#define CAPVOLT_MAX 30
+#define CAPVOLT_MIN 12
+
+#endif
