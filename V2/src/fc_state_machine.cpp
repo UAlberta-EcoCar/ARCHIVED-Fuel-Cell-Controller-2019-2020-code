@@ -1,6 +1,7 @@
 #include "mbed.h"
 
 #include <fc_state_machine.h>
+#include <error_checker.h>
 
 #include <pin_defs.h>
 
