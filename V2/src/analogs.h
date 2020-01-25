@@ -5,6 +5,9 @@ struct analog_values_struct {
    float fcvolt;
    float motorvolt;
    float capvolt;
+   float fccurr;
+   float motorcurr;
+   float capcurr;
 };
 
 analog_values_struct get_analog_values();

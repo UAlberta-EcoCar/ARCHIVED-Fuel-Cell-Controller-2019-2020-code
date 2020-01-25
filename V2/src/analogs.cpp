@@ -32,6 +32,9 @@ void analog_read_thread() {
         analog_values.fcvolt = fcvolt.read() * 1.0f + 0.0f;
         analog_values.motorvolt = motorvolt.read();
         analog_values.capvolt = capvolt.read();
+        analog_values.fccurr = fccurr.read();
+        analog_values.motorcurr = motorcurr.read();
+        analog_values.capcurr = capcurr.read();
 
         led2 = !led2; // todo - remove
         ThisThread::sleep_for(0.001);
