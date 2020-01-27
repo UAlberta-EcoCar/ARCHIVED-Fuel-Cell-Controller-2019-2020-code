@@ -5,7 +5,11 @@
 
 #include <pin_defs.h>
 
+#ifdef ENABLE_FC_TEST
+uint32_t state = FC_TEST;
+#else
 uint32_t state = FC_INIT;
+#endif
 
 uint32_t get_fc_state() {
     // read-only access to state variable
@@ -22,6 +26,10 @@ void fc_state_machine_thread() {
     while (true) {
         if (check_all_errors()) {
             state = FC_FAULT;
+        }
+
+        if (state == FC_TEST) {
+            ThisThread::sleep_for(50); // Add test state code here, if desired.
         }
 
         if (state == FC_INIT){
