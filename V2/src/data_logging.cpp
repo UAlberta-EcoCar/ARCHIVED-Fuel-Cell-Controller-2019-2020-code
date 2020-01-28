@@ -29,7 +29,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        if (get_error_state().fcvolt_high || get_error_state().fcvolt_low){
+        if (check_all_errors()){
           sprintf(buffer, "{Error?: %3s}\n", "YES");
         }
         else {sprintf(buffer, "{Error?: %3s}\n", "NO");}
@@ -109,7 +109,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        ThisThread::sleep_for(3s);
+        ThisThread::sleep_for(3000);
         led3 = !led3;
     }
 }
