@@ -27,7 +27,9 @@ bool expect_low_voltage(uint32_t fc_state) {
     // It is expected that the voltage is low in initial and startup states
     return (fc_state==FC_INIT)|(fc_state==FC_STARTUP);
 }
-
+bool expect_low_pressure(uint32_t fc_state) {
+  return false;
+}
 void error_checker_thread() {
     // Loop and check alert conditions at 10 Hz
     while (true) {
@@ -37,7 +39,24 @@ void error_checker_thread() {
         if ((get_analog_values().fcvolt < FCVOLT_MIN)&!expect_low_voltage(get_fc_state())) {
             error_state.fcvolt_low = true;
         }
-        
+        if (get_analog_values().capvolt > CAPVOLT_MAX) {
+          error_state.capvolt_high = true;
+        }
+        if (get_analog_values().capvolt < CAPVOLT_MIN) {
+          error_state.capvolt_low = true;
+        }
+        if (get_analog_values().fccurr > MAX_FC_CURR)  {
+          error_state.fccurr_high = true;
+        }
+        if (get_analog_values().capcurr > MAX_CAP_CURR) {
+          error_state.capcurr_high = true;
+        }
+        if (get_analog_values().press1 > PRESSURE_MAX) {
+          error_state.press_high = true;
+        }
+        if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
+          error_state.press_low = true;
+        }
         ThisThread::sleep_for(0.1);
     }
 }
