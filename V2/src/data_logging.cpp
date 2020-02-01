@@ -7,9 +7,16 @@
 
 DigitalOut led3(LED3);
 
+#define FTDI_BAUD 115200
+#define BLUE_BAUD 115200
+#define OL_BAUD 115200
+
+Timer datatimer;
+
+//Object declarations
 //Serial pc(USBTX, USBRX); // todo - remove this since code will freeze if usb isn't connected
 Serial ftdi(FTDI_TX, FTDI_RX);
-Serial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
+Serial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX, BLUE_BAUD);
 Serial open_log(OPEN_LOG_TX, OPEN_LOG_RX);
 
 char buffer [100];
@@ -109,7 +116,8 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        ThisThread::sleep_for(3000);
+        ThisThread::sleep_for(1000);
         led3 = !led3;
+
     }
 }
