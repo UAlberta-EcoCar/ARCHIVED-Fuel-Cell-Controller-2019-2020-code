@@ -5,7 +5,7 @@
 #include <data_logging.h>
 #include <fc_state_machine.h>
 
-DigitalOut led1(LED1);  // todo - remove this
+
 
 Thread analog_read_thr;
 Thread error_checker_thr;
@@ -22,7 +22,7 @@ int main() {
     fc_state_machine_thr.start(fc_state_machine_thread);
 
     while (true) {
-        led1 = !led1; // todo - remove this
+     
         wait(0.5);
     }
 }

@@ -4,7 +4,7 @@
 
 #include "pin_defs.h"
 
-DigitalOut led2(LED2); // todo - remove
+
 
 // todo - other sensors
 AnalogIn fcvolt(FCVOLT);
@@ -31,9 +31,9 @@ void analog_read_thread() {
     // Loop read adcs at 1kHz (does this actually run at 1 kHz?)
     while (true) {
         // todo - other sensors and scaling
-        analog_values.fcvolt = fcvolt.read() * 26.70162f - 0.0357f;
+        analog_values.fcvolt = fcvolt.read() * 49.932f - 0.25f; //updated scaling factor
         analog_values.motorvolt = motorvolt.read() * 26.70162f - 0.0357f;
-        analog_values.capvolt = capvolt.read() * 26.70162f - 0.0357f;
+        analog_values.capvolt = capvolt.read() * 49.131f - 0.24f; //updated scaling factor
         analog_values.fccurr = fccurr.read() * 157.7268f - 58.099f;
         analog_values.motorcurr = motorcurr.read() * 315.4536f - 199.4556f;
         analog_values.capcurr = capcurr.read() * 157.7268f - 58.099f;
@@ -44,7 +44,7 @@ void analog_read_thread() {
 
 
 
-        led2 = !led2; // todo - remove
+
         ThisThread::sleep_for(0.001);
     }
 }
