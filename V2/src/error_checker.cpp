@@ -1,10 +1,10 @@
 #include "mbed.h"
 
 #include <error_checker.h>
-
 #include <error_thresholds.h>
 #include <analogs.h>
 #include <fc_state_machine.h>
+
 
 // Options I've considered for storing error state:
     // a map: slow

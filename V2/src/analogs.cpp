@@ -4,8 +4,6 @@
 
 #include "pin_defs.h"
 
-DigitalOut led2(LED2); // todo - remove
-
 // todo - other sensors
 AnalogIn fcvolt(FCVOLT);
 AnalogIn motorvolt(MOTORVOLT);
@@ -43,8 +41,6 @@ void analog_read_thread() {
         pow(x, 2)*-7539.7506f + pow(x, 1)* 7471.2785f - 2818.1076f;
 
 
-
-        led2 = !led2; // todo - remove
         ThisThread::sleep_for(0.001);
     }
 }
