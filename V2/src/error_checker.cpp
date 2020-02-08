@@ -56,7 +56,8 @@ void error_checker_thread() {
         }
         if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
-        }
+      }
+
         ThisThread::sleep_for(0.1);
     }
 }

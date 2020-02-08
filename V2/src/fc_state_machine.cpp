@@ -24,15 +24,14 @@ Timer timer;
 
 void fc_state_machine_thread() {
     while (true) {
-        if (check_all_errors()) {
+        if (check_all_errors() && state != FC_TEST) {
             state = FC_FAULT;
         }
 
-        if (state == FC_TEST) {
-            ThisThread::sleep_for(50); // Add test state code here, if desired.
+        if (state == FC_TEST){
+          ThisThread::sleep_for(50); // Add test state code here, if desired.
         }
-
-        if (state == FC_INIT){
+        else if (state == FC_INIT){
             if (start) {
                 state = FC_STARTUP;
                 // we will need lots if timers

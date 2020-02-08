@@ -18,6 +18,7 @@ Serial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX, BLUE_BAUD);
 Serial open_log(OPEN_LOG_TX, OPEN_LOG_RX);
 
 char buffer [100];
+DigitalOut led2(LED2);
 
 void data_logging_thread() {
     // Dalin's cpp magic made this a lot nicer but oh well.
@@ -116,8 +117,8 @@ void data_logging_thread() {
 
         //Add temp
         //Add pressure
-
-        ThisThread::sleep_for(7000); // 7s
+        led2 = !led2;
+        ThisThread::sleep_for(3000); // 7s
 
     }
 }
