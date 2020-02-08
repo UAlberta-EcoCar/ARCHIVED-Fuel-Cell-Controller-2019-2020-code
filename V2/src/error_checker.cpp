@@ -2,9 +2,13 @@
 
 #include <error_checker.h>
 
+#include <pin_defs.h>
 #include <error_thresholds.h>
 #include <analogs.h>
 #include <fc_state_machine.h>
+
+DigitalOut start_r(START_R);
+DigitalOut charge_r(CHARGE_R);
 
 // Options I've considered for storing error state:
     // a map: slow
@@ -20,7 +24,7 @@ error_state_struct get_error_state() {
 
 bool check_all_errors() {
     // This is ugly but for now just manually list everything out here
-    return error_state.fcvolt_high | error_state.fcvolt_low;
+    return error_state.fcvolt_high | error_state.fcvolt_low | error_state.relays_shorted;
 }
 
 bool expect_low_voltage(uint32_t fc_state) {
@@ -56,6 +60,9 @@ void error_checker_thread() {
         }
         if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
+        }
+        if (start_r&charge_r) {
+          error_state.relays_shorted = true;
         }
         ThisThread::sleep_for(0.1);
     }
