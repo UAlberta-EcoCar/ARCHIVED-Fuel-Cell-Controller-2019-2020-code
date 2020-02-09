@@ -8,6 +8,9 @@ struct analog_values_struct {
    float fccurr;
    float motorcurr;
    float capcurr;
+   float press1;
+   float fctemp1;
+
 };
 
 analog_values_struct get_analog_values();

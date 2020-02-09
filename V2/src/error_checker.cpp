@@ -2,9 +2,13 @@
 
 #include <error_checker.h>
 
+#include <pin_defs.h>
 #include <error_thresholds.h>
 #include <analogs.h>
 #include <fc_state_machine.h>
+
+DigitalOut start_r(START_R);
+DigitalOut charge_r(CHARGE_R);
 
 // Options I've considered for storing error state:
     // a map: slow
@@ -41,7 +45,9 @@ bool expect_low_pressure(uint32_t fc_state) {
     // Init and any state where the purge valve opens
     return (fc_state==FC_STANDBY);
 }
-
+bool expect_low_pressure(uint32_t fc_state) {
+  return false;
+}
 void error_checker_thread() {
     // Loop and check alert conditions at 10 Hz
     while (true) {
@@ -68,6 +74,9 @@ void error_checker_thread() {
         }
         if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
+        }
+        if (start_r&charge_r) {
+          error_state.relays_shorted = true;
         }
         ThisThread::sleep_for(0.1);
     }
