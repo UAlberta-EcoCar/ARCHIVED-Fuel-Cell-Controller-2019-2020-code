@@ -17,8 +17,8 @@ int main() {
 
     // start watchdog timer
     Watchdog &watchdog = Watchdog::get_instance();
-    watchdog.start(min(TIMEOUT_MS, get_max_timeout ()));
-    
+    watchdog.start(min(TIMEOUT_MS, watchdog.get_max_timeout ()));
+
     // start threads
     analog_read_thr.start(analog_read_thread);
     error_checker_thr.start(error_checker_thread);
@@ -28,7 +28,7 @@ int main() {
     while (true) {
         // Reset watchdog timer
         watchdog.kick();  // this is a little violent
-        
+
         wait(0.5);
     }
 }
