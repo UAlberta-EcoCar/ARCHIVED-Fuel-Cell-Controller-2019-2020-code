@@ -1,10 +1,14 @@
 #include "mbed.h"
 
 #include <error_checker.h>
+
+#include <pin_defs.h>
 #include <error_thresholds.h>
 #include <analogs.h>
 #include <fc_state_machine.h>
 
+DigitalOut start_r(START_R);
+DigitalOut charge_r(CHARGE_R);
 
 // Options I've considered for storing error state:
     // a map: slow
@@ -20,12 +24,26 @@ error_state_struct get_error_state() {
 
 bool check_all_errors() {
     // This is ugly but for now just manually list everything out here
-    return error_state.fcvolt_high | error_state.fcvolt_low;
+    return error_state.fcvolt_high | error_state.fcvolt_low |
+           error_state.capvolt_high | error_state.capvolt_low |
+           error_state.fccurr_high | error_state.capcurr_high |
+           error_state.press_high | error_state.press_low;
 }
 
 bool expect_low_voltage(uint32_t fc_state) {
     // It is expected that the voltage is low in initial and startup states
-    return (fc_state==FC_INIT)|(fc_state==FC_STARTUP);
+    return (fc_state==FC_STANDBY)|(fc_state==FC_SHUTDOWN);
+}
+
+bool expect_low_cap_voltage(uint32_t fc_state) {
+    // It is expected that the capacitor is low when it is ok for the stack to be low
+    // or the caps are charging
+    return expect_low_voltage(fc_state)|(fc_state==FC_CHARGE);
+}
+
+bool expect_low_pressure(uint32_t fc_state) {
+    // Init and any state where the purge valve opens
+    return (fc_state==FC_STANDBY);
 }
 bool expect_low_pressure(uint32_t fc_state) {
   return false;
@@ -42,7 +60,7 @@ void error_checker_thread() {
         if (get_analog_values().capvolt > CAPVOLT_MAX) {
           error_state.capvolt_high = true;
         }
-        if (get_analog_values().capvolt < CAPVOLT_MIN) {
+        if (get_analog_values().capvolt < CAPVOLT_MIN&!expect_low_cap_voltage(get_fc_state())) {
           error_state.capvolt_low = true;
         }
         if (get_analog_values().fccurr > MAX_FC_CURR)  {
@@ -56,8 +74,10 @@ void error_checker_thread() {
         }
         if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
-      }
-
+        }
+        if (start_r&charge_r) {
+          error_state.relays_shorted = true;
+        }
         ThisThread::sleep_for(0.1);
     }
 }

@@ -10,6 +10,7 @@ struct error_state_struct {
    bool capcurr_high;
    bool press_high;
    bool press_low;
+   bool relays_shorted;
 };
 
 error_state_struct get_error_state();

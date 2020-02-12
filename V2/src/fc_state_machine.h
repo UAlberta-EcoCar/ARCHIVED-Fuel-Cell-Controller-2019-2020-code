@@ -4,10 +4,11 @@
 // Uncomment the line below to enable the test state.
 #define ENABLE_FC_TEST
 
-// todo - fill in rest of states
-#define FC_INIT 0
-#define FC_STARTUP 1
-#define FC_FAULT 2
+#define FC_STANDBY 0
+#define FC_CHARGE 1
+#define FC_RUN 2
+#define FC_SHUTDOWN 3
+#define FC_ALARM 4
 #define FC_TEST 10
 #include <stdint.h>
 
