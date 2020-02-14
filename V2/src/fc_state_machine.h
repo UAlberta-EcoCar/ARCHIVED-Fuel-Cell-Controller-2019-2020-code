@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 uint32_t get_fc_state();
+bool get_relay_conflict();
 void fc_state_machine_thread();
 
 #endif

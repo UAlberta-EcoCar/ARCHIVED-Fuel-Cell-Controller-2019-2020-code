@@ -24,7 +24,7 @@ int main() {
     fan_thr.start(fan_thread);
 
     while (true) {
-        wait(0.5);
+        wait_us(0.5);
     }
 }
 

@@ -26,7 +26,7 @@ void fan_thread() {
       // Choose fan behaviour based on current state
       // NOTE: pwm will only output if H2 STOP input signal is 3.3V
       switch(get_fc_state()){
-        case STANDBY :
+        case FC_STANDBY :
           fan_switch_all.write(false);
           break;
         case FC_CHARGE :
@@ -55,11 +55,9 @@ void fan_thread() {
           fan_switch_all.write(false);
           break;
         case FC_TEST :
-          led1.write(true);
           fan_switch_all.write(true);
           pwm_1.write(LOW);
           ThisThread::sleep_for(2000);
-          led1.write(false);
           fan_switch_all.write(false);
           ThisThread::sleep_for(3000);
           fan_switch_all.write(true);
