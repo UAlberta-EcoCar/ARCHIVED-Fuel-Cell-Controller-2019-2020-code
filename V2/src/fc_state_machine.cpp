@@ -1,5 +1,7 @@
 #include "mbed.h"
+#include "rtos.h"
 
+#include <math.h>
 #include <fc_state_machine.h>
 #include <error_checker.h>
 #include <pin_defs.h>
@@ -15,7 +17,7 @@ uint32_t state = FC_TEST;
 uint32_t state = FC_STANDBY;
 #endif
 
-DigitalIn start(START); 
+DigitalIn start(START);
 
 // Valves.
 DigitalOut supply_v(SUPPLY_V);
@@ -42,24 +44,31 @@ uint32_t get_fc_state() // Read-only access to state variable.
     return state;
 }
 
-void fc_state_machine_thread() 
+bool get_relay_conflict()
+{
+  if (start_r&charge_r){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+void fc_state_machine_thread()
 {
     fcc_r.write(true); // Solid state relay.
 
-    while (true) 
-    {
-        if (check_all_errors()) 
+    while (true) {
+        if (check_all_errors() && state != FC_TEST) {
             state = FC_ALARM;
-
-        if (FC_TEST == state) 
-        {
-            ThisThread::sleep_for(50); // Add test state code here, if desired.
-            charge_r.write(false);
         }
 
-        if (FC_STANDBY == state) // Wait until start button is pressed.
-        { 
-            if (start) 
+        if (state == FC_TEST){
+          ThisThread::sleep_for(50); // Add test state code here, if desired.
+        }
+        else if (FC_STANDBY == state) // Wait until start button is pressed.
+        {
+            if (start)
             {
                 purge_v.write(false); // Perform start purge.
                 start_r.write(true);
@@ -67,25 +76,25 @@ void fc_state_machine_thread()
                 charge_r.write(false);
                 cap_r.write(false);
                 supply_v.write(true);
-                Thread::wait(1000);
+                ThisThread::sleep_for(1000);
                 purge_v.write(true);
-                Thread::wait(200);
-                purge_v.write(false); 
+                ThisThread::sleep_for(200);
+                purge_v.write(false);
 
                 supply_v.write(true); // Charge state setup.
                 start_r.write(false);
                 motor_r.write(false);
                 charge_r.write(true);
                 cap_r.write(false);
-                state = FC_CHARGE; 
+                state = FC_CHARGE;
                 update_leds();
             }
         }
-        else if (FC_CHARGE == state) 
-        { 
+        else if (FC_CHARGE == state)
+        {
             if (get_analog_values().capvolt >= CAP_THRESHOLD) // Leave charge state.
             {
-                supply_v.write(true); 
+                supply_v.write(true);
                 purge_v.write(false);
                 start_r.write(false);
                 motor_r.write(true);
@@ -95,7 +104,7 @@ void fc_state_machine_thread()
                 update_leds();
             }
         }
-        else if (FC_RUN == state) 
+        else if (FC_RUN == state)
         {
 
             if (start)
@@ -110,12 +119,12 @@ void fc_state_machine_thread()
                 update_leds();
             }
         }
-        else if (FC_SHUTDOWN == state) 
+        else if (FC_SHUTDOWN == state)
         {
             // TODO Figure out so we can start/stop with start button.
         }
         else if (FC_ALARM == state) // Turn off all digital outputs.
-        { 
+        {
             update_leds();
             supply_v.write(false);
             purge_v.write(false);
@@ -124,7 +133,7 @@ void fc_state_machine_thread()
             charge_r.write(false);
             cap_r.write(false);
         }
-        else 
+        else
         {
             // Fault since invalid state entered.
             state = FC_ALARM;
@@ -134,7 +143,7 @@ void fc_state_machine_thread()
     }
 }
 
-void update_leds() 
+void update_leds()
 {
     alarm_led.write(false);
     shut_led.write(false);
@@ -142,7 +151,7 @@ void update_leds()
     run_led.write(false);
     uint32_t state = get_fc_state();
 
-    switch (state) 
+    switch (state)
     {
         case FC_ALARM:
             alarm_led.write(true);
@@ -160,6 +169,6 @@ void update_leds()
         case FC_RUN:
             run_led.write(true);
         default:
-            break; // Shouldn't happen. 
-    } 
+            break; // Shouldn't happen.
+    }
 }

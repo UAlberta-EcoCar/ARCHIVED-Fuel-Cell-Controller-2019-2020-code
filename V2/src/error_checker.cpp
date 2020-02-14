@@ -7,9 +7,6 @@
 #include <analogs.h>
 #include <fc_state_machine.h>
 
-DigitalOut start_r(START_R);
-DigitalOut charge_r(CHARGE_R);
-
 // Options I've considered for storing error state:
     // a map: slow
     // an array: fast. keeping track of indexes and array length is a pain
@@ -45,22 +42,20 @@ bool expect_low_pressure(uint32_t fc_state) {
     // Init and any state where the purge valve opens
     return (fc_state==FC_STANDBY);
 }
-bool expect_low_pressure(uint32_t fc_state) {
-  return false;
-}
+
 void error_checker_thread() {
     // Loop and check alert conditions at 10 Hz
     while (true) {
         if (get_analog_values().fcvolt > FCVOLT_MAX) {
             error_state.fcvolt_high = true;
         }
-        if ((get_analog_values().fcvolt < FCVOLT_MIN)&!expect_low_voltage(get_fc_state())) {
+        if ((get_analog_values().fcvolt < FCVOLT_MIN) && !expect_low_voltage(get_fc_state())) {
             error_state.fcvolt_low = true;
         }
         if (get_analog_values().capvolt > CAPVOLT_MAX) {
           error_state.capvolt_high = true;
         }
-        if (get_analog_values().capvolt < CAPVOLT_MIN&!expect_low_cap_voltage(get_fc_state())) {
+        if ((get_analog_values().capvolt < CAPVOLT_MIN) && !expect_low_cap_voltage(get_fc_state())) {
           error_state.capvolt_low = true;
         }
         if (get_analog_values().fccurr > MAX_FC_CURR)  {
@@ -72,10 +67,10 @@ void error_checker_thread() {
         if (get_analog_values().press1 > PRESSURE_MAX) {
           error_state.press_high = true;
         }
-        if ((get_analog_values().press1 < PRESSURE_MIN)&!expect_low_pressure(get_fc_state())) {
+        if ((get_analog_values().press1 < PRESSURE_MIN) && !expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
         }
-        if (start_r&charge_r) {
+        if (get_relay_conflict()) {
           error_state.relays_shorted = true;
         }
         ThisThread::sleep_for(0.1);

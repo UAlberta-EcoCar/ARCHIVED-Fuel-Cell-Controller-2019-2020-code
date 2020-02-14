@@ -4,8 +4,6 @@
 
 #include "pin_defs.h"
 
-
-
 // todo - other sensors
 AnalogIn fcvolt(FCVOLT);
 AnalogIn motorvolt(MOTORVOLT);
@@ -41,9 +39,6 @@ void analog_read_thread() {
         float x = fctemp1.read();
         analog_values.fctemp1 = pow(x, 5)*140.0978f + pow(x, 4)*-899.05152f + pow(x, 3)*3595.492f +
         pow(x, 2)*-7539.7506f + pow(x, 1)* 7471.2785f - 2818.1076f;
-
-
-
 
         ThisThread::sleep_for(0.001);
     }

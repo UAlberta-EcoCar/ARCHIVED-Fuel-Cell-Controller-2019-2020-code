@@ -5,8 +5,6 @@
 #include <error_checker.h>
 #include <fc_state_machine.h>
 
-DigitalOut led3(LED3);
-
 #define FTDI_BAUD 115200
 #define BLUE_BAUD 115200
 #define OL_BAUD 115200
@@ -20,12 +18,13 @@ Serial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX, BLUE_BAUD);
 Serial open_log(OPEN_LOG_TX, OPEN_LOG_RX);
 
 char buffer [100];
+DigitalOut led2(LED2);
 
 void data_logging_thread() {
     // Dalin's cpp magic made this a lot nicer but oh well.
     while (true) {
 
-        sprintf(buffer, "{State: %lu}\n", get_fc_state());
+        sprintf(buffer, "{State: %lu,     }", get_fc_state());
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -50,7 +49,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        sprintf(buffer, "{FC Voltage: %2.1f}\n", get_analog_values().fcvolt);
+        sprintf(buffer, "{FC Voltage: %2.1f,     }", get_analog_values().fcvolt);
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -72,7 +71,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        sprintf(buffer, "{Cap Voltage: %2.1f}\n", get_analog_values().capvolt);
+        sprintf(buffer, "{Cap Voltage: %2.1f,     }", get_analog_values().capvolt);
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -94,7 +93,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        sprintf(buffer, "{Motor Voltage: %2.1f}\n", get_analog_values().motorvolt);
+        sprintf(buffer, "{Motor Voltage: %2.1f,     }", get_analog_values().motorvolt);
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -116,8 +115,10 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        ThisThread::sleep_for(1000);
-        led3 = !led3;
+        //Add temp
+        //Add pressure
+        led2 = !led2;
+        ThisThread::sleep_for(3000); // 7s
 
     }
 }
