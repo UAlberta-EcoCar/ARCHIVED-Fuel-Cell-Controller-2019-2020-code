@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "rtos.h"
 
+#include <Timer.h>
 #include <math.h>
 #include <fc_state_machine.h>
 #include <error_checker.h>
@@ -39,9 +40,16 @@ DigitalOut shut_led(SHUT_LED);
 DigitalOut run_led(RUN_LED);
 DigitalOut start_led(START_LED);
 
+Timer purgeTimer;
+uint32_t purgeCount = 0;
+
 uint32_t get_fc_state() // Read-only access to state variable.
 {
     return state;
+}
+uint32_t get_purge_count() // Read-only access to purge count.
+{
+  return purgeCount;
 }
 
 bool get_relay_conflict()
@@ -65,6 +73,19 @@ void fc_state_machine_thread()
 
         if (state == FC_TEST){
           ThisThread::sleep_for(50); // Add test state code here, if desired.
+          purgeTimer.start();
+
+          if (purgeTimer.read()>15) {
+            purgeTimer.stop();
+
+            purge_v.write(true);
+            ThisThread::sleep_for(200);
+            purge_v.write(false);
+
+            purgeTimer.reset();
+            purgeTimer.start();
+            purgeCount = purgeCount+1;
+          }
         }
         else if (FC_STANDBY == state) // Wait until start button is pressed.
         {
@@ -106,6 +127,17 @@ void fc_state_machine_thread()
         }
         else if (FC_RUN == state)
         {
+          if (purgeTimer.read()>3*60) {
+            purgeTimer.stop();
+
+            purge_v.write(true);
+            ThisThread::sleep_for(200);
+            purge_v.write(false);
+
+            purgeTimer.reset();
+            purgeTimer.start();
+            purgeCount = purgeCount+1;
+          }
 
             if (start)
             {
