@@ -46,7 +46,41 @@ void data_logging_thread() {
         ThisThread::sleep_for(0.1);
 
         if (check_all_errors()){
-          sprintf(buffer, "{Error?: %3s}\n", "YES");
+          sprintf(buffer, "{Error: %3s}\n", "YES");
+          bluetooth.puts(buffer);
+
+          if (get_error_state().fcvolt_low){
+            sprintf(buffer, "{Error: FC Voltage Low}\n");
+          }
+          if (get_error_state().capvolt_high){
+            sprintf(buffer, "{Error: Cap Voltage High}\n");
+          }
+          else if (get_error_state().capvolt_low){
+            sprintf(buffer, "{Error: Cap Voltage Low}\n");
+          }
+          else if (get_error_state().fccurr_high){
+            sprintf(buffer, "{Error: FC Current High}\n");
+          }
+          else if (get_error_state().capcurr_high){
+            sprintf(buffer, "{Error: Cap Current High}\n");
+          }
+          else if (get_error_state().press_high){
+            sprintf(buffer, "{Error: Over Pressure}\n");
+          }
+          else if (get_error_state().press_low){
+            sprintf(buffer, "{Error: Under Pressure}\n");
+          }
+          else if (get_error_state().relays_shorted){
+            sprintf(buffer, "{Error: Relays are Shorted}\n");
+          }
+          else if (get_error_state().over_temp){
+            sprintf(buffer, "{Error: Over Temperature}\n");
+          }
+          else {
+            sprintf(buffer, "{Error: None of the errors?}\n");
+          }
+
+          bluetooth.puts(buffer);
         }
         else {sprintf(buffer, "{Error?: %3s}\n", "NO");}
         //ThisThread::sleep_for(0.1);
@@ -125,7 +159,7 @@ void data_logging_thread() {
         open_log.puts(buffer);
         ThisThread::sleep_for(0.1);
 
-        sprintf(buffer, "{Temperature: %2.1f}     ", get_analog_values().fctemp1);
+        sprintf(buffer, "{Temperature: %2.1f}  ", get_analog_values().fctemp1);
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);

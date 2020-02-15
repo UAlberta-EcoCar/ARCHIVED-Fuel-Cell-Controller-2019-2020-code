@@ -24,7 +24,8 @@ bool check_all_errors() {
     return error_state.fcvolt_high | error_state.fcvolt_low |
            error_state.capvolt_high | error_state.capvolt_low |
            error_state.fccurr_high | error_state.capcurr_high |
-           error_state.press_high | error_state.press_low;
+           error_state.press_high | error_state.press_low|
+           error_state.over_temp;
 }
 
 bool expect_low_voltage(uint32_t fc_state) {
@@ -35,7 +36,7 @@ bool expect_low_voltage(uint32_t fc_state) {
 bool expect_low_cap_voltage(uint32_t fc_state) {
     // It is expected that the capacitor is low when it is ok for the stack to be low
     // or the caps are charging
-    return expect_low_voltage(fc_state)|(fc_state==FC_CHARGE);
+    return (fc_state==FC_STANDBY)|(fc_state==FC_CHARGE);
 }
 
 bool expect_low_pressure(uint32_t fc_state) {
@@ -70,9 +71,12 @@ void error_checker_thread() {
         if ((get_analog_values().press1 < PRESSURE_MIN) && !expect_low_pressure(get_fc_state())) {
           error_state.press_low = true;
         }
+        if ((get_analog_values().fctemp1 > TEMP_MAX)){
+          error_state.over_temp = true;
+        }
         if (get_relay_conflict()) {
           error_state.relays_shorted = true;
         }
         ThisThread::sleep_for(0.1);
-    }
+   }
 }

@@ -20,7 +20,7 @@
 
 // Start
 #define START PF_12
-#define BUTT PF_2
+#define BUTTON PF_2
 
 /*
 Valves

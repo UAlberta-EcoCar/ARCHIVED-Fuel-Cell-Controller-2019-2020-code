@@ -9,6 +9,7 @@
 #define PRESSURE_MAX 8
 #define MAX_FC_CURR 30
 #define MAX_CAP_CURR 30
+#define TEMP_MAX 70
 
 
 #endif

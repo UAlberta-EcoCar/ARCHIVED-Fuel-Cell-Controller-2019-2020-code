@@ -19,6 +19,7 @@ uint32_t state = FC_STANDBY;
 #endif
 
 DigitalIn start(START);
+DigitalIn button(BUTTON);
 
 // Valves.
 DigitalOut supply_v(SUPPLY_V);
@@ -67,10 +68,9 @@ void fc_state_machine_thread()
     fcc_r.write(true); // Solid state relay.
 
     while (true) {
-        if (check_all_errors() && state != FC_TEST) {
+        if (check_all_errors() && (state!=FC_STANDBY) && (state!=FC_TEST) && (state!=FC_SHUTDOWN) && (state!=FC_CHARGE)) {
             state = FC_ALARM;
         }
-
         if (state == FC_TEST){
           ThisThread::sleep_for(50); // Add test state code here, if desired.
           purgeTimer.start();
@@ -89,7 +89,7 @@ void fc_state_machine_thread()
         }
         else if (FC_STANDBY == state) // Wait until start button is pressed.
         {
-            if (start)
+            if (button)
             {
                 purge_v.write(false); // Perform start purge.
                 start_r.write(true);

@@ -11,6 +11,7 @@ struct error_state_struct {
    bool press_high;
    bool press_low;
    bool relays_shorted;
+   bool over_temp;
 };
 
 error_state_struct get_error_state();
@@ -18,5 +19,9 @@ error_state_struct get_error_state();
 bool check_all_errors();
 
 void error_checker_thread();
+
+bool expect_low_voltage();
+bool expect_low_pressure();
+bool expect_low_cap_voltage();
 
 #endif
