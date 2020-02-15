@@ -5,7 +5,8 @@
 #include <pin_defs.h>
 #include <analogs.h>
 
-#define CAP_THRESHOLD 20 // Move to another file, if they aren't already.
+#define CAP_THRESHOLD 20 // TODO Correct these values.
+#define PRESS_THRESHOLD 5.0 
 
 void update_leds(void);
 
@@ -56,34 +57,43 @@ void fc_state_machine_thread()
             ThisThread::sleep_for(50); // Add test state code here, if desired.
             charge_r.write(false);
         }
-
-        if (FC_STANDBY == state) // Wait until start button is pressed.
+        else if (FC_STANDBY == state) // Wait until start button is pressed.
         { 
             if (start) 
             {
-                purge_v.write(false); // Perform start purge.
-                start_r.write(true);
-                motor_r.write(false);
-                charge_r.write(false);
-                cap_r.write(false);
                 supply_v.write(true);
-                Thread::wait(1000);
-                purge_v.write(true);
-                Thread::wait(200);
-                purge_v.write(false); 
-
-                supply_v.write(true); // Charge state setup.
-                start_r.write(false);
-                motor_r.write(false);
-                charge_r.write(true);
-                cap_r.write(false);
-                state = FC_CHARGE; 
-                update_leds();
+                state = FC_PRESSURIZE;
             }
+        }
+        else if (FC_PRESSURIZE == state) // Wait for adequate pressure.
+        {
+            if (get_analog_values().press1 > PRESS_THRESHOLD)
+                state = FC_START_PURGE;
+        }
+        else if (FC_START_PURGE == state)
+        {
+            purge_v.write(false); // Perform start purge.
+            start_r.write(true);
+            motor_r.write(false);
+            charge_r.write(false);
+            cap_r.write(false);
+            supply_v.write(true);
+            Thread::wait(1000); // TODO Change so that check_all_errors() isn't blocked.
+            purge_v.write(true);
+            Thread::wait(200);
+            purge_v.write(false); 
+
+            supply_v.write(true); // Charge state setup.
+            start_r.write(false);
+            motor_r.write(false);
+            charge_r.write(true);
+            cap_r.write(false);
+            state = FC_CHARGE; 
+            update_leds();
         }
         else if (FC_CHARGE == state) 
         { 
-            if (get_analog_values().capvolt >= CAP_THRESHOLD) // Leave charge state.
+            if (get_analog_values().capvolt > CAP_THRESHOLD) // Leave charge state.
             {
                 supply_v.write(true); 
                 purge_v.write(false);
