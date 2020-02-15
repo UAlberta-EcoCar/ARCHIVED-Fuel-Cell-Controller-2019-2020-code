@@ -66,9 +66,11 @@ bool get_relay_conflict()
 void fc_state_machine_thread()
 {
     fcc_r.write(true); // Solid state relay.
+    button.mode(PullDown);
+    update_leds();
 
     while (true) {
-        if (check_all_errors() && (state!=FC_STANDBY) && (state!=FC_TEST) && (state!=FC_SHUTDOWN) && (state!=FC_CHARGE)) {
+        if (check_all_errors()) {
             state = FC_ALARM;
         }
         if (state == FC_TEST){
@@ -113,17 +115,17 @@ void fc_state_machine_thread()
         }
         else if (FC_CHARGE == state)
         {
-            if (get_analog_values().capvolt >= CAP_THRESHOLD) // Leave charge state.
-            {
-                supply_v.write(true);
-                purge_v.write(false);
-                start_r.write(false);
-                motor_r.write(true);
-                charge_r.write(false);
-                cap_r.write(true);
-                state = FC_RUN;
-                update_leds();
-            }
+          if (get_analog_values().capvolt >= CAP_THRESHOLD) // Leave charge state.
+          {
+              supply_v.write(true);
+              purge_v.write(false);
+              start_r.write(false);
+              motor_r.write(true);
+              charge_r.write(false);
+              cap_r.write(true);
+              state = FC_RUN;
+              update_leds();
+          }
         }
         else if (FC_RUN == state)
         {

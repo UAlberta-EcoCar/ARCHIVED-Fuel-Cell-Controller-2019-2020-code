@@ -49,9 +49,7 @@ void data_logging_thread() {
           sprintf(buffer, "{Error: %3s}\n", "YES");
           bluetooth.puts(buffer);
 
-          if (get_error_state().fcvolt_low){
-            sprintf(buffer, "{Error: FC Voltage Low}\n");
-          }
+
           if (get_error_state().capvolt_high){
             sprintf(buffer, "{Error: Cap Voltage High}\n");
           }
@@ -70,6 +68,9 @@ void data_logging_thread() {
           else if (get_error_state().press_low){
             sprintf(buffer, "{Error: Under Pressure}\n");
           }
+          else if (get_error_state().fcvolt_low){
+            sprintf(buffer, "{Error: FC Voltage Low}\n");
+          }
           else if (get_error_state().relays_shorted){
             sprintf(buffer, "{Error: Relays are Shorted}\n");
           }
@@ -80,7 +81,6 @@ void data_logging_thread() {
             sprintf(buffer, "{Error: None of the errors?}\n");
           }
 
-          bluetooth.puts(buffer);
         }
         else {sprintf(buffer, "{Error?: %3s}\n", "NO");}
         //ThisThread::sleep_for(0.1);
