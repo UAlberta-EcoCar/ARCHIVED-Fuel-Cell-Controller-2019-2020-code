@@ -104,6 +104,11 @@ void fc_state_machine_thread()
                 ThisThread::sleep_for(200);
                 purge_v.write(false);
 
+                while (get_analog_values().fcvolt < 18)
+                {
+                    ThisThread::sleep_for(100);
+                }
+
                 supply_v.write(true); // Charge state setup.
                 start_r.write(false);
                 motor_r.write(false);
@@ -141,7 +146,7 @@ void fc_state_machine_thread()
             purgeCount = purgeCount+1;
           }
 
-            if (start)
+            if (button)
             {
                 supply_v.write(false);
                 purge_v.write(false);
