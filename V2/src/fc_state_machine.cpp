@@ -5,6 +5,7 @@
 #include <math.h>
 #include <fc_state_machine.h>
 #include <error_checker.h>
+#include <error_thresholds.h>
 #include <pin_defs.h>
 #include <analogs.h>
 
@@ -93,7 +94,7 @@ void fc_state_machine_thread()
             Open supply valve and wait for stack to pressurize.
             */
             supply_v.write(true);
-            if (get_analog_values().press1 > 5)
+            if (get_analog_values().press1 > PRESSURE_MIN)
             { // Make me a constant
                 state = FC_START_UP_PURGE;
             }
@@ -113,8 +114,8 @@ void fc_state_machine_thread()
                 start_purge_performed = true;
             }
             // Wait for pressure to recover
-            if (get_analog_values().press1 > 5)
-            { // Make me a constant
+            if (get_analog_values().press1 > PRESSURE_MIN)
+            {
                 state = FC_CHARGE;
             }
         }
