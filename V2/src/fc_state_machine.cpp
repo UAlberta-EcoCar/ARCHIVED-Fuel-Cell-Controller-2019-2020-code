@@ -19,13 +19,8 @@ uint32_t state = FC_STANDBY;
 #endif
 
 DigitalIn start(START);
-DigitalIn button(BUTTON);
-
-// Valves.
-DigitalOut supply_v(SUPPLY_V);
-DigitalOut purge_v(PURGE_V);
-DigitalOut other1_v(VALVE3);
-DigitalOut other2_v(VALVE4);
+DigitalIn button(BUTTON); // This button is broken please fix
+DigitalIn blue_button(BLUE_BUTTON);
 
 // Relays.
 DigitalOut start_r(START_R);
@@ -33,6 +28,12 @@ DigitalOut motor_r(MOTOR_R);
 DigitalOut charge_r(CHARGE_R);
 DigitalOut cap_r(CAP_R);
 DigitalOut fcc_r(FCC_R);
+
+// Valves.
+DigitalOut supply_v(SUPPLY_V);
+DigitalOut purge_v(PURGE_V);
+DigitalOut other1_v(VALVE3);
+DigitalOut other2_v(VALVE4);
 
 // LEDs.
 DigitalOut alarm_led(ALARM_LED);
@@ -50,103 +51,120 @@ uint32_t get_fc_state() // Read-only access to state variable.
 }
 uint32_t get_purge_count() // Read-only access to purge count.
 {
-  return purgeCount;
+    return purgeCount;
 }
 
 bool get_relay_conflict()
 {
-  if (start_r&charge_r){
-    return true;
-  }
-  else{
-    return false;
-  }
+    if (start_r & charge_r)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void fc_state_machine_thread()
 {
     fcc_r.write(true); // Solid state relay.
-    button.mode(PullDown);
     update_leds();
 
-    while (true) {
-        if (check_all_errors()) {
+    bool start_purge_performed = false;
+
+    while (true)
+    {
+        if (check_all_errors())
+        {
             state = FC_ALARM;
         }
-        if (state == FC_TEST){
-          ThisThread::sleep_for(50); // Add test state code here, if desired.
-          purgeTimer.start();
 
-          if (purgeTimer.read()>15) {
-            purgeTimer.stop();
-
-            purge_v.write(true);
-            ThisThread::sleep_for(200);
-            purge_v.write(false);
-
-            purgeTimer.reset();
-            purgeTimer.start();
-            purgeCount = purgeCount+1;
-          }
-        }
-        else if (FC_STANDBY == state) // Wait until start button is pressed.
+        if (FC_STANDBY == state) // Wait until start button is pressed.
         {
-            if (button)
+            if (blue_button.read())
             {
-                purge_v.write(false); // Perform start purge.
-                start_r.write(true);
-                motor_r.write(false);
-                charge_r.write(false);
-                cap_r.write(false);
-                supply_v.write(true);
-                ThisThread::sleep_for(1000);
+                state = FC_PRESSURIZE;
+            }
+        }
+        else if (FC_PRESSURIZE == state)
+        {
+            /*
+            Open supply valve and wait for stack to pressurize.
+            */
+            supply_v.write(true);
+            if (get_analog_values().press1 > 5)
+            { // Make me a constant
+                state = FC_START_UP_PURGE;
+            }
+        }
+        else if (FC_START_UP_PURGE == state)
+        {
+            /*
+            Perform startup purge with start resistors connected
+            */
+            if (!start_purge_performed)
+            {
                 purge_v.write(true);
+                start_r.write(true);
                 ThisThread::sleep_for(200);
-                purge_v.write(false);
-
-                while (get_analog_values().fcvolt < 18)
-                {
-                    ThisThread::sleep_for(100);
-                }
-
-                supply_v.write(true); // Charge state setup.
                 start_r.write(false);
-                motor_r.write(false);
-                charge_r.write(true);
-                cap_r.write(false);
+                purge_v.write(false);
+                start_purge_performed = true;
+            }
+            // Wait for pressure to recover
+            if (get_analog_values().press1 > 5)
+            { // Make me a constant
                 state = FC_CHARGE;
-                update_leds();
             }
         }
         else if (FC_CHARGE == state)
         {
-          if (get_analog_values().capvolt >= CAP_THRESHOLD) // Leave charge state.
-          {
-              supply_v.write(true);
-              purge_v.write(false);
-              start_r.write(false);
-              motor_r.write(true);
-              charge_r.write(false);
-              cap_r.write(true);
-              state = FC_RUN;
-              update_leds();
-          }
+            /*
+            Let fc voltage recover after purge
+            */
+            if (get_analog_values().fcvolt >= 20)
+            {
+                state = CAP_CHARGE;
+                charge_r.write(true);
+            }
+        }
+        else if (CAP_CHARGE == state)
+        {
+            /*
+            Charge caps to __ V using the startup resistors. Then charge
+            to __ V without them
+            */
+            if (get_analog_values().capvolt >= 20)
+            { // make me a constant
+                // Disconnect charge_r then connect cap_r so charge goes faster
+                charge_r.write(false);
+                ThisThread::sleep_for(100);
+                cap_r.write(true);
+            }
+            if (get_analog_values().capvolt >= 25)
+            { // make me a constant
+                // charging complete
+                state = FC_RUN;
+                motor_r.write(true);
+            }
         }
         else if (FC_RUN == state)
         {
-          if (purgeTimer.read()>3*60) {
-            purgeTimer.stop();
+            if (purgeTimer.read() > 3 * 60)
+            {
+                purgeTimer.stop();
 
-            purge_v.write(true);
-            ThisThread::sleep_for(200);
-            purge_v.write(false);
+                purge_v.write(true);
+                ThisThread::sleep_for(200);
+                purge_v.write(false);
 
-            purgeTimer.reset();
-            purgeTimer.start();
-            purgeCount = purgeCount+1;
-          }
+                purgeTimer.reset();
+                purgeTimer.start();
+                purgeCount = purgeCount + 1;
+            }
 
-            if (button)
+            if (blue_button)
             {
                 supply_v.write(false);
                 purge_v.write(false);
@@ -192,22 +210,22 @@ void update_leds()
 
     switch (state)
     {
-        case FC_ALARM:
-            alarm_led.write(true);
-            break;
-        case FC_SHUTDOWN:
-            shut_led.write(true);
-            break;
-        case FC_STANDBY:
-            start_led.write(true);
-            break;
-        case FC_CHARGE:
-            start_led.write(true);
-            run_led.write(true);
-            break;
-        case FC_RUN:
-            run_led.write(true);
-        default:
-            break; // Shouldn't happen.
+    case FC_ALARM:
+        alarm_led.write(true);
+        break;
+    case FC_SHUTDOWN:
+        shut_led.write(true);
+        break;
+    case FC_STANDBY:
+        start_led.write(true);
+        break;
+    case FC_CHARGE:
+        start_led.write(true);
+        run_led.write(true);
+        break;
+    case FC_RUN:
+        run_led.write(true);
+    default:
+        break; // Shouldn't happen.
     }
 }

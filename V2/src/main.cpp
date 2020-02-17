@@ -7,15 +7,12 @@
 #include <fan.h>
 
 Thread analog_read_thr;
-Thread error_checker_thr;
 Thread data_logging_thr;
 Thread fc_state_machine_thr;
 Thread fan_thr;
 
 int main() {
     analog_read_thr.start(analog_read_thread);
-
-    error_checker_thr.start(error_checker_thread);
 
     data_logging_thr.start(data_logging_thread);
 

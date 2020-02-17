@@ -21,6 +21,7 @@
 // Start
 #define START PF_12
 #define BUTTON PF_2
+#define BLUE_BUTTON PC_13
 
 /*
 Valves
@@ -126,5 +127,23 @@ I2C
 */
 #define I2C_SDA PB_9
 #define I2C_SCL PB_8
+
+/*
+Global Digital IO Objects
+*/
+extern DigitalIn start;
+extern DigitalIn button;
+extern DigitalIn blue_button;
+
+extern DigitalOut start_r;
+extern DigitalOut motor_r;
+extern DigitalOut charge_r;
+extern DigitalOut cap_r;
+extern DigitalOut fcc_r;
+
+extern DigitalOut supply_v;
+extern DigitalOut purge_v;
+extern DigitalOut other1_v;
+extern DigitalOut other2_v;
 
 #endif
