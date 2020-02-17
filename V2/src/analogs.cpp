@@ -37,8 +37,8 @@ void analog_read_thread() {
         analog_values.capcurr = capcurr.read() * 157.7268f - 58.099f; //not working properly
         analog_values.press1 = press1.read() * 61.8057f - 23.353f;
         float x = fctemp1.read();
-        analog_values.fctemp1 = pow(x, 5)*140.0978f + pow(x, 4)*-899.05152f + pow(x, 3)*3595.492f +
-        pow(x, 2)*-7539.7506f + pow(x, 1)* 7471.2785f - 2818.1076f;
+        analog_values.fctemp1 = pow(x, 5)*(-2818.1076f) + pow(x, 4)*(7471.2785f) + pow(x, 3)*(-7539.7506f) +
+        pow(x, 2)*(3595.492f) + pow(x, 1)*(-899.05152f)  + 140.0978f;
 
         ThisThread::sleep_for(0.001);
     }
