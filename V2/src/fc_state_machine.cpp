@@ -54,7 +54,10 @@ uint32_t get_purge_count() // Read-only access to purge count.
 {
     return purgeCount;
 }
-
+float get_purge_timer()
+{
+    return purgeTimer.read();
+}
 bool get_relay_conflict()
 {
     if (start_r & charge_r)
@@ -127,6 +130,7 @@ void fc_state_machine_thread()
             if (get_analog_values().fcvolt >= 20)
             {
                 state = CAP_CHARGE;
+                purgeTimer.start();
                 charge_r.write(true);
             }
         }
@@ -136,14 +140,14 @@ void fc_state_machine_thread()
             Charge caps to __ V using the startup resistors. Then charge
             to __ V without them
             */
-            if (get_analog_values().capvolt >= 20)
+            if (get_analog_values().capvolt >= 30)
             { // make me a constant
                 // Disconnect charge_r then connect cap_r so charge goes faster
                 charge_r.write(false);
                 ThisThread::sleep_for(100);
                 cap_r.write(true);
             }
-            if (get_analog_values().capvolt >= 25)
+            if (get_analog_values().capvolt >= 35)
             { // make me a constant
                 // charging complete
                 state = FC_RUN;
@@ -152,17 +156,14 @@ void fc_state_machine_thread()
         }
         else if (FC_RUN == state)
         {
+
             if (purgeTimer.read() > 3 * 60)
             {
                 purgeTimer.stop();
-
-                purge_v.write(true);
-                ThisThread::sleep_for(200);
-                purge_v.write(false);
-
                 purgeTimer.reset();
+                state = FC_PURGE;
+                purge_v.write(true);
                 purgeTimer.start();
-                purgeCount = purgeCount + 1;
             }
 
             if (blue_button)
@@ -175,6 +176,21 @@ void fc_state_machine_thread()
                 cap_r.write(false);
                 state = FC_SHUTDOWN;
                 update_leds();
+            }
+        }
+        else if (FC_PURGE == state)
+        {
+            if (purgeTimer.read() > 0.2)
+            {
+                purge_v.write(false);
+                purgeTimer.stop();
+                purgeTimer.reset();
+            }
+            if ((!purge_v)&(get_analog_values().press1>PRESSURE_MIN))
+            {
+                purgeTimer.start();
+                purgeCount = purgeCount + 1;
+                state = FC_RUN;
             }
         }
         else if (FC_SHUTDOWN == state)

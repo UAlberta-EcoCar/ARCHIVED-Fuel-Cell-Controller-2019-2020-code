@@ -67,6 +67,7 @@ bool expect_low_pressure(uint32_t fc_state)
   return (fc_state == FC_STANDBY) || 
          (fc_state == FC_PRESSURIZE) ||
          (fc_state == FC_START_UP_PURGE) ||
+         (fc_state == FC_PURGE) ||
          (fc_state == FC_SHUTDOWN) || 
          (fc_state == FC_ALARM);
 }
