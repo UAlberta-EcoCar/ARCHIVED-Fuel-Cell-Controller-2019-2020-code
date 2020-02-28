@@ -23,7 +23,7 @@ void data_logging_thread() {
     // Dalin's cpp magic made this a lot nicer but oh well.
     while (true) {
 
-        sprintf(buffer, "\n\n\n\n\n\n\n\n\n\n\n\n\n{State: %lu}     ", get_fc_state());
+        sprintf(buffer, "\n\n\n{State: %lu}     ", get_fc_state());
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -35,6 +35,17 @@ void data_logging_thread() {
         ThisThread::sleep_for(0.1);
 
         sprintf(buffer, "{Purge Count: %ld}     ", get_purge_count());
+        //ThisThread::sleep_for(0.1);
+        // pc.puts(buffer);
+        ThisThread::sleep_for(0.1);
+        ftdi.puts(buffer);
+        ThisThread::sleep_for(0.1);
+        bluetooth.puts(buffer);
+        ThisThread::sleep_for(0.1);
+        open_log.puts(buffer);
+        ThisThread::sleep_for(0.1);
+
+        sprintf(buffer, "{Purge Timer: %f}     ", get_purge_timer());
         //ThisThread::sleep_for(0.1);
         // pc.puts(buffer);
         ThisThread::sleep_for(0.1);
@@ -72,6 +83,10 @@ void data_logging_thread() {
           }
           if (get_error_state().press_low){
             sprintf(buffer, "{Error: Under Pressure}");
+            bluetooth.puts(buffer);
+          }
+          if (get_error_state().fcvolt_high){
+            sprintf(buffer, "{Error: FC Voltage High}");
             bluetooth.puts(buffer);
           }
           if (get_error_state().fcvolt_low){
@@ -162,6 +177,6 @@ void data_logging_thread() {
         sprintf(buffer, "{BLUE BUTTON: %d}\n\n", blue_button.read());
         bluetooth.puts(buffer);
         
-        ThisThread::sleep_for(500);
+        ThisThread::sleep_for(2000);
     }
 }
