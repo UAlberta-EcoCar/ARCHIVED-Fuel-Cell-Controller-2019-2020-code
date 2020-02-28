@@ -29,11 +29,11 @@ void analog_read_thread() {
     // Loop read adcs at 1kHz (does this actually run at 1 kHz?)
     while (true) {
         // todo - other sensors and scaling
-        analog_values.fcvolt = fcvolt.read() * 49.932f - 0.25f; //updated scaling factor, tested okay
+        analog_values.fcvolt = fcvolt.read() * 48.996f - 0.2139f; //updated scaling factor, tested accurate
         analog_values.motorvolt = motorvolt.read() * 26.70162f - 0.0357f; //not working properly
-        analog_values.capvolt = capvolt.read() * 49.131f - 0.24f; //updated scaling factor, tested okay
-        analog_values.fccurr = fccurr.read() * 270.951f - 102.515f; //updated scaling factors, tested okay
-        analog_values.motorcurr = motorcurr.read() * 132.5529f - 54.3216f; //updated scaling factors, tested okay
+        analog_values.capvolt = capvolt.read() *  48.645f - 0.158f; //updated scaling factor, tested accurate
+        analog_values.fccurr = fccurr.read() * 265.369f - 103.7556f; //updated scaling factors, tested within an amp
+        analog_values.motorcurr = motorcurr.read() * * 133.083f - 50.5399f; //updated scaling factors, tested within an amp
         analog_values.capcurr = capcurr.read() * 157.7268f - 58.099f; //not working properly
         analog_values.press1 = press1.read() * 61.8057f - 23.353f;
         float x = fctemp1.read();
