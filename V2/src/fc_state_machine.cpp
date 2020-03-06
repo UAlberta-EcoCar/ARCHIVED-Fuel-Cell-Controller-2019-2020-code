@@ -147,7 +147,7 @@ void fc_state_machine_thread()
                 ThisThread::sleep_for(100);
                 cap_r.write(true);
             }
-            if (get_analog_values().capvolt >= 35)
+            if (get_analog_values().capvolt >= 31)
             { // make me a constant
                 // charging complete
                 state = FC_RUN;

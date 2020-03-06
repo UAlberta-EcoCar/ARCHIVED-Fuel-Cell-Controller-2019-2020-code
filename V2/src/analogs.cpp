@@ -32,8 +32,8 @@ void analog_read_thread() {
         analog_values.fcvolt = fcvolt.read() * 48.996f - 0.2139f; //updated scaling factor, tested accurate
         analog_values.motorvolt = motorvolt.read() * 26.70162f - 0.0357f; //not working properly
         analog_values.capvolt = capvolt.read() *  48.645f - 0.158f; //updated scaling factor, tested accurate
-        analog_values.fccurr = fccurr.read() * 265.369f - 103.7556f; //updated scaling factors, tested within an amp
-        analog_values.motorcurr = motorcurr.read() * * 133.083f - 50.5399f; //updated scaling factors, tested within an amp
+        analog_values.fccurr = 0.6494*(fccurr.read() * 265.369f - 97.9556f) + 0.3799; //updated scaling factors, tested within an amp
+        analog_values.motorcurr = motorcurr.read() * 133.083f - 50.5399f; //updated scaling factors, tested within an amp
         analog_values.capcurr = capcurr.read() * 157.7268f - 58.099f; //not working properly
         analog_values.press1 = press1.read() * 61.8057f - 23.353f;
         float x = fctemp1.read();
