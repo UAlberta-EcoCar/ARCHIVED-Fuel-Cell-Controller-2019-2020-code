@@ -42,11 +42,23 @@ void fan_thread() {
           break;
         case FC_RUN :
           idealtemp = 52.204*(1-exp(-0.010*fccurrent)+38.095);
-          if (fctemp>=60){
+          if (fctemp>=55){
             pwm_1.write(HIGH); 
             pwm_2.write(HIGH); 
             pwm_3.write(HIGH);
           }
+          else if (fctemp>=50){
+            pwm_1.write(MEDIUM);
+            pwm_2.write(MEDIUM);
+            pwm_3.write(MEDIUM);
+          }
+          else
+          {
+            pwm_1.write(LOW);
+            pwm_2.write(LOW);
+            pwm_3.write(LOW);
+          }
+/*
           else if (fctemp<=idealtemp){
             pwm_1.write(LOW);
             pwm_2.write(LOW);
@@ -62,6 +74,7 @@ void fan_thread() {
             pwm_2.write(HIGH);
             pwm_3.write(HIGH);
           }
+*/
           break;
         case FC_SHUTDOWN :
           fan_switch_all.write(false);
