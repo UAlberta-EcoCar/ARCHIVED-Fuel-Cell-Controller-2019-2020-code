@@ -34,10 +34,10 @@ void data_logging_thread() {
         else if (get_fc_state() == FC_SHUTDOWN){sprintf(buffer,"\n\nState: FC_SHUTDOWN\n");}
         else if (get_fc_state() == FC_ALARM){sprintf(buffer,"\n\nState: FC_ALARM\n");}
         else if (get_fc_state() == FC_TEST){sprintf(buffer,"\n\nState: FC_TEST\n");}
-        else {sprintf(buffer,"State: UNKNOWN STATE?!\n");}
+        else {sprintf(buffer,"\n\nState: UNKNOWN STATE?!\n");}
         printData(buffer);
 
-        sprintf(buffer, "Purge Count: %3u    |", get_purge_count());
+        sprintf(buffer, "Purge Count: %-5u|", get_purge_count());
         printData(buffer);
 
         sprintf(buffer, "  Pressure: %-10.1f|", get_analog_values().press1);
@@ -45,18 +45,18 @@ void data_logging_thread() {
 
         if (check_all_errors())
         {
-          sprintf(buffer, "   Error: %-3s|", "YES");
+          sprintf(buffer, "   Error: %-3s\n", "YES");
         }
         else
         {
-          sprintf(buffer, "   Error: %-3s|", "NO");
+          sprintf(buffer, "   Error: %-3s\n", "NO");
         }
         printData(buffer);
 
-        sprintf(buffer, "Purge Timer: %2.2f |", get_purge_timer());
+        sprintf(buffer, "Purge Timer: %-2.2f |", get_purge_timer());
         printData(buffer);
 
-        sprintf(buffer, "  Temperature: %7.1f|", get_analog_values().fctemp1);
+        sprintf(buffer, "  Temperature: %-7.1f|", get_analog_values().fctemp1);
         printData(buffer);
 
         sprintf(buffer, "   Error: ");
@@ -122,22 +122,22 @@ void data_logging_thread() {
           }
         }
 
-        sprintf(buffer, "\n\nFC Voltage: %3.1f  |", get_analog_values().fcvolt);
+        sprintf(buffer, "\n\nFC Voltage: %-5.1f|", get_analog_values().fcvolt);
         printData(buffer);
 
-        sprintf(buffer, "  Cap Voltage: %3.1f  |", get_analog_values().capvolt);
+        sprintf(buffer, "  Cap Voltage: %-8.1f|", get_analog_values().capvolt);
         printData(buffer);
 
-        sprintf(buffer, "  Motor Voltage: %3.1f\n", get_analog_values().motorvolt);
+        sprintf(buffer, "  Motor Voltage: %-3.1f\n", get_analog_values().motorvolt);
         printData(buffer);
 
-        sprintf(buffer, "FC Current: %3.1f  |", get_analog_values().fccurr);
+        sprintf(buffer, "FC Current: %-5.1f|", get_analog_values().fccurr);
         printData(buffer);
 
-        sprintf(buffer, "  Cap Current: %3.1f  |", get_analog_values().capcurr);
+        sprintf(buffer, "  Cap Current: %-8.1f|", get_analog_values().capcurr);
         printData(buffer);
 
-        sprintf(buffer, "  Motor Current: %3.1f\n", get_analog_values().motorcurr);
+        sprintf(buffer, "  Motor Current: %-5.1f\n", get_analog_values().motorcurr);
         printData(buffer);
 
         sprintf(buffer, "\n  Relays Open (OFF): ");
@@ -204,9 +204,12 @@ void data_logging_thread() {
           printData(buffer);
         }
         if (!purge_v.read()){
-          sprintf(buffer, "SUPPLY_V, ");
+          sprintf(buffer, "PURGE_V, ");
           printData(buffer);
         }
+
+        sprintf(buffer, "\n____________________________________________________________________________");
+        printData(buffer);
 
         ThisThread::sleep_for(2000);
     }
