@@ -1,5 +1,4 @@
 #include "mbed.h"
-
 #include <analogs.h>
 #include <error_checker.h>
 #include <data_logging.h>

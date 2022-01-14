@@ -45,7 +45,6 @@ DigitalOut start_led(START_LED);
 
 Timer purgeTimer;
 uint32_t purgeCount = 0;
-
 uint32_t get_fc_state() // Read-only access to state variable.
 {
     return state;
